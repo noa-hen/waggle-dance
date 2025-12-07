@@ -2610,4 +2610,272 @@ public class FederatedHMSHandlerTest {
     handler.update_creation_metadata(CAT_1, DB_P, TBL_1, request);
     verify(primaryClient).update_creation_metadata(CAT_1, DB_P, TBL_1, request);
   }
+
+  /**
+   * Test 1: Cross-Metastore Database Listing with Multiple Federated Metastores
+   * 
+   * This comprehensive test validates the PanopticOperationHandler's ability to:
+   * - Aggregate database listings from multiple federated metastores
+   * - Properly transform outbound database names with prefixes
+   * - Filter databases based on patterns across all metastores
+   * - Handle scenarios where multiple metastores contribute to the result
+   */
+  @Test
+  public void get_databases_aggregatesFromMultipleFederatedMetastores() throws TException {
+    // Setup: Create mock for a second federated metastore
+    DatabaseMapping federatedMapping = Mockito.mock(DatabaseMapping.class);
+    Iface federatedClient = Mockito.mock(Iface.class);
+    when(federatedMapping.getClient()).thenReturn(federatedClient);
+    when(federatedMapping.getMetastoreFilter()).thenReturn(new DefaultMetaStoreFilterHookImpl(new HiveConf()));
+    when(federatedMapping.getDatabasePrefix()).thenReturn("federated_");
+
+    // Setup: Configure the PanopticOperationHandler to return aggregated results
+    PanopticOperationHandler panopticHandler = Mockito.mock(PanopticOperationHandler.class);
+    when(databaseMappingService.getPanopticOperationHandler()).thenReturn(panopticHandler);
+
+    // Setup: Configure available database mappings to include both primary and federated
+    List<DatabaseMapping> allMappings = Lists.newArrayList(primaryMapping, federatedMapping);
+    when(databaseMappingService.getAvailableDatabaseMappings()).thenReturn(allMappings);
+
+    // Scenario: Pattern-based query that matches databases across multiple metastores
+    // Primary metastore has: db_primary, db_shared
+    // Federated metastore has: federated_analytics, federated_shared (with prefix transformation)
+    String pattern = "*";
+    List<String> aggregatedDatabases = Lists.newArrayList(
+        DB_P,                    // from primary metastore (no prefix)
+        "db_shared",             // from primary metastore (no prefix)
+        "federated_analytics",   // from federated metastore (with prefix)
+        "federated_shared"       // from federated metastore (with prefix)
+    );
+    when(panopticHandler.getAllDatabases(pattern)).thenReturn(aggregatedDatabases);
+
+    // Execute: Call get_databases which should aggregate from all metastores
+    List<String> result = handler.get_databases(pattern);
+
+    // Verify: All databases from all metastores are returned
+    assertThat(result.size(), is(4));
+    assertThat(result, contains(DB_P, "db_shared", "federated_analytics", "federated_shared"));
+
+    // Verify: PanopticOperationHandler was called with the correct pattern
+    verify(panopticHandler).getAllDatabases(pattern);
+  }
+
+  /**
+   * Test 1b: Cross-Metastore Database Listing - get_all_databases variant
+   * 
+   * Tests the get_all_databases() method which doesn't take a pattern parameter
+   * but still needs to aggregate results from all federated metastores.
+   */
+  @Test
+  public void get_all_databases_aggregatesFromMultipleFederatedMetastores() throws TException {
+    // Setup: Create mock for additional federated metastores
+    DatabaseMapping federatedMapping1 = Mockito.mock(DatabaseMapping.class);
+    DatabaseMapping federatedMapping2 = Mockito.mock(DatabaseMapping.class);
+    Iface federatedClient1 = Mockito.mock(Iface.class);
+    Iface federatedClient2 = Mockito.mock(Iface.class);
+
+    when(federatedMapping1.getClient()).thenReturn(federatedClient1);
+    when(federatedMapping1.getDatabasePrefix()).thenReturn("warehouse1_");
+    when(federatedMapping2.getClient()).thenReturn(federatedClient2);
+    when(federatedMapping2.getDatabasePrefix()).thenReturn("warehouse2_");
+
+    // Setup: Configure the PanopticOperationHandler
+    PanopticOperationHandler panopticHandler = Mockito.mock(PanopticOperationHandler.class);
+    when(databaseMappingService.getPanopticOperationHandler()).thenReturn(panopticHandler);
+
+    // Setup: Configure available database mappings to include primary and two federated
+    List<DatabaseMapping> allMappings = Lists.newArrayList(primaryMapping, federatedMapping1, federatedMapping2);
+    when(databaseMappingService.getAvailableDatabaseMappings()).thenReturn(allMappings);
+
+    // Scenario: All databases from three metastores with proper prefix transformation
+    List<String> aggregatedDatabases = Lists.newArrayList(
+        DB_P,                      // from primary (no prefix)
+        "default",                 // from primary (no prefix)
+        "warehouse1_sales",        // from federated1 (with prefix)
+        "warehouse1_inventory",    // from federated1 (with prefix)
+        "warehouse2_analytics",    // from federated2 (with prefix)
+        "warehouse2_reporting"     // from federated2 (with prefix)
+    );
+    when(panopticHandler.getAllDatabases()).thenReturn(aggregatedDatabases);
+
+    // Execute: Call get_all_databases
+    List<String> result = handler.get_all_databases();
+
+    // Verify: All databases from all metastores are returned with proper prefixes
+    assertThat(result.size(), is(6));
+    assertThat(result, contains(
+        DB_P, "default",
+        "warehouse1_sales", "warehouse1_inventory",
+        "warehouse2_analytics", "warehouse2_reporting"
+    ));
+
+    // Verify: PanopticOperationHandler was called
+    verify(panopticHandler).getAllDatabases();
+  }
+
+  /**
+   * Test 2: Access Control Enforcement with Database Whitelist
+   * 
+   * This test validates the access control logic when AccessControlType is set to
+   * READ_AND_WRITE_ON_DATABASE_WHITELIST and a database is NOT in the whitelist.
+   * 
+   * Validates:
+   * - Write operations are rejected for databases not in the whitelist
+   * - Proper exception type is thrown (NotAllowedException)
+   * - Read operations still succeed for non-whitelisted databases
+   */
+  @Test
+  public void accessControl_writeOperationRejectedWhenDatabaseNotInWhitelist() throws TException {
+    // Setup: Create a database mapping that simulates whitelist-based access control
+    // where the database is NOT in the whitelist
+    String nonWhitelistedDb = "restricted_db";
+    String tableName = "sensitive_table";
+
+    // Setup: Configure the mapping to throw NotAllowedException for write operations
+    // This simulates READ_AND_WRITE_ON_DATABASE_WHITELIST where the db is not whitelisted
+    DatabaseMapping restrictedMapping = Mockito.mock(DatabaseMapping.class);
+    Iface restrictedClient = Mockito.mock(Iface.class);
+    when(restrictedMapping.getClient()).thenReturn(restrictedClient);
+    when(restrictedMapping.getMetastoreFilter()).thenReturn(new DefaultMetaStoreFilterHookImpl(new HiveConf()));
+    when(restrictedMapping.transformInboundDatabaseName(nonWhitelistedDb)).thenReturn(nonWhitelistedDb);
+
+    // Configure databaseMappingService to return the restricted mapping for this database
+    when(databaseMappingService.databaseMapping(nonWhitelistedDb)).thenReturn(restrictedMapping);
+
+    // Setup: checkWritePermissions throws NotAllowedException for non-whitelisted database
+    Mockito.doThrow(new com.hotels.bdp.waggledance.server.security.NotAllowedException(
+        "You cannot perform this operation on the virtual database '" + nonWhitelistedDb + "'."))
+        .when(restrictedMapping).checkWritePermissions(nonWhitelistedDb);
+
+    // Test 1: Verify write operation (drop_table) is rejected
+    try {
+      handler.drop_table(nonWhitelistedDb, tableName, false);
+      // If we reach here, the test should fail
+      throw new AssertionError("Expected NotAllowedException to be thrown for write operation on non-whitelisted database");
+    } catch (com.hotels.bdp.waggledance.server.security.NotAllowedException e) {
+      // Expected: Write operation should be rejected
+      assertThat(e.getMessage(), is("You cannot perform this operation on the virtual database '" + nonWhitelistedDb + "'."));
+    }
+
+    // Verify: checkWritePermissions was called
+    verify(restrictedMapping).checkWritePermissions(nonWhitelistedDb);
+
+    // Verify: The actual drop_table was never called on the client
+    verify(restrictedClient, never()).drop_table(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
+  }
+
+  /**
+   * Test 2b: Access Control - Read operations succeed for non-whitelisted databases
+   * 
+   * Validates that read operations (like get_table) still succeed even when the
+   * database is not in the write whitelist.
+   */
+  @Test
+  public void accessControl_readOperationSucceedsForNonWhitelistedDatabase() throws TException {
+    // Setup: Create a database mapping that simulates whitelist-based access control
+    String nonWhitelistedDb = "readonly_db";
+    String tableName = "public_table";
+
+    // Setup: Configure the mapping for read operations
+    DatabaseMapping readOnlyMapping = Mockito.mock(DatabaseMapping.class);
+    Iface readOnlyClient = Mockito.mock(Iface.class);
+    when(readOnlyMapping.getClient()).thenReturn(readOnlyClient);
+    when(readOnlyMapping.getMetastoreFilter()).thenReturn(new DefaultMetaStoreFilterHookImpl(new HiveConf()));
+    when(readOnlyMapping.transformInboundDatabaseName(nonWhitelistedDb)).thenReturn(nonWhitelistedDb);
+
+    // Configure databaseMappingService to return the read-only mapping
+    when(databaseMappingService.databaseMapping(nonWhitelistedDb)).thenReturn(readOnlyMapping);
+
+    // Setup: Configure checkWritePermissions to throw for write operations
+    // (simulating READ_AND_WRITE_ON_DATABASE_WHITELIST where db is not whitelisted)
+    Mockito.doThrow(new com.hotels.bdp.waggledance.server.security.NotAllowedException(
+        "You cannot perform this operation on the virtual database '" + nonWhitelistedDb + "'."))
+        .when(readOnlyMapping).checkWritePermissions(nonWhitelistedDb);
+
+    // Setup: Configure successful read operation
+    Table expectedTable = new Table();
+    expectedTable.setDbName(nonWhitelistedDb);
+    expectedTable.setTableName(tableName);
+    when(readOnlyClient.get_table(nonWhitelistedDb, tableName)).thenReturn(expectedTable);
+    when(readOnlyMapping.transformOutboundTable(expectedTable)).thenReturn(expectedTable);
+
+    // Setup: Allow table access check to pass
+    doNothing().when(databaseMappingService).checkTableAllowed(nonWhitelistedDb, tableName, readOnlyMapping);
+
+    // Execute: Read operation (get_table) should succeed
+    Table result = handler.get_table(nonWhitelistedDb, tableName);
+
+    // Verify: Read operation succeeded and returned the expected table
+    assertThat(result.getDbName(), is(nonWhitelistedDb));
+    assertThat(result.getTableName(), is(tableName));
+
+    // Verify: checkWritePermissions was NOT called for read operation
+    verify(readOnlyMapping, never()).checkWritePermissions(Mockito.anyString());
+
+    // Verify: The read operation was executed on the client
+    verify(readOnlyClient).get_table(nonWhitelistedDb, tableName);
+  }
+
+  /**
+   * Test 2c: Access Control - Multiple database mappings with different access control types
+   * 
+   * Validates that the system correctly handles multiple metastores with different
+   * access control configurations, ensuring write operations are properly routed
+   * and access control is enforced per-metastore.
+   */
+  @Test
+  public void accessControl_multipleMappingsWithDifferentAccessControlTypes() throws TException {
+    // Setup: Primary metastore with full read-write access
+    String primaryDb = DB_P;
+    String primaryTable = "writable_table";
+
+    // Primary mapping already configured in setUp() with full access
+    when(primaryMapping.transformInboundDatabaseName(primaryDb)).thenReturn(primaryDb);
+    doNothing().when(primaryMapping).checkWritePermissions(primaryDb);
+
+    // Setup: Federated metastore with READ_AND_WRITE_ON_DATABASE_WHITELIST
+    String federatedDb = "federated_restricted";
+    String federatedTable = "restricted_table";
+
+    DatabaseMapping federatedMapping = Mockito.mock(DatabaseMapping.class);
+    Iface federatedClient = Mockito.mock(Iface.class);
+    when(federatedMapping.getClient()).thenReturn(federatedClient);
+    when(federatedMapping.getMetastoreFilter()).thenReturn(new DefaultMetaStoreFilterHookImpl(new HiveConf()));
+    when(federatedMapping.transformInboundDatabaseName(federatedDb)).thenReturn("restricted");
+    when(federatedMapping.getDatabasePrefix()).thenReturn("federated_");
+
+    // Configure databaseMappingService to return appropriate mappings
+    when(databaseMappingService.databaseMapping(federatedDb)).thenReturn(federatedMapping);
+
+    // Federated mapping rejects write operations (not in whitelist)
+    Mockito.doThrow(new com.hotels.bdp.waggledance.server.security.NotAllowedException(
+        "You cannot perform this operation on the virtual database '" + federatedDb + "'."))
+        .when(federatedMapping).checkWritePermissions(federatedDb);
+
+    // Test 1: Write operation on primary metastore should succeed
+    Table primaryTableObj = new Table();
+    primaryTableObj.setDbName(primaryDb);
+    primaryTableObj.setTableName(primaryTable);
+    Table inboundPrimaryTable = new Table();
+    inboundPrimaryTable.setDbName(primaryDb);
+    when(primaryMapping.transformInboundTable(primaryTableObj)).thenReturn(inboundPrimaryTable);
+    doNothing().when(databaseMappingService).checkTableAllowed(primaryDb, primaryTable, primaryMapping);
+
+    // Execute write on primary - should succeed
+    handler.create_table(primaryTableObj);
+    verify(primaryMapping).checkWritePermissions(primaryDb);
+    verify(primaryClient).create_table(inboundPrimaryTable);
+
+    // Test 2: Write operation on federated metastore should fail
+    try {
+      handler.drop_table(federatedDb, federatedTable, false);
+      throw new AssertionError("Expected NotAllowedException for federated metastore write operation");
+    } catch (com.hotels.bdp.waggledance.server.security.NotAllowedException e) {
+      // Expected: Write operation on federated metastore should be rejected
+      assertThat(e.getMessage(), is("You cannot perform this operation on the virtual database '" + federatedDb + "'."));
+    }
+
+    // Verify: Federated client's drop_table was never called
+    verify(federatedClient, never()).drop_table(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean());
+  }
 }
