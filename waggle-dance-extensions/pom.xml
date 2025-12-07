@@ -29,13 +29,13 @@
     </dependency>    
     <dependency>
       <groupId>com.bucket4j</groupId>
-      <artifactId>bucket4j_jdk8-core</artifactId>
-      <version>8.9.0</version>
-	</dependency>
-	<dependency>
+      <artifactId>bucket4j-core</artifactId>
+      <version>8.10.1</version>
+    </dependency>
+    <dependency>
       <groupId>com.bucket4j</groupId>
-      <artifactId>bucket4j_jdk8-redis</artifactId>
-      <version>8.9.0</version>
+      <artifactId>bucket4j-redis</artifactId>
+      <version>8.10.1</version>
     </dependency>
     <dependency>
       <groupId>org.redisson</groupId>

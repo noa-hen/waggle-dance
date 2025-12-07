@@ -11,7 +11,7 @@
   <name>${project.groupId}:${project.artifactId}</name>
 
   <properties>
-    <feign.version>12.4</feign.version>
+    <feign.version>13.5</feign.version>
   </properties>
 
   <dependencies>
@@ -114,7 +114,7 @@
     </dependency>
     <dependency>
       <groupId>io.github.openfeign</groupId>
-      <artifactId>feign-jaxrs</artifactId>
+      <artifactId>feign-jaxrs3</artifactId>
       <version>${feign.version}</version>
       <scope>test</scope>
     </dependency>

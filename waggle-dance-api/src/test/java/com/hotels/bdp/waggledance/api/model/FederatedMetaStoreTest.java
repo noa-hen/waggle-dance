@@ -20,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.junit.Test;
 

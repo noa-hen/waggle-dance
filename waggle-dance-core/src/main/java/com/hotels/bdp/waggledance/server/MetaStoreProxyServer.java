@@ -34,7 +34,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
 
 import org.apache.hadoop.hive.common.auth.HiveAuthUtils;
