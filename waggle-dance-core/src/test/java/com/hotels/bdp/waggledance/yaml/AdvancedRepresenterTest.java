@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2021 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.introspector.MethodProperty;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.MappingNode;
@@ -84,7 +85,8 @@ public class AdvancedRepresenterTest {
     }
   }
 
-  private final AdvancedRepresenter representer = new AdvancedRepresenter();
+  // SnakeYAML 2.x requires DumperOptions in constructor
+  private final AdvancedRepresenter representer = new AdvancedRepresenter(new DumperOptions());
   private TestBean bean;
   private BeanInfo beanInfo;
 
