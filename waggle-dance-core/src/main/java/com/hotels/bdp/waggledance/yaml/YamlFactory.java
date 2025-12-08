@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2023 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -44,30 +45,31 @@ import com.hotels.bdp.waggledance.conf.YamlStorageConfiguration;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlFactory {
 
-  public static Yaml newYaml() {
-    PropertyUtils propertyUtils = new AdvancedPropertyUtils();
-    propertyUtils.setSkipMissingProperties(true);
+    public static Yaml newYaml() {
+      PropertyUtils propertyUtils = new AdvancedPropertyUtils();
+      propertyUtils.setSkipMissingProperties(true);
 
-    Constructor constructor = new Constructor(Federations.class);
-    TypeDescription federationDescription = new TypeDescription(Federations.class);
-    federationDescription.putListPropertyType("federatedMetaStores", FederatedMetaStore.class);
-    constructor.addTypeDescription(federationDescription);
-    constructor.setPropertyUtils(propertyUtils);
+      LoaderOptions loaderOptions = new LoaderOptions();
+      Constructor constructor = new Constructor(Federations.class, loaderOptions);
+      TypeDescription federationDescription = new TypeDescription(Federations.class);
+      federationDescription.putListPropertyType("federatedMetaStores", FederatedMetaStore.class);
+      constructor.addTypeDescription(federationDescription);
+      constructor.setPropertyUtils(propertyUtils);
 
-    Representer representer = new AdvancedRepresenter();
-    representer.setPropertyUtils(new FieldOrderPropertyUtils());
-    representer.addClassTag(Federations.class, Tag.MAP);
-    representer.addClassTag(AbstractMetaStore.class, Tag.MAP);
-    representer.addClassTag(WaggleDanceConfiguration.class, Tag.MAP);
-    representer.addClassTag(YamlStorageConfiguration.class, Tag.MAP);
-    representer.addClassTag(GraphiteConfiguration.class, Tag.MAP);
+      DumperOptions dumperOptions = new DumperOptions();
+      dumperOptions.setIndent(2);
+      dumperOptions.setDefaultFlowStyle(FlowStyle.BLOCK);
 
-    DumperOptions dumperOptions = new DumperOptions();
-    dumperOptions.setIndent(2);
-    dumperOptions.setDefaultFlowStyle(FlowStyle.BLOCK);
+      Representer representer = new AdvancedRepresenter(dumperOptions);
+      representer.setPropertyUtils(new FieldOrderPropertyUtils());
+      representer.addClassTag(Federations.class, Tag.MAP);
+      representer.addClassTag(AbstractMetaStore.class, Tag.MAP);
+      representer.addClassTag(WaggleDanceConfiguration.class, Tag.MAP);
+      representer.addClassTag(YamlStorageConfiguration.class, Tag.MAP);
+      representer.addClassTag(GraphiteConfiguration.class, Tag.MAP);
 
-    return new Yaml(constructor, representer, dumperOptions);
-  }
+      return new Yaml(constructor, representer, dumperOptions);
+    }
 
   private static class FieldOrderPropertyUtils extends AdvancedPropertyUtils {
     @Override

@@ -26,8 +26,6 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.ConstraintViolationException;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import fm.last.commons.test.file.ClassDataFolder;
 import fm.last.commons.test.file.DataFolder;
+import jakarta.validation.ConstraintViolationException;
 
 import com.google.common.collect.Lists;
 

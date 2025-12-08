@@ -220,10 +220,15 @@
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>com.hotels</groupId>
-      <artifactId>hcommon-hive-metastore</artifactId>
-    </dependency>
+        <dependency>
+          <groupId>com.hotels</groupId>
+          <artifactId>hcommon-hive-metastore</artifactId>
+        </dependency>
+        <!-- javax.validation for backward compatibility with hcommon-hive-metastore -->
+        <dependency>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+        </dependency>
 
     <!-- Apache VFS -->
     <dependency>

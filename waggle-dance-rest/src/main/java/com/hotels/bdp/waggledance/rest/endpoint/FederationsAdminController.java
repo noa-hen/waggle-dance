@@ -17,10 +17,6 @@ package com.hotels.bdp.waggledance.rest.endpoint;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.ValidationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -34,6 +30,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.ValidationException;
 
 import com.hotels.bdp.waggledance.api.ValidationError;
 import com.hotels.bdp.waggledance.api.federation.service.FederationService;

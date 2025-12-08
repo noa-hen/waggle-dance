@@ -30,7 +30,7 @@ import io.micrometer.graphite.GraphiteMeterRegistry;
 import io.micrometer.graphite.GraphiteProtocol;
 import io.micrometer.jmx.JmxConfig;
 import io.micrometer.jmx.JmxMeterRegistry;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 
 import com.hotels.bdp.waggledance.conf.GraphiteConfiguration;
 import com.hotels.bdp.waggledance.conf.PrometheusConfiguration;

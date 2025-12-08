@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.annotation.PreDestroy;
 import javax.annotation.WillClose;
 
 import org.apache.thrift.transport.TTransport;
@@ -32,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 
 import com.google.common.annotations.VisibleForTesting;
