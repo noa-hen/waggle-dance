@@ -61,7 +61,7 @@
     <!-- Override spotless plugin version for Java 17 compatibility -->
     <spotless.maven.plugin.version>2.43.0</spotless.maven.plugin.version>
     <!-- Override JaCoCo version for Java 17 compatibility (0.8.6 doesn't support class file major version 61) -->
-    <jacoco.maven.plugin.version>0.8.11</jacoco.maven.plugin.version>
+    <jacoco.version>0.8.11</jacoco.version>
   </properties>
 
   <dependencyManagement>
