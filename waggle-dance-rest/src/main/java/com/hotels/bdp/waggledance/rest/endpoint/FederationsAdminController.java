@@ -50,7 +50,8 @@ public class FederationsAdminController {
     this.federationService = federationService;
   }
 
-  @RequestMapping(method = RequestMethod.GET)
+  // Spring Boot 3.x no longer matches trailing slashes by default, so explicitly accept both
+  @RequestMapping(method = RequestMethod.GET, path = { "", "/" })
   @ResponseBody
   public List<AbstractMetaStore> federations() {
     return federationService.getAll();
@@ -62,7 +63,8 @@ public class FederationsAdminController {
     return federationService.get(name);
   }
 
-  @RequestMapping(method = RequestMethod.POST)
+  // Spring Boot 3.x no longer matches trailing slashes by default, so explicitly accept both
+  @RequestMapping(method = RequestMethod.POST, path = { "", "/" })
   public void add(@Validated @RequestBody AbstractMetaStore federatedMetaStore) {
     federationService.register(federatedMetaStore);
   }
