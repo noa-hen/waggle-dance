@@ -57,10 +57,12 @@
     <lombok.version>1.18.30</lombok.version>
     <apache.commons.version>3.14.0</apache.commons.version>
     <curator.version>5.5.0</curator.version>
-      <jdk.version>17</jdk.version>
-      <!-- Override spotless plugin version for Java 17 compatibility -->
-      <spotless.maven.plugin.version>2.43.0</spotless.maven.plugin.version>
-    </properties>
+    <jdk.version>17</jdk.version>
+    <!-- Override spotless plugin version for Java 17 compatibility -->
+    <spotless.maven.plugin.version>2.43.0</spotless.maven.plugin.version>
+    <!-- Override JaCoCo version for Java 17 compatibility (0.8.6 doesn't support class file major version 61) -->
+    <jacoco.maven.plugin.version>0.8.11</jacoco.maven.plugin.version>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
