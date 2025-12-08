@@ -74,7 +74,7 @@ import org.springframework.web.client.RestTemplate;
 import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
-import feign.jaxrs.JAXRSContract;
+import feign.jaxrs.JakartaContract;
 import fm.last.commons.test.file.ClassDataFolder;
 import fm.last.commons.test.file.DataFolder;
 
@@ -705,7 +705,7 @@ public class WaggleDanceIntegrationTest {
     runWaggleDance(runner);
     FederationsAdminClient restClient = Feign
         .builder()
-        .contract(new JAXRSContract())
+        .contract(new JakartaContract())
         .encoder(new JacksonEncoder())
         .decoder(new JacksonDecoder())
         .target(FederationsAdminClient.class, "http://localhost:" + runner.getRestApiPort() + "/");
@@ -743,7 +743,7 @@ public class WaggleDanceIntegrationTest {
     runWaggleDance(runner);
     FederationsAdminClient restClient = Feign
         .builder()
-        .contract(new JAXRSContract())
+        .contract(new JakartaContract())
         .encoder(new JacksonEncoder())
         .decoder(new JacksonDecoder())
         .target(FederationsAdminClient.class, "http://localhost:" + runner.getRestApiPort() + "/");
