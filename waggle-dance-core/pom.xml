@@ -224,6 +224,12 @@
       <groupId>com.hotels</groupId>
       <artifactId>hcommon-hive-metastore</artifactId>
     </dependency>
+    <!-- javax.validation API for backward compatibility with hcommon-hive-metastore -->
+    <!-- which was compiled against javax.validation and references ValidationException -->
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+    </dependency>
 
     <!-- Apache VFS -->
     <dependency>

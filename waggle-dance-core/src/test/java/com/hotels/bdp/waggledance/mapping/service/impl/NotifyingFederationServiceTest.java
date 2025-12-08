@@ -26,13 +26,13 @@ import static com.hotels.bdp.waggledance.api.model.AbstractMetaStore.newFederate
 import java.util.Collections;
 import java.util.List;
 
+import javax.validation.ValidationException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import jakarta.validation.ValidationException;
 
 import com.hotels.bdp.waggledance.api.model.AbstractMetaStore;
 import com.hotels.bdp.waggledance.mapping.service.FederatedMetaStoreStorage;
