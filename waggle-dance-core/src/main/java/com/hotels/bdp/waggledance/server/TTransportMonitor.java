@@ -23,8 +23,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.WillClose;
 
-import jakarta.annotation.PreDestroy;
-
 import org.apache.thrift.transport.TTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 
 import com.google.common.annotations.VisibleForTesting;

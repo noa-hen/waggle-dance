@@ -30,13 +30,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
-import jakarta.validation.constraints.NotNull;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.TableMeta;
 import org.apache.thrift.TException;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 
 import com.google.common.collect.ImmutableList;

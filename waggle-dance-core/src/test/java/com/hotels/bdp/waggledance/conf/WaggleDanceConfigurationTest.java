@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2021 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import jakarta.validation.ConstraintViolation;
-
 import org.hibernate.validator.HibernateValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+import jakarta.validation.ConstraintViolation;
 
 import com.google.common.collect.ImmutableMap;
 
