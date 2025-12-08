@@ -36,28 +36,31 @@
 
   <properties>
     <maven.release.plugin.version>3.0.1</maven.release.plugin.version>
-    <spring-boot.version>2.7.13</spring-boot.version>
+    <spring-boot.version>3.4.0</spring-boot.version>
     <hadoop.version>3.3.6</hadoop.version>
     <maven.surefire.plugin.version>3.1.2</maven.surefire.plugin.version>
     <hamcrest.version>2.2</hamcrest.version>
     <hive.version>3.1.3</hive.version>
     <junit.version>4.13.2</junit.version>
-    <mockito.version>3.5.15</mockito.version>
+    <mockito.version>5.8.0</mockito.version>
     <aspectj-maven-plugin.version>1.14.0</aspectj-maven-plugin.version>
-    <aspectj.version>1.9.7</aspectj.version>
+    <aspectj.version>1.9.21</aspectj.version>
     <beeju.version>5.0.0</beeju.version>
-    <guava.version>31.1-jre</guava.version>
+    <guava.version>32.1.3-jre</guava.version>
     <guice.version>5.1.0</guice.version>
-    <log4j2.version>2.17.1</log4j2.version>
+    <log4j2.version>2.21.1</log4j2.version>
     <hcommon-hive-metastore.version>1.4.2</hcommon-hive-metastore.version>
-	<jackson.version>2.9.8</jackson.version>
-    <jackson.databind.version>2.9.10.8</jackson.databind.version>    
+    <jackson.version>2.15.3</jackson.version>
+    <jackson.databind.version>2.15.3</jackson.databind.version>
     <joda-time.version>2.12.5</joda-time.version>
     <jakarta.version>6.0.0</jakarta.version>
-    <lombok.version>1.18.24</lombok.version>
-    <apache.commons.version>3.12.0</apache.commons.version>
-    <curator.version>2.13.0</curator.version>
-  </properties>
+    <lombok.version>1.18.30</lombok.version>
+    <apache.commons.version>3.14.0</apache.commons.version>
+    <curator.version>5.5.0</curator.version>
+      <jdk.version>17</jdk.version>
+      <!-- Override spotless plugin version for Java 17 compatibility -->
+      <spotless.maven.plugin.version>2.43.0</spotless.maven.plugin.version>
+    </properties>
 
   <dependencyManagement>
     <dependencies>
@@ -385,18 +388,17 @@
         <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
-      <!-- spring uses a newer version of byte-buddy but Mockito requires
-        an older version -->
+      <!-- byte-buddy version compatible with Mockito 5.x and Java 17 -->
       <dependency>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy</artifactId>
-        <version>1.14.5</version>
+        <version>1.14.11</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy-agent</artifactId>
-        <version>1.14.5</version>
+        <version>1.14.11</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -581,11 +583,10 @@
           <version>${maven.release.plugin.version}</version>
         </plugin>
         <plugin>
-          <!-- NOTE: we are blocked on building waggle dance using Java 11
-            on the below, need to wait for https://github.com/mojohaus/aspectj-maven-plugin/pull/45 -->
-          <groupId>org.codehaus.mojo</groupId>
+          <!-- Using dev.aspectj plugin which supports Java 17+ -->
+          <groupId>dev.aspectj</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
-          <version>${aspectj-maven-plugin.version}</version>
+          <version>1.14</version>
           <configuration>
             <source>${jdk.version}</source>
             <target>${jdk.version}</target>
@@ -659,7 +660,7 @@
               <pluginExecutions>
                 <pluginExecution>
                   <pluginExecutionFilter>
-                    <groupId>org.codehaus.mojo</groupId>
+                    <groupId>dev.aspectj</groupId>
                     <artifactId>aspectj-maven-plugin</artifactId>
                     <versionRange>[1.0,)</versionRange>
                     <goals>

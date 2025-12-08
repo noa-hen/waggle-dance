@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 
 import org.junit.Before;
 import org.junit.Rule;

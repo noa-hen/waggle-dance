@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.hibernate.validator.HibernateValidator;
 import org.junit.Before;
