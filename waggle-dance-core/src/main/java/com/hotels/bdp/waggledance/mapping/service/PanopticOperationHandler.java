@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2023 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.service;
@@ -37,9 +35,9 @@ import com.hotels.bdp.waggledance.mapping.service.requests.GetTableMetaRequest;
 import com.hotels.bdp.waggledance.mapping.service.requests.SetUgiRequest;
 
 /**
- * Class responsible for handling the Hive operations that need to combine results from multiple Hive Metastores
+ * Class responsible for handling the Hive operations that need to combine results from multiple
+ * Hive Metastores
  */
-
 @Log4j2
 public abstract class PanopticOperationHandler {
 
@@ -70,14 +68,17 @@ public abstract class PanopticOperationHandler {
       BiFunction<String, DatabaseMapping, Boolean> filter) {
     List<GetAllDatabasesByPatternRequest> allRequests = new ArrayList<>();
 
-    for (Entry<DatabaseMapping, String> mappingWithPattern : databaseMappingsForPattern.entrySet()) {
+    for (Entry<DatabaseMapping, String> mappingWithPattern :
+        databaseMappingsForPattern.entrySet()) {
       DatabaseMapping mapping = mappingWithPattern.getKey();
-      GetAllDatabasesByPatternRequest databasesByPatternRequest = new GetAllDatabasesByPatternRequest(mapping,
-          mappingWithPattern.getValue(), filter);
+      GetAllDatabasesByPatternRequest databasesByPatternRequest =
+          new GetAllDatabasesByPatternRequest(mapping, mappingWithPattern.getValue(), filter);
       allRequests.add(databasesByPatternRequest);
     }
-    List<String> result = getPanopticOperationExecutor()
-        .executeRequests(allRequests, GET_DATABASES_TIMEOUT, "Can't fetch databases by pattern: {}");
+    List<String> result =
+        getPanopticOperationExecutor()
+            .executeRequests(
+                allRequests, GET_DATABASES_TIMEOUT, "Can't fetch databases by pattern: {}");
     log.info("All Databases Result={}", result);
     return result;
   }
@@ -90,7 +91,8 @@ public abstract class PanopticOperationHandler {
    * @param tableTypes table types to match
    * @return list of table metadata
    */
-  abstract public List<TableMeta> getTableMeta(String databasePatterns, String tablePatterns, List<String> tableTypes);
+  public abstract List<TableMeta> getTableMeta(
+      String databasePatterns, String tablePatterns, List<String> tableTypes);
 
   protected List<TableMeta> getTableMeta(
       String tablePatterns,
@@ -99,15 +101,19 @@ public abstract class PanopticOperationHandler {
       BiFunction<TableMeta, DatabaseMapping, Boolean> filter) {
     List<GetTableMetaRequest> allRequests = new ArrayList<>();
 
-    for (Entry<DatabaseMapping, String> mappingWithPattern : databaseMappingsForPattern.entrySet()) {
+    for (Entry<DatabaseMapping, String> mappingWithPattern :
+        databaseMappingsForPattern.entrySet()) {
       DatabaseMapping mapping = mappingWithPattern.getKey();
-      GetTableMetaRequest tableMetaRequest = new GetTableMetaRequest(mapping, mappingWithPattern.getValue(),
-          tablePatterns, tableTypes, filter);
+      GetTableMetaRequest tableMetaRequest =
+          new GetTableMetaRequest(
+              mapping, mappingWithPattern.getValue(), tablePatterns, tableTypes, filter);
       allRequests.add(tableMetaRequest);
     }
 
-    List<TableMeta> result = getPanopticOperationExecutor()
-        .executeRequests(allRequests, GET_TABLE_META_TIMEOUT, "Got exception fetching get_table_meta: {}");
+    List<TableMeta> result =
+        getPanopticOperationExecutor()
+            .executeRequests(
+                allRequests, GET_TABLE_META_TIMEOUT, "Got exception fetching get_table_meta: {}");
     return result;
   }
 
@@ -118,8 +124,10 @@ public abstract class PanopticOperationHandler {
    * @param group_names group names
    * @return list
    */
-  public List<String> setUgi(String user_name, List<String> group_names, List<DatabaseMapping> databaseMappings) {
-    // set_ugi returns the user_name that was set (on EMR at least) we just combine them all to avoid duplicates.
+  public List<String> setUgi(
+      String user_name, List<String> group_names, List<DatabaseMapping> databaseMappings) {
+    // set_ugi returns the user_name that was set (on EMR at least) we just combine them all to
+    // avoid duplicates.
     // Not sure if anything uses these results. We're assuming the order doesn't matter.
     List<SetUgiRequest> allRequests = new ArrayList<>();
 
@@ -128,8 +136,9 @@ public abstract class PanopticOperationHandler {
       allRequests.add(setUgiRequest);
     }
 
-    List<String> resultWithDuplicates = getPanopticOperationExecutor()
-        .executeRequests(allRequests, SET_UGI_TIMEOUT, "Got exception setting UGI: {}");
+    List<String> resultWithDuplicates =
+        getPanopticOperationExecutor()
+            .executeRequests(allRequests, SET_UGI_TIMEOUT, "Got exception setting UGI: {}");
     Set<String> result = new LinkedHashSet<>(resultWithDuplicates);
     return new ArrayList<>(result);
   }
@@ -147,14 +156,17 @@ public abstract class PanopticOperationHandler {
       allRequests.add(getAllFunctionsRequest);
     }
 
-    List<GetAllFunctionsResponse> responses = getPanopticOperationExecutor()
-        .executeRequests(allRequests, GET_ALL_FUNCTIONS_TIMEOUT, "Got exception fetching get_all_functions: {}");
+    List<GetAllFunctionsResponse> responses =
+        getPanopticOperationExecutor()
+            .executeRequests(
+                allRequests,
+                GET_ALL_FUNCTIONS_TIMEOUT,
+                "Got exception fetching get_all_functions: {}");
     if (responses.isEmpty()) {
       return new GetAllFunctionsResponse();
     }
     GetAllFunctionsResponse result = new GetAllFunctionsResponse(responses.get(0));
-    responses
-        .stream()
+    responses.stream()
         .skip(1)
         .filter(GetAllFunctionsResponse::isSetFunctions)
         .flatMap(response -> response.getFunctions().stream())

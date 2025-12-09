@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.metrics;
@@ -66,8 +64,11 @@ public class MonitoredAspect {
       Object returnObj = pjp.proceed();
       result = "success";
       return returnObj;
-    } catch (NoSuchObjectException | InvalidOperationException | InvalidObjectException | AlreadyExistsException e) {
-      //expected Exception e.g. when getTable is called and the table does not exist.
+    } catch (NoSuchObjectException
+        | InvalidOperationException
+        | InvalidObjectException
+        | AlreadyExistsException e) {
+      // expected Exception e.g. when getTable is called and the table does not exist.
       result = "success";
       throw e;
     } catch (Throwable t) {
@@ -75,12 +76,19 @@ public class MonitoredAspect {
       throw t;
     } finally {
       stopwatch.stop();
-      increment(buildMetricName(COUNTER, metricBasePath, getMonitorMetastore(), "calls"),methodName,
+      increment(
+          buildMetricName(COUNTER, metricBasePath, getMonitorMetastore(), "calls"),
+          methodName,
           buildMetricName(COUNTER, className, "calls"));
-      increment(buildMetricName(COUNTER, metricBasePath, getMonitorMetastore(), result),methodName,
+      increment(
+          buildMetricName(COUNTER, metricBasePath, getMonitorMetastore(), result),
+          methodName,
           buildMetricName(COUNTER, className, result));
-      submit(buildMetricName(TIMER, metricBasePath, getMonitorMetastore(), "duration"),
-          stopwatch.elapsed(TimeUnit.MILLISECONDS),methodName, buildMetricName(TIMER, className, "duration"));
+      submit(
+          buildMetricName(TIMER, metricBasePath, getMonitorMetastore(), "duration"),
+          stopwatch.elapsed(TimeUnit.MILLISECONDS),
+          methodName,
+          buildMetricName(TIMER, className, "duration"));
     }
   }
 

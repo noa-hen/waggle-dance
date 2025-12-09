@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.core.federation.service;
@@ -33,7 +31,7 @@ import com.hotels.bdp.waggledance.api.model.MetaStoreStatus;
 @Service
 public class PopulateStatusFederationService implements FederationService {
 
-  private final static Logger log = LoggerFactory.getLogger(PopulateStatusFederationService.class);
+  private static final Logger log = LoggerFactory.getLogger(PopulateStatusFederationService.class);
 
   private final FederationService federationService;
   private final FederationStatusService federationStatusService;
@@ -72,9 +70,13 @@ public class PopulateStatusFederationService implements FederationService {
     // Custom Thread pool so we get optimal parallelism we want for firing our requests
     ForkJoinPool customThreadPool = new ForkJoinPool(metaStores.size());
     try {
-      customThreadPool.submit(() -> metaStores.parallelStream().forEach(metaStore -> {
-        populate(metaStore);
-      }));
+      customThreadPool.submit(
+          () ->
+              metaStores.parallelStream()
+                  .forEach(
+                      metaStore -> {
+                        populate(metaStore);
+                      }));
       customThreadPool.shutdown();
       // wait at most 1 minute otherwise just return what we got thus far.
       customThreadPool.awaitTermination(1L, TimeUnit.MINUTES);

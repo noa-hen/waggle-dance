@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2024 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.extensions;
@@ -54,8 +52,10 @@ public class ExtensionBeans {
   public ThriftClientFactory thriftClientFactory(
       ThriftClientFactory defaultWaggleDanceClientFactory,
       BucketService bucketService,
-      BucketKeyGenerator bucketKeyGenerator, MeterRegistry meterRegistry) {
-    return new RateLimitingClientFactory(defaultWaggleDanceClientFactory, bucketService, bucketKeyGenerator, meterRegistry);
+      BucketKeyGenerator bucketKeyGenerator,
+      MeterRegistry meterRegistry) {
+    return new RateLimitingClientFactory(
+        defaultWaggleDanceClientFactory, bucketService, bucketKeyGenerator, meterRegistry);
   }
 
   @Bean
@@ -64,13 +64,17 @@ public class ExtensionBeans {
     return new BucketKeyGenerator(keyPrefix);
   }
 
-  @ConditionalOnProperty(name = "waggledance.extensions.ratelimit.storage", havingValue = STORAGE_MEMORY)
+  @ConditionalOnProperty(
+      name = "waggledance.extensions.ratelimit.storage",
+      havingValue = STORAGE_MEMORY)
   @Bean
   public BucketService inMemoryBucketService(BucketBandwidthProvider bucketBandwidthProvider) {
     return new InMemoryBucketService(bucketBandwidthProvider);
   }
 
-  @ConditionalOnProperty(name = "waggledance.extensions.ratelimit.storage", havingValue = STORAGE_REDIS)
+  @ConditionalOnProperty(
+      name = "waggledance.extensions.ratelimit.storage",
+      havingValue = STORAGE_REDIS)
   @Bean
   public BucketService redisBucketService(
       BucketBandwidthProvider bucketBandwidthProvider,
@@ -78,21 +82,27 @@ public class ExtensionBeans {
     return new RedisBucketService(bucketBandwidthProvider, redissonBasedProxyManager);
   }
 
-  @ConditionalOnProperty(name = "waggledance.extensions.ratelimit.storage", havingValue = STORAGE_REDIS)
+  @ConditionalOnProperty(
+      name = "waggledance.extensions.ratelimit.storage",
+      havingValue = STORAGE_REDIS)
   @Bean
   public RedissonBasedProxyManager<String> redissonBasedProxyManager(
-      @Value("${waggledance.extensions.ratelimit.reddison.embedded.config}") String embeddedConfigString)
-    throws IOException {
+      @Value("${waggledance.extensions.ratelimit.reddison.embedded.config}")
+          String embeddedConfigString)
+      throws IOException {
     Config config = Config.fromYAML(embeddedConfigString);
     Redisson redisson = (Redisson) Redisson.create(config);
     ConnectionManager connectionManager = redisson.getConnectionManager();
     RedissonObjectBuilder objectBuilder = new RedissonObjectBuilder(redisson.reactive());
-    CommandAsyncExecutor commandExecutor = new CommandReactiveService(connectionManager, objectBuilder);
-    RedissonBasedProxyManager<String> proxyManager = RedissonBasedProxyManager
-        .builderFor(commandExecutor)
-        .withExpirationStrategy(ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(Duration.ofHours(24)))
-        .withKeyMapper(Mapper.STRING)
-        .build();
+    CommandAsyncExecutor commandExecutor =
+        new CommandReactiveService(connectionManager, objectBuilder);
+    RedissonBasedProxyManager<String> proxyManager =
+        RedissonBasedProxyManager.builderFor(commandExecutor)
+            .withExpirationStrategy(
+                ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(
+                    Duration.ofHours(24)))
+            .withKeyMapper(Mapper.STRING)
+            .build();
     return proxyManager;
   }
 
@@ -103,5 +113,4 @@ public class ExtensionBeans {
       @Value("${waggledance.extensions.ratelimit.refillType:GREEDY}") RefillType refillType) {
     return refillType.createBandwidthProvider(capacity, tokensPerMinute);
   }
-
 }

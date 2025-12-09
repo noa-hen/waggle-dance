@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.server.security;
@@ -32,35 +30,41 @@ public class AccessControlHandlerFactory {
   private final FederationService federationService;
 
   @Autowired
-  public AccessControlHandlerFactory(@Qualifier("notifyingFederationService") FederationService federationService) {
+  public AccessControlHandlerFactory(
+      @Qualifier("notifyingFederationService") FederationService federationService) {
     this.federationService = federationService;
   }
 
   public AccessControlHandler newInstance(AbstractMetaStore metaStore) {
     switch (metaStore.getAccessControlType()) {
-    case READ_ONLY:
-      return new ReadOnlyAccessControlHandler();
-    case READ_AND_WRITE_ON_DATABASE_WHITELIST:
-      return new DatabaseWhitelistAccessControlHandler(metaStore, federationService, CANNOT_CREATE);
-    case READ_AND_WRITE_AND_CREATE:
-      if (metaStore.getFederationType() == FederationType.PRIMARY) {
-        return new ReadWriteCreateAccessControlHandler(metaStore, federationService);
-      } else {
-        // Should never be possible to configure this state. If this is thrown it is a bug.
-        throw new IllegalStateException("Write access on anything other then a 'primary' metastore is not allowed");
-      }
-    case READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST:
-      if (metaStore.getFederationType() == FederationType.PRIMARY) {
-        return new DatabaseWhitelistAccessControlHandler(metaStore, federationService, CAN_CREATE);
-      } else {
-        // Should never be possible to configure this state. If this is thrown it is a bug.
-        throw new IllegalStateException("Write access on anything other then a 'primary' metastore is not allowed");
-      }
+      case READ_ONLY:
+        return new ReadOnlyAccessControlHandler();
+      case READ_AND_WRITE_ON_DATABASE_WHITELIST:
+        return new DatabaseWhitelistAccessControlHandler(
+            metaStore, federationService, CANNOT_CREATE);
+      case READ_AND_WRITE_AND_CREATE:
+        if (metaStore.getFederationType() == FederationType.PRIMARY) {
+          return new ReadWriteCreateAccessControlHandler(metaStore, federationService);
+        } else {
+          // Should never be possible to configure this state. If this is thrown it is a bug.
+          throw new IllegalStateException(
+              "Write access on anything other then a 'primary' metastore is not allowed");
+        }
+      case READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST:
+        if (metaStore.getFederationType() == FederationType.PRIMARY) {
+          return new DatabaseWhitelistAccessControlHandler(
+              metaStore, federationService, CAN_CREATE);
+        } else {
+          // Should never be possible to configure this state. If this is thrown it is a bug.
+          throw new IllegalStateException(
+              "Write access on anything other then a 'primary' metastore is not allowed");
+        }
 
-    default:
-      throw new IllegalStateException("Cannot determine AccessControlHandler type given type: '"
-          + metaStore.getAccessControlType()
-          + "'");
+      default:
+        throw new IllegalStateException(
+            "Cannot determine AccessControlHandler type given type: '"
+                + metaStore.getAccessControlType()
+                + "'");
     }
   }
 }

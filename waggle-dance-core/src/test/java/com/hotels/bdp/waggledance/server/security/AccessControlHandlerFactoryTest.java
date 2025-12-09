@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2019 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.server.security;
@@ -32,8 +30,7 @@ import com.hotels.bdp.waggledance.api.model.PrimaryMetaStore;
 @RunWith(MockitoJUnitRunner.class)
 public class AccessControlHandlerFactoryTest {
 
-  @Mock
-  private FederationService federationService;
+  @Mock private FederationService federationService;
   private AccessControlHandlerFactory factory;
 
   @Before
@@ -51,8 +48,8 @@ public class AccessControlHandlerFactoryTest {
 
   @Test
   public void newInstanceReadAndWriteOnDatabaseWhiteList() throws Exception {
-    PrimaryMetaStore primaryMetaStore = new PrimaryMetaStore("primary", "",
-        AccessControlType.READ_AND_WRITE_ON_DATABASE_WHITELIST);
+    PrimaryMetaStore primaryMetaStore =
+        new PrimaryMetaStore("primary", "", AccessControlType.READ_AND_WRITE_ON_DATABASE_WHITELIST);
     AccessControlHandler newInstance = factory.newInstance(primaryMetaStore);
     assertTrue(newInstance instanceof DatabaseWhitelistAccessControlHandler);
     assertFalse(newInstance.hasCreatePermission());
@@ -60,8 +57,8 @@ public class AccessControlHandlerFactoryTest {
 
   @Test
   public void newInstanceReadAndWriteAndCreate() throws Exception {
-    PrimaryMetaStore primaryMetaStore = new PrimaryMetaStore("primary", "",
-        AccessControlType.READ_AND_WRITE_AND_CREATE);
+    PrimaryMetaStore primaryMetaStore =
+        new PrimaryMetaStore("primary", "", AccessControlType.READ_AND_WRITE_AND_CREATE);
     AccessControlHandler newInstance = factory.newInstance(primaryMetaStore);
     assertTrue(newInstance instanceof ReadWriteCreateAccessControlHandler);
     assertTrue(newInstance.hasCreatePermission());
@@ -69,15 +66,16 @@ public class AccessControlHandlerFactoryTest {
 
   @Test(expected = IllegalStateException.class)
   public void newInstanceReadAndWriteAndCreateNotPrimary() {
-    FederatedMetaStore federatedMetaStore = new FederatedMetaStore("federated", "",
-        AccessControlType.READ_AND_WRITE_AND_CREATE);
+    FederatedMetaStore federatedMetaStore =
+        new FederatedMetaStore("federated", "", AccessControlType.READ_AND_WRITE_AND_CREATE);
     factory.newInstance(federatedMetaStore);
   }
 
   @Test
   public void newInstanceReadAndWriteAndCreateOnDatabaseWhiteList() throws Exception {
-    PrimaryMetaStore primaryMetaStore = new PrimaryMetaStore("primary", "",
-        AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST);
+    PrimaryMetaStore primaryMetaStore =
+        new PrimaryMetaStore(
+            "primary", "", AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST);
     AccessControlHandler newInstance = factory.newInstance(primaryMetaStore);
     assertTrue(newInstance instanceof DatabaseWhitelistAccessControlHandler);
     assertTrue(newInstance.hasCreatePermission());
@@ -85,9 +83,9 @@ public class AccessControlHandlerFactoryTest {
 
   @Test(expected = IllegalStateException.class)
   public void newInstanceReadAndWriteAndCreateOnDatabaseWhiteListNotPrimary() {
-    FederatedMetaStore federatedMetaStore = new FederatedMetaStore("federated", "",
-        AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST);
+    FederatedMetaStore federatedMetaStore =
+        new FederatedMetaStore(
+            "federated", "", AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST);
     factory.newInstance(federatedMetaStore);
   }
-
 }

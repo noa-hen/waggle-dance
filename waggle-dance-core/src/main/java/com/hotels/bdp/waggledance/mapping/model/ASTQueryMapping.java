@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.model;
@@ -37,12 +35,12 @@ import org.apache.hadoop.hive.ql.parse.ParseUtils;
 import com.hotels.bdp.waggledance.api.WaggleDanceException;
 
 public enum ASTQueryMapping implements QueryMapping {
-
   INSTANCE;
 
   private static final String PRESTO_VIEW_MARKER = "/* Presto View";
-  private final static String RE_WORD_BOUNDARY = "\\b";
-  private final static Comparator<CommonToken> ON_START_INDEX = Comparator.comparingInt(CommonToken::getStartIndex);
+  private static final String RE_WORD_BOUNDARY = "\\b";
+  private static final Comparator<CommonToken> ON_START_INDEX =
+      Comparator.comparingInt(CommonToken::getStartIndex);
 
   @Override
   public String transformOutboundDatabaseName(MetaStoreMapping metaStoreMapping, String query) {
@@ -69,14 +67,16 @@ public enum ASTQueryMapping implements QueryMapping {
     return false;
   }
 
-  private StringBuilder transformDatabaseTableTokens(MetaStoreMapping metaStoreMapping, ASTNode root, String query) {
+  private StringBuilder transformDatabaseTableTokens(
+      MetaStoreMapping metaStoreMapping, ASTNode root, String query) {
     StringBuilder result = new StringBuilder();
     SortedSet<CommonToken> dbNameTokens = extractDbNameTokens(root);
     int startIndex = 0;
     for (CommonToken dbNameNode : dbNameTokens) {
       final String dbName = dbNameNode.getText();
       final boolean escaped = dbName.startsWith("`") && dbName.endsWith("`");
-      String transformedDbName = metaStoreMapping.transformOutboundDatabaseName(unescapeIdentifier(dbName));
+      String transformedDbName =
+          metaStoreMapping.transformOutboundDatabaseName(unescapeIdentifier(dbName));
       if (escaped) {
         transformedDbName = "`" + transformedDbName + "`";
       }
@@ -88,8 +88,10 @@ public enum ASTQueryMapping implements QueryMapping {
     return result;
   }
 
-  private void transformFunctionTokens(MetaStoreMapping metaStoreMapping, ASTNode root, StringBuilder result) {
-    // Done differently from the extractDbNameTokens as the Function tokens do not contain a correct start index. We'll
+  private void transformFunctionTokens(
+      MetaStoreMapping metaStoreMapping, ASTNode root, StringBuilder result) {
+    // Done differently from the extractDbNameTokens as the Function tokens do not contain a correct
+    // start index. We'll
     // have to fall back to search and replace.
     List<CommonToken> functionTokens = extractFunctionTokens(root);
     for (CommonToken functionNode : functionTokens) {
@@ -148,7 +150,7 @@ public enum ASTQueryMapping implements QueryMapping {
         }
         Tree child = current.getChild(0);
         if (child.getType() == HiveParser.Identifier) {
-          CommonToken dbNameDotFunctionNameNode = (CommonToken) ((ASTNode)child).getToken();
+          CommonToken dbNameDotFunctionNameNode = (CommonToken) ((ASTNode) child).getToken();
           tokens.add(dbNameDotFunctionNameNode);
         }
       }
@@ -175,5 +177,4 @@ public enum ASTQueryMapping implements QueryMapping {
     }
     return rt;
   }
-
 }

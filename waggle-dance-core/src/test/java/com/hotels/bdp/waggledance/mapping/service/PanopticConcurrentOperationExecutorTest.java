@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2021 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.service;
@@ -36,7 +34,7 @@ import com.hotels.bdp.waggledance.mapping.service.requests.RequestCallable;
 @RunWith(MockitoJUnitRunner.class)
 public class PanopticConcurrentOperationExecutorTest {
 
-  private final static long REQUEST_TIMEOUT = TimeUnit.MILLISECONDS.toMillis(500);
+  private static final long REQUEST_TIMEOUT = TimeUnit.MILLISECONDS.toMillis(500);
 
   private @Mock DatabaseMapping mapping1;
   private @Mock DatabaseMapping mapping2;
@@ -52,8 +50,10 @@ public class PanopticConcurrentOperationExecutorTest {
   @Test
   public void executeRequestsInOrder() throws Exception {
     PanopticConcurrentOperationExecutor executor = new PanopticConcurrentOperationExecutor();
-    List<DummyRequestCallable> allRequests = Lists
-        .newArrayList(new DummyRequestCallable("call1", mapping1), new DummyRequestCallable("call2", mapping2),
+    List<DummyRequestCallable> allRequests =
+        Lists.newArrayList(
+            new DummyRequestCallable("call1", mapping1),
+            new DummyRequestCallable("call2", mapping2),
             new DummyRequestCallable("call0", mapping3));
     List<String> executeRequests = executor.executeRequests(allRequests, REQUEST_TIMEOUT, "error");
     assertThat(executeRequests.size(), is(3));
@@ -65,16 +65,17 @@ public class PanopticConcurrentOperationExecutorTest {
   @Test
   public void executeRequestsSlowConnection() throws Exception {
     PanopticConcurrentOperationExecutor executor = new PanopticConcurrentOperationExecutor();
-    DummyRequestCallable slowRequest = new DummyRequestCallable("call2", mapping2) {
-      @Override
-      public List<String> call() throws Exception {
-        // Too slow should never be executed
-        Thread.sleep(REQUEST_TIMEOUT * 10);
-        return super.call();
-      }
-    };
-    List<DummyRequestCallable> allRequests = Lists
-        .newArrayList(new DummyRequestCallable("call1", mapping1), slowRequest);
+    DummyRequestCallable slowRequest =
+        new DummyRequestCallable("call2", mapping2) {
+          @Override
+          public List<String> call() throws Exception {
+            // Too slow should never be executed
+            Thread.sleep(REQUEST_TIMEOUT * 10);
+            return super.call();
+          }
+        };
+    List<DummyRequestCallable> allRequests =
+        Lists.newArrayList(new DummyRequestCallable("call1", mapping1), slowRequest);
     List<String> executeRequests = executor.executeRequests(allRequests, REQUEST_TIMEOUT, "error");
     assertThat(executeRequests.size(), is(1));
     assertThat(executeRequests.get(0), is("call1"));
@@ -85,16 +86,17 @@ public class PanopticConcurrentOperationExecutorTest {
     Long mapping2Latency = TimeUnit.MILLISECONDS.toMillis(1000);
     when(mapping2.getLatency()).thenReturn(mapping2Latency);
     PanopticConcurrentOperationExecutor executor = new PanopticConcurrentOperationExecutor();
-    DummyRequestCallable slowRequest = new DummyRequestCallable("call2", mapping2) {
-      @Override
-      public List<String> call() throws Exception {
-        // Slow but within timeout+latency, should be called
-        Thread.sleep(REQUEST_TIMEOUT + 100);
-        return super.call();
-      }
-    };
-    List<DummyRequestCallable> allRequests = Lists
-        .newArrayList(new DummyRequestCallable("call1", mapping1), slowRequest);
+    DummyRequestCallable slowRequest =
+        new DummyRequestCallable("call2", mapping2) {
+          @Override
+          public List<String> call() throws Exception {
+            // Slow but within timeout+latency, should be called
+            Thread.sleep(REQUEST_TIMEOUT + 100);
+            return super.call();
+          }
+        };
+    List<DummyRequestCallable> allRequests =
+        Lists.newArrayList(new DummyRequestCallable("call1", mapping1), slowRequest);
     List<String> executeRequests = executor.executeRequests(allRequests, REQUEST_TIMEOUT, "error");
     assertThat(executeRequests.size(), is(2));
     assertThat(executeRequests.get(0), is("call1"));
@@ -104,16 +106,20 @@ public class PanopticConcurrentOperationExecutorTest {
   @Test
   public void executeRequestsExceptionLoggedResultsReturned() throws Exception {
     PanopticConcurrentOperationExecutor executor = new PanopticConcurrentOperationExecutor();
-    DummyRequestCallable errorRequest = new DummyRequestCallable("call2", mapping2) {
-      @Override
-      public List<String> call() throws Exception {
-        throw new RuntimeException("who you gonna call...");
-      }
-    };
-    List<DummyRequestCallable> allRequests = Lists
-        .newArrayList(new DummyRequestCallable("call1", mapping1), errorRequest,
+    DummyRequestCallable errorRequest =
+        new DummyRequestCallable("call2", mapping2) {
+          @Override
+          public List<String> call() throws Exception {
+            throw new RuntimeException("who you gonna call...");
+          }
+        };
+    List<DummyRequestCallable> allRequests =
+        Lists.newArrayList(
+            new DummyRequestCallable("call1", mapping1),
+            errorRequest,
             new DummyRequestCallable("call3", mapping3));
-    List<String> executeRequests = executor.executeRequests(allRequests, REQUEST_TIMEOUT, "error in call: {}");
+    List<String> executeRequests =
+        executor.executeRequests(allRequests, REQUEST_TIMEOUT, "error in call: {}");
     assertThat(executeRequests.size(), is(2));
     assertThat(executeRequests.get(0), is("call1"));
     assertThat(executeRequests.get(1), is("call3"));
@@ -123,7 +129,8 @@ public class PanopticConcurrentOperationExecutorTest {
   public void executeEmptyRequests() throws Exception {
     PanopticConcurrentOperationExecutor executor = new PanopticConcurrentOperationExecutor();
     List<DummyRequestCallable> allRequests = Lists.newArrayList();
-    List<String> executeRequests = executor.executeRequests(allRequests, REQUEST_TIMEOUT, "error in call: {}");
+    List<String> executeRequests =
+        executor.executeRequests(allRequests, REQUEST_TIMEOUT, "error in call: {}");
     assertThat(executeRequests.size(), is(0));
   }
 
@@ -146,7 +153,5 @@ public class PanopticConcurrentOperationExecutorTest {
     public DatabaseMapping getMapping() {
       return mapping;
     }
-
   }
-
 }

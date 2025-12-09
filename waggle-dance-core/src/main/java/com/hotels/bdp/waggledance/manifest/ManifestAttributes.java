@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2023 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.manifest;
@@ -29,14 +27,12 @@ import java.util.jar.Manifest;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Read and make available all the attributes held in the specified class' META_INF/MANIFEST.MF file. The attributes are
- * made available via a getter and the toString method can for instance be used on application start to report build
- * date, build user and version number of Maven builds.
- * <p>
- * This class does the best effort to find the correct manifest in the classpath.
- * </p>
+ * Read and make available all the attributes held in the specified class' META_INF/MANIFEST.MF
+ * file. The attributes are made available via a getter and the toString method can for instance be
+ * used on application start to report build date, build user and version number of Maven builds.
+ *
+ * <p>This class does the best effort to find the correct manifest in the classpath.
  */
-
 @Log4j2
 public class ManifestAttributes {
 
@@ -78,7 +74,7 @@ public class ManifestAttributes {
   }
 
   protected InputStream openManifestStream(ProtectionDomain protectionDomain)
-    throws MalformedURLException, IOException {
+      throws MalformedURLException, IOException {
     URL manifestUrl = null;
 
     // try to pick the Manifest in the source JAR
@@ -86,7 +82,8 @@ public class ManifestAttributes {
     log.debug("Manifest location in JARs is {}", manifestUrl);
 
     if (manifestUrl == null) {
-      // if we can't locate the correct JAR then try get to manifest file via a file path (e.g. in Hadoop case where
+      // if we can't locate the correct JAR then try get to manifest file via a file path (e.g. in
+      // Hadoop case where
       // jar is unpacked to disk)
       manifestUrl = selectFromFileLocation(protectionDomain);
       log.debug("Manifest location on disk is {}", manifestUrl);
@@ -110,7 +107,8 @@ public class ManifestAttributes {
     URL jarLocation = protectionDomain.getCodeSource().getLocation();
     if (jarLocation != null) {
       String containingJar = JAR_PROTOCOL + jarLocation.toString();
-      Enumeration<URL> resources = protectionDomain.getClassLoader().getResources(META_INF_MANIFEST_MF);
+      Enumeration<URL> resources =
+          protectionDomain.getClassLoader().getResources(META_INF_MANIFEST_MF);
       if (resources != null) {
         while (resources.hasMoreElements()) {
           URL url = resources.nextElement();
@@ -140,5 +138,4 @@ public class ManifestAttributes {
   public String toString() {
     return attributesString;
   }
-
 }

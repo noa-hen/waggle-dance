@@ -1,31 +1,27 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.model;
@@ -76,29 +72,41 @@ public class MetaStoreMappingFactoryImplTest {
 
   private static final String TEST_DB = "test_db";
 
-  public final @Rule ThriftHiveMetaStoreJUnitRule thrift = new ThriftHiveMetaStoreJUnitRule(TEST_DB);
+  public final @Rule ThriftHiveMetaStoreJUnitRule thrift =
+      new ThriftHiveMetaStoreJUnitRule(TEST_DB);
 
   private @Mock WaggleDanceConfiguration waggleDanceConfiguration;
   private @Mock PrefixNamingStrategy prefixNamingStrategy;
   private @Mock AccessControlHandlerFactory accessControlHandlerFactory;
-  private final CloseableThriftHiveMetastoreIfaceClientFactory metaStoreClientFactory = new CloseableThriftHiveMetastoreIfaceClientFactory(
-      new TunnelingMetaStoreClientFactory(), new DefaultMetaStoreClientFactory(), new GlueClientFactory(),
-      new WaggleDanceConfiguration(), new SplitTrafficMetastoreClientFactory());
+  private final CloseableThriftHiveMetastoreIfaceClientFactory metaStoreClientFactory =
+      new CloseableThriftHiveMetastoreIfaceClientFactory(
+          new TunnelingMetaStoreClientFactory(),
+          new DefaultMetaStoreClientFactory(),
+          new GlueClientFactory(),
+          new WaggleDanceConfiguration(),
+          new SplitTrafficMetastoreClientFactory());
 
   private MetaStoreMappingFactoryImpl factory;
 
   @Before
   public void init() {
     when(prefixNamingStrategy.apply(any(AbstractMetaStore.class)))
-        .thenAnswer((Answer<String>) invocation -> ((AbstractMetaStore) invocation.getArgument(0)).getDatabasePrefix());
-    factory = new MetaStoreMappingFactoryImpl(waggleDanceConfiguration, prefixNamingStrategy, metaStoreClientFactory,
-        accessControlHandlerFactory);
+        .thenAnswer(
+            (Answer<String>)
+                invocation -> ((AbstractMetaStore) invocation.getArgument(0)).getDatabasePrefix());
+    factory =
+        new MetaStoreMappingFactoryImpl(
+            waggleDanceConfiguration,
+            prefixNamingStrategy,
+            metaStoreClientFactory,
+            accessControlHandlerFactory);
   }
 
   @Test
   public void typicalPrefixed() {
     when(waggleDanceConfiguration.getDatabaseResolution()).thenReturn(DatabaseResolution.PREFIXED);
-    AbstractMetaStore federatedMetaStore = newFederatedInstance("fed1", thrift.getThriftConnectionUri());
+    AbstractMetaStore federatedMetaStore =
+        newFederatedInstance("fed1", thrift.getThriftConnectionUri());
     MetaStoreMapping mapping = factory.newInstance(federatedMetaStore);
     assertThat(mapping, is(notNullValue()));
     verify(prefixNamingStrategy).apply(federatedMetaStore);
@@ -109,7 +117,8 @@ public class MetaStoreMappingFactoryImplTest {
 
   @Test
   public void typicalNonPrefixed() {
-    AbstractMetaStore federatedMetaStore = newFederatedInstance("fed1", thrift.getThriftConnectionUri());
+    AbstractMetaStore federatedMetaStore =
+        newFederatedInstance("fed1", thrift.getThriftConnectionUri());
     MetaStoreMapping mapping = factory.newInstance(federatedMetaStore);
     assertThat(mapping, is(notNullValue()));
     verify(prefixNamingStrategy).apply(federatedMetaStore);
@@ -120,7 +129,8 @@ public class MetaStoreMappingFactoryImplTest {
 
   @Test
   public void reconnection() throws Exception {
-    MetaStoreMapping mapping = factory.newInstance(newFederatedInstance("fed1", thrift.getThriftConnectionUri()));
+    MetaStoreMapping mapping =
+        factory.newInstance(newFederatedInstance("fed1", thrift.getThriftConnectionUri()));
     assertThat(mapping.getClient().get_all_databases(), is(Arrays.asList("default", "test_db")));
     mapping.close();
     assertThat(mapping.getClient().get_all_databases(), is(Arrays.asList("default", "test_db")));
@@ -128,7 +138,8 @@ public class MetaStoreMappingFactoryImplTest {
 
   @Test
   public void connectionLost() throws Exception {
-    MetaStoreMapping mapping = factory.newInstance(newFederatedInstance("fed1", thrift.getThriftConnectionUri()));
+    MetaStoreMapping mapping =
+        factory.newInstance(newFederatedInstance("fed1", thrift.getThriftConnectionUri()));
     assertThat(mapping.getClient().get_all_databases(), is(Arrays.asList("default", "test_db")));
     // simulate disconnection
     thrift.client().reconnect();
@@ -137,11 +148,16 @@ public class MetaStoreMappingFactoryImplTest {
 
   @Test
   public void unreachableMetastoreClient() {
-    CloseableThriftHiveMetastoreIfaceClientFactory closeableThriftHiveMetastoreIfaceClientFactory = Mockito
-        .mock(CloseableThriftHiveMetastoreIfaceClientFactory.class);
-    MetaStoreMappingFactoryImpl factory = new MetaStoreMappingFactoryImpl(waggleDanceConfiguration,
-        prefixNamingStrategy, closeableThriftHiveMetastoreIfaceClientFactory, accessControlHandlerFactory);
-    AbstractMetaStore federatedMetaStore = newFederatedInstance("fed1", thrift.getThriftConnectionUri());
+    CloseableThriftHiveMetastoreIfaceClientFactory closeableThriftHiveMetastoreIfaceClientFactory =
+        Mockito.mock(CloseableThriftHiveMetastoreIfaceClientFactory.class);
+    MetaStoreMappingFactoryImpl factory =
+        new MetaStoreMappingFactoryImpl(
+            waggleDanceConfiguration,
+            prefixNamingStrategy,
+            closeableThriftHiveMetastoreIfaceClientFactory,
+            accessControlHandlerFactory);
+    AbstractMetaStore federatedMetaStore =
+        newFederatedInstance("fed1", thrift.getThriftConnectionUri());
     when(closeableThriftHiveMetastoreIfaceClientFactory.newInstance(federatedMetaStore))
         .thenThrow(new RuntimeException("Cannot create client"));
 
@@ -157,7 +173,8 @@ public class MetaStoreMappingFactoryImplTest {
 
   @Test
   public void loadMetastoreFilterHookFromConfig() {
-    AbstractMetaStore federatedMetaStore = newFederatedInstance("fed1", thrift.getThriftConnectionUri());
+    AbstractMetaStore federatedMetaStore =
+        newFederatedInstance("fed1", thrift.getThriftConnectionUri());
     federatedMetaStore.setHiveMetastoreFilterHook(PrefixingMetastoreFilter.class.getName());
     MetaStoreMapping mapping = factory.newInstance(federatedMetaStore);
     assertThat(mapping, is(notNullValue()));
@@ -166,18 +183,20 @@ public class MetaStoreMappingFactoryImplTest {
 
   @Test
   public void loadDefaultMetastoreFilterHook() {
-    AbstractMetaStore federatedMetaStore = newFederatedInstance("fed1", thrift.getThriftConnectionUri());
+    AbstractMetaStore federatedMetaStore =
+        newFederatedInstance("fed1", thrift.getThriftConnectionUri());
     MetaStoreMapping mapping = factory.newInstance(federatedMetaStore);
     assertThat(mapping, is(notNullValue()));
     assertThat(mapping.getMetastoreFilter(), instanceOf(DefaultMetaStoreFilterHookImpl.class));
   }
 
   @Test
-  public void loadMetastoreFilterHookWithCustomConfig() throws Exception{
-    AbstractMetaStore federatedMetaStore = newFederatedInstance("fed1", thrift.getThriftConnectionUri());
+  public void loadMetastoreFilterHookWithCustomConfig() throws Exception {
+    AbstractMetaStore federatedMetaStore =
+        newFederatedInstance("fed1", thrift.getThriftConnectionUri());
     federatedMetaStore.setHiveMetastoreFilterHook(PrefixingMetastoreFilter.class.getName());
-    Map<String,String> metaStoreConfigurationProperties = new HashMap<>();
-    metaStoreConfigurationProperties.put(PrefixingMetastoreFilter.PREFIX_KEY,"prefix-test-");
+    Map<String, String> metaStoreConfigurationProperties = new HashMap<>();
+    metaStoreConfigurationProperties.put(PrefixingMetastoreFilter.PREFIX_KEY, "prefix-test-");
     federatedMetaStore.setConfigurationProperties(metaStoreConfigurationProperties);
 
     MetaStoreMapping mapping = factory.newInstance(federatedMetaStore);
@@ -190,7 +209,8 @@ public class MetaStoreMappingFactoryImplTest {
     sd.setLocation("file:///tmp/local_database/local_table");
     table.setSd(sd);
 
-    String oldLocation=sd.getLocation();
-    assertThat(filterHook.filterTable(table).getSd().getLocation(), equalTo("prefix-test-" + oldLocation ) );
+    String oldLocation = sd.getLocation();
+    assertThat(
+        filterHook.filterTable(table).getSd().getLocation(), equalTo("prefix-test-" + oldLocation));
   }
 }

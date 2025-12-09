@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.api.model;
@@ -24,9 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -39,10 +37,14 @@ import com.google.common.collect.HashBiMap;
 
 import com.hotels.hcommon.hive.metastore.client.tunnelling.MetastoreTunnel;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "federationType")
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "federationType")
 @JsonSubTypes({
-    @Type(value = PrimaryMetaStore.class, name = "PRIMARY"),
-    @Type(value = FederatedMetaStore.class, name = "FEDERATED") })
+  @Type(value = PrimaryMetaStore.class, name = "PRIMARY"),
+  @Type(value = FederatedMetaStore.class, name = "FEDERATED")
+})
 public abstract class AbstractMetaStore {
   private String databasePrefix;
   private String hiveMetastoreFilterHook;
@@ -56,7 +58,8 @@ public abstract class AbstractMetaStore {
   private @NotNull AccessControlType accessControlType = AccessControlType.READ_ONLY;
   private transient @JsonProperty @NotNull MetaStoreStatus status = MetaStoreStatus.UNKNOWN;
   private long latency = 0;
-  private transient @JsonIgnore HashBiMap<String, String> databaseNameBiMapping = HashBiMap.create();
+  private transient @JsonIgnore HashBiMap<String, String> databaseNameBiMapping =
+      HashBiMap.create();
   private boolean impersonationEnabled;
   private Map<String, String> configurationProperties = new HashMap<>();
   private GlueConfig glueConfig;
@@ -65,7 +68,8 @@ public abstract class AbstractMetaStore {
 
   public AbstractMetaStore() {}
 
-  public AbstractMetaStore(String name, String remoteMetaStoreUris, AccessControlType accessControlType) {
+  public AbstractMetaStore(
+      String name, String remoteMetaStoreUris, AccessControlType accessControlType) {
     this.name = name;
     this.remoteMetaStoreUris = remoteMetaStoreUris;
     this.accessControlType = accessControlType;
@@ -83,11 +87,11 @@ public abstract class AbstractMetaStore {
   }
 
   public AbstractMetaStore(
-          String name,
-          String remoteMetaStoreUris,
-          String databasePrefix,
-          AccessControlType accessControlType,
-          List<String> writableDatabaseWhitelist) {
+      String name,
+      String remoteMetaStoreUris,
+      String databasePrefix,
+      AccessControlType accessControlType,
+      List<String> writableDatabaseWhitelist) {
     this.name = name;
     this.remoteMetaStoreUris = remoteMetaStoreUris;
     this.databasePrefix = databasePrefix;
@@ -95,15 +99,12 @@ public abstract class AbstractMetaStore {
     this.writableDatabaseWhitelist = writableDatabaseWhitelist;
   }
 
-
   public static FederatedMetaStore newFederatedInstance(String name, String remoteMetaStoreUris) {
     return new FederatedMetaStore(name, remoteMetaStoreUris);
   }
 
   public static PrimaryMetaStore newPrimaryInstance(
-      String name,
-      String remoteMetaStoreUris,
-      AccessControlType accessControlType) {
+      String name, String remoteMetaStoreUris, AccessControlType accessControlType) {
     return new PrimaryMetaStore(name, remoteMetaStoreUris, accessControlType);
   }
 
@@ -112,10 +113,10 @@ public abstract class AbstractMetaStore {
   }
 
   public static PrimaryMetaStore newPrimaryInstance(
-          String name,
-          String remoteMetaStoreUris,
-          String databasePrefix,
-          AccessControlType accessControlType) {
+      String name,
+      String remoteMetaStoreUris,
+      String databasePrefix,
+      AccessControlType accessControlType) {
     return new PrimaryMetaStore(name, remoteMetaStoreUris, databasePrefix, accessControlType);
   }
 
@@ -154,11 +155,11 @@ public abstract class AbstractMetaStore {
   public String getReadOnlyRemoteMetaStoreUris() {
     return readOnlyRemoteMetaStoreUris;
   }
-  
+
   public void setReadOnlyRemoteMetaStoreUris(String readOnlyRemoteMetaStoreUris) {
     this.readOnlyRemoteMetaStoreUris = readOnlyRemoteMetaStoreUris;
   }
-  
+
   public MetastoreTunnel getMetastoreTunnel() {
     return metastoreTunnel;
   }
@@ -174,7 +175,7 @@ public abstract class AbstractMetaStore {
     return DIRECT;
   }
 
-  abstract public FederationType getFederationType();
+  public abstract FederationType getFederationType();
 
   public AccessControlType getAccessControlType() {
     return accessControlType;
@@ -246,7 +247,7 @@ public abstract class AbstractMetaStore {
   public void setReadOnlyGlueConfig(GlueConfig readOnlyGlueConfig) {
     this.readOnlyGlueConfig = readOnlyGlueConfig;
   }
-  
+
   @Transient
   public HashBiMap<String, String> getDatabaseNameBiMapping() {
     return databaseNameBiMapping;
@@ -256,11 +257,10 @@ public abstract class AbstractMetaStore {
     return configurationProperties;
   }
 
-  public void setConfigurationProperties(
-          Map<String, String> configurationProperties) {
+  public void setConfigurationProperties(Map<String, String> configurationProperties) {
     this.configurationProperties = configurationProperties;
   }
-  
+
   @Transient
   public MetaStoreStatus getStatus() {
     return status;
@@ -298,8 +298,7 @@ public abstract class AbstractMetaStore {
 
   @Override
   public String toString() {
-    return MoreObjects
-        .toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("name", name)
         .add("databasePrefix", databasePrefix)
         .add("federationType", getFederationType())

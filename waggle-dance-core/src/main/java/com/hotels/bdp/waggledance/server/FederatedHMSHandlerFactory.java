@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.server;
@@ -60,8 +58,12 @@ public class FederatedHMSHandlerFactory {
     MappingEventListener service = createDatabaseMappingService();
     MonitoredDatabaseMappingService monitoredService = new MonitoredDatabaseMappingService(service);
 
-    CloseableIHMSHandler baseHandler = new FederatedHMSHandler(monitoredService, notifyingFederationService,
-        waggleDanceConfiguration, saslServerWrapper);
+    CloseableIHMSHandler baseHandler =
+        new FederatedHMSHandler(
+            monitoredService,
+            notifyingFederationService,
+            waggleDanceConfiguration,
+            saslServerWrapper);
     HiveConf conf = new HiveConf(hiveConf);
     baseHandler.setConf(conf);
     return baseHandler;
@@ -69,16 +71,16 @@ public class FederatedHMSHandlerFactory {
 
   private MappingEventListener createDatabaseMappingService() {
     if (waggleDanceConfiguration.getDatabaseResolution() == DatabaseResolution.MANUAL) {
-      return new StaticDatabaseMappingService(metaStoreMappingFactory, notifyingFederationService.getAll(),
-          queryMapping);
+      return new StaticDatabaseMappingService(
+          metaStoreMappingFactory, notifyingFederationService.getAll(), queryMapping);
     } else if (waggleDanceConfiguration.getDatabaseResolution() == DatabaseResolution.PREFIXED) {
-      return new PrefixBasedDatabaseMappingService(metaStoreMappingFactory, notifyingFederationService.getAll(),
-          queryMapping);
+      return new PrefixBasedDatabaseMappingService(
+          metaStoreMappingFactory, notifyingFederationService.getAll(), queryMapping);
     } else {
-      throw new WaggleDanceException("Cannot instantiate databaseMappingService for prefixType '"
-          + waggleDanceConfiguration.getDatabaseResolution()
-          + "'");
+      throw new WaggleDanceException(
+          "Cannot instantiate databaseMappingService for prefixType '"
+              + waggleDanceConfiguration.getDatabaseResolution()
+              + "'");
     }
   }
-
 }

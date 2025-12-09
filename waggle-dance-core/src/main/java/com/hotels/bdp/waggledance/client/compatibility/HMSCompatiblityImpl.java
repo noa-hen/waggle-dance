@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client.compatibility;
@@ -58,9 +56,9 @@ import org.apache.thrift.TException;
 import lombok.AllArgsConstructor;
 
 /**
- * This class is a best effort attempt designed to mostly not break calls made to WD when federating different versions of the Hive Metastores.
- * It does not implement all methods and it can't magically implement newer Hive features when calling a legacy Hive Metastore.
- * 
+ * This class is a best effort attempt designed to mostly not break calls made to WD when federating
+ * different versions of the Hive Metastores. It does not implement all methods and it can't
+ * magically implement newer Hive features when calling a legacy Hive Metastore.
  */
 @AllArgsConstructor
 public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibility {
@@ -78,7 +76,8 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
    * to implement it using the Hive 1.x.x methods only.
    */
   @Override
-  public GetTableResult get_table_req(GetTableRequest req) throws MetaException, NoSuchObjectException, TException {
+  public GetTableResult get_table_req(GetTableRequest req)
+      throws MetaException, NoSuchObjectException, TException {
     Table table = client.get_table(req.getDbName(), req.getTblName());
     return new GetTableResult(table);
   }
@@ -92,7 +91,7 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
    */
   @Override
   public GetTablesResult get_table_objects_by_name_req(GetTablesRequest req)
-    throws MetaException, InvalidOperationException, UnknownDBException, TException {
+      throws MetaException, InvalidOperationException, UnknownDBException, TException {
     List<Table> tables = client.get_table_objects_by_name(req.getDbName(), req.getTblNames());
     return new GetTablesResult(tables);
   }
@@ -105,7 +104,7 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
    */
   @Override
   public PrimaryKeysResponse get_primary_keys(PrimaryKeysRequest request)
-    throws MetaException, NoSuchObjectException, TException {
+      throws MetaException, NoSuchObjectException, TException {
     // making sure the table exists
     client.get_table(request.getDb_name(), request.getTbl_name());
     // get_primary_keys is not supported in hive < 2.1 so just returning empty list.
@@ -120,7 +119,7 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
    */
   @Override
   public ForeignKeysResponse get_foreign_keys(ForeignKeysRequest request)
-    throws MetaException, NoSuchObjectException, TException {
+      throws MetaException, NoSuchObjectException, TException {
     // making sure the table exists
     client.get_table(request.getForeign_db_name(), request.getForeign_tbl_name());
     // get_foreign_keys is not supported in hive < 2.1 so just returning empty list.
@@ -140,64 +139,73 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
       List<SQLNotNullConstraint> notNullConstraints,
       List<SQLDefaultConstraint> defaultConstraints,
       List<SQLCheckConstraint> checkConstraints)
-    throws AlreadyExistsException, InvalidObjectException, MetaException, NoSuchObjectException, TException {
+      throws AlreadyExistsException,
+          InvalidObjectException,
+          MetaException,
+          NoSuchObjectException,
+          TException {
     client.create_table(tbl);
   }
 
   @Override
   public void add_unique_constraint(AddUniqueConstraintRequest addUniqueConstraintRequest)
-    throws NoSuchObjectException, MetaException, TException {
+      throws NoSuchObjectException, MetaException, TException {
     // empty don't do anything
   }
 
   @Override
   public void add_not_null_constraint(AddNotNullConstraintRequest addNotNullConstraintRequest)
-    throws NoSuchObjectException, MetaException, TException {
+      throws NoSuchObjectException, MetaException, TException {
     // empty don't do anything
   }
 
   @Override
   public void add_default_constraint(AddDefaultConstraintRequest addDefaultConstraintRequest)
-    throws NoSuchObjectException, MetaException, TException {
+      throws NoSuchObjectException, MetaException, TException {
     // empty don't do anything
   }
 
   @Override
   public void add_check_constraint(AddCheckConstraintRequest addCheckConstraintRequest)
-    throws NoSuchObjectException, MetaException, TException {
+      throws NoSuchObjectException, MetaException, TException {
     // empty don't do anything
   }
 
   @Override
-  public UniqueConstraintsResponse get_unique_constraints(UniqueConstraintsRequest uniqueConstraintsRequest)
-    throws MetaException, NoSuchObjectException, TException {
+  public UniqueConstraintsResponse get_unique_constraints(
+      UniqueConstraintsRequest uniqueConstraintsRequest)
+      throws MetaException, NoSuchObjectException, TException {
     return new UniqueConstraintsResponse(emptyList());
   }
 
   @Override
-  public NotNullConstraintsResponse get_not_null_constraints(NotNullConstraintsRequest notNullConstraintsRequest)
-    throws MetaException, NoSuchObjectException, TException {
+  public NotNullConstraintsResponse get_not_null_constraints(
+      NotNullConstraintsRequest notNullConstraintsRequest)
+      throws MetaException, NoSuchObjectException, TException {
     return new NotNullConstraintsResponse(emptyList());
   }
 
   @Override
-  public DefaultConstraintsResponse get_default_constraints(DefaultConstraintsRequest defaultConstraintsRequest)
-    throws MetaException, NoSuchObjectException, TException {
+  public DefaultConstraintsResponse get_default_constraints(
+      DefaultConstraintsRequest defaultConstraintsRequest)
+      throws MetaException, NoSuchObjectException, TException {
     return new DefaultConstraintsResponse(emptyList());
   }
 
   @Override
-  public CheckConstraintsResponse get_check_constraints(CheckConstraintsRequest checkConstraintsRequest)
-    throws MetaException, NoSuchObjectException, TException {
+  public CheckConstraintsResponse get_check_constraints(
+      CheckConstraintsRequest checkConstraintsRequest)
+      throws MetaException, NoSuchObjectException, TException {
     return new CheckConstraintsResponse(emptyList());
   }
 
   /**
-   * Hive 3.x.x added methods that we don't implement in the compatibility layer. Leaving them here for potential future
-   * fixes.
+   * Hive 3.x.x added methods that we don't implement in the compatibility layer. Leaving them here
+   * for potential future fixes.
    */
-  // public void truncate_table(String dbName, String tableName, List<String> partNames) throws MetaException, TException {
-  // 
+  // public void truncate_table(String dbName, String tableName, List<String> partNames) throws
+  // MetaException, TException {
+  //
   // }
   //
   // public void create_catalog(CreateCatalogRequest createCatalogRequest)
@@ -231,10 +239,12 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // }
   //
-  // public void repl_tbl_writeid_state(ReplTblWriteIdStateRequest replTblWriteIdStateRequest) throws TException {
+  // public void repl_tbl_writeid_state(ReplTblWriteIdStateRequest replTblWriteIdStateRequest)
+  // throws TException {
   // }
   //
-  // public GetValidWriteIdsResponse get_valid_write_ids(GetValidWriteIdsRequest getValidWriteIdsRequest)
+  // public GetValidWriteIdsResponse get_valid_write_ids(GetValidWriteIdsRequest
+  // getValidWriteIdsRequest)
   // throws NoSuchTxnException, MetaException, TException {
   //
   // }
@@ -250,12 +260,14 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // }
   //
-  // public WMCreateResourcePlanResponse create_resource_plan(WMCreateResourcePlanRequest wmCreateResourcePlanRequest)
+  // public WMCreateResourcePlanResponse create_resource_plan(WMCreateResourcePlanRequest
+  // wmCreateResourcePlanRequest)
   // throws AlreadyExistsException, InvalidObjectException, MetaException, TException {
   //
   // }
   //
-  // public WMGetResourcePlanResponse get_resource_plan(WMGetResourcePlanRequest wmGetResourcePlanRequest)
+  // public WMGetResourcePlanResponse get_resource_plan(WMGetResourcePlanRequest
+  // wmGetResourcePlanRequest)
   // throws NoSuchObjectException, MetaException, TException {
   //
   // }
@@ -266,12 +278,14 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // }
   //
-  // public WMGetAllResourcePlanResponse get_all_resource_plans(WMGetAllResourcePlanRequest wmGetAllResourcePlanRequest)
+  // public WMGetAllResourcePlanResponse get_all_resource_plans(WMGetAllResourcePlanRequest
+  // wmGetAllResourcePlanRequest)
   // throws MetaException, TException {
   //
   // }
   //
-  // public WMAlterResourcePlanResponse alter_resource_plan(WMAlterResourcePlanRequest wmAlterResourcePlanRequest)
+  // public WMAlterResourcePlanResponse alter_resource_plan(WMAlterResourcePlanRequest
+  // wmAlterResourcePlanRequest)
   // throws NoSuchObjectException, InvalidOperationException, MetaException, TException {
   //
   // }
@@ -282,13 +296,15 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // }
   //
-  // public WMDropResourcePlanResponse drop_resource_plan(WMDropResourcePlanRequest wmDropResourcePlanRequest)
+  // public WMDropResourcePlanResponse drop_resource_plan(WMDropResourcePlanRequest
+  // wmDropResourcePlanRequest)
   // throws NoSuchObjectException, InvalidOperationException, MetaException, TException {
   //
   // }
   //
   // public WMCreateTriggerResponse create_wm_trigger(WMCreateTriggerRequest wmCreateTriggerRequest)
-  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException, TException {
+  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException,
+  // TException {
   //
   // }
   //
@@ -309,12 +325,14 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   // }
   //
   // public WMCreatePoolResponse create_wm_pool(WMCreatePoolRequest wmCreatePoolRequest)
-  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException, TException {
+  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException,
+  // TException {
   //
   // }
   //
   // public WMAlterPoolResponse alter_wm_pool(WMAlterPoolRequest wmAlterPoolRequest)
-  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException, TException {
+  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException,
+  // TException {
   //
   // }
   //
@@ -325,7 +343,8 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // public WMCreateOrUpdateMappingResponse create_or_update_wm_mapping(
   // WMCreateOrUpdateMappingRequest wmCreateOrUpdateMappingRequest)
-  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException, TException {
+  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException,
+  // TException {
   //
   // }
   //
@@ -336,7 +355,8 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // public WMCreateOrDropTriggerToPoolMappingResponse create_or_drop_wm_trigger_to_pool_mapping(
   // WMCreateOrDropTriggerToPoolMappingRequest wmCreateOrDropTriggerToPoolMappingRequest)
-  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException, TException {
+  // throws AlreadyExistsException, NoSuchObjectException, InvalidObjectException, MetaException,
+  // TException {
   //
   // }
   //
@@ -350,7 +370,8 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // }
   //
-  // public ISchema get_ischema(ISchemaName iSchemaName) throws NoSuchObjectException, MetaException, TException {
+  // public ISchema get_ischema(ISchemaName iSchemaName) throws NoSuchObjectException,
+  // MetaException, TException {
   //
   // }
   //
@@ -389,7 +410,8 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // }
   //
-  // public void map_schema_version_to_serde(MapSchemaVersionToSerdeRequest mapSchemaVersionToSerdeRequest)
+  // public void map_schema_version_to_serde(MapSchemaVersionToSerdeRequest
+  // mapSchemaVersionToSerdeRequest)
   // throws NoSuchObjectException, MetaException, TException {
   //
   // }
@@ -399,21 +421,25 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // }
   //
-  // public void add_serde(SerDeInfo serDeInfo) throws AlreadyExistsException, MetaException, TException {
+  // public void add_serde(SerDeInfo serDeInfo) throws AlreadyExistsException, MetaException,
+  // TException {
   //
   // }
   //
-  // public SerDeInfo get_serde(GetSerdeRequest getSerdeRequest) throws NoSuchObjectException, MetaException, TException
+  // public SerDeInfo get_serde(GetSerdeRequest getSerdeRequest) throws NoSuchObjectException,
+  // MetaException, TException
   // {
   //
   // }
   //
-  // public LockResponse get_lock_materialization_rebuild(String dbName, String tableName, long txnId) throws TException
+  // public LockResponse get_lock_materialization_rebuild(String dbName, String tableName, long
+  // txnId) throws TException
   // {
   //
   // }
   //
-  // public boolean heartbeat_lock_materialization_rebuild(String dbName, String tableName, long txnId) throws
+  // public boolean heartbeat_lock_materialization_rebuild(String dbName, String tableName, long
+  // txnId) throws
   // TException {
   //
   // }
@@ -426,11 +452,13 @@ public class HMSCompatiblityImpl implements HiveThriftMetaStoreIfaceCompatibilit
   //
   // }
   //
-  // public ClearFileMetadataResult clear_file_metadata(ClearFileMetadataRequest req) throws TException {
+  // public ClearFileMetadataResult clear_file_metadata(ClearFileMetadataRequest req) throws
+  // TException {
   //
   // }
   //
-  // public CmRecycleResponse cm_recycle(CmRecycleRequest cmRecycleRequest) throws MetaException, TException {
+  // public CmRecycleResponse cm_recycle(CmRecycleRequest cmRecycleRequest) throws MetaException,
+  // TException {
   //
   // }
   //

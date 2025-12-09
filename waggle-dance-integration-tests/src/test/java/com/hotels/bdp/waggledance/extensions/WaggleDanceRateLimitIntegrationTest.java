@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2024 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.extensions;
@@ -49,15 +47,14 @@ public class WaggleDanceRateLimitIntegrationTest {
   private RedisServer redisServer;
   private WaggleDanceRunner runner;
   private Map<String, Object> extraServerConfig;
-  
+
   @Before
   public void setup() {
     extraServerConfig = new HashMap<>();
-    extraServerConfig.put("waggledance.extensions.ratelimit.enabled", "true");    
-    //Use INTERVALLY as it's more deterministic for the test.
-    extraServerConfig.put("waggledance.extensions.ratelimit.refillType", "INTERVALLY"); 
+    extraServerConfig.put("waggledance.extensions.ratelimit.enabled", "true");
+    // Use INTERVALLY as it's more deterministic for the test.
+    extraServerConfig.put("waggledance.extensions.ratelimit.refillType", "INTERVALLY");
   }
-  
 
   @Test
   public void rateLimitInMemory() throws Exception {
@@ -65,12 +62,15 @@ public class WaggleDanceRateLimitIntegrationTest {
     extraServerConfig.put("waggledance.extensions.ratelimit.capacity", "2");
     extraServerConfig.put("waggledance.extensions.ratelimit.tokenPerMinute", "1");
 
-    runner = WaggleDanceRunner
-        .builder(temporaryFolder.newFolder("config"))
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .extraServerConfig(extraServerConfig)
-        .primary("primary", metastore.getThriftConnectionUri(), AccessControlType.READ_AND_WRITE_AND_CREATE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(temporaryFolder.newFolder("config"))
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .extraServerConfig(extraServerConfig)
+            .primary(
+                "primary",
+                metastore.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE)
+            .build();
 
     runner.runAndWaitForStartup();
 
@@ -88,14 +88,18 @@ public class WaggleDanceRateLimitIntegrationTest {
     extraServerConfig.put("waggledance.extensions.ratelimit.storage", "REDIS");
     extraServerConfig.put("waggledance.extensions.ratelimit.capacity", "2");
     extraServerConfig.put("waggledance.extensions.ratelimit.tokenPerMinute", "1");
-    extraServerConfig.put("waggledance.extensions.ratelimit.reddison.embedded.config", reddisonYaml);
+    extraServerConfig.put(
+        "waggledance.extensions.ratelimit.reddison.embedded.config", reddisonYaml);
 
-    runner = WaggleDanceRunner
-        .builder(temporaryFolder.newFolder("config"))
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .extraServerConfig(extraServerConfig)
-        .primary("primary", metastore.getThriftConnectionUri(), AccessControlType.READ_AND_WRITE_AND_CREATE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(temporaryFolder.newFolder("config"))
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .extraServerConfig(extraServerConfig)
+            .primary(
+                "primary",
+                metastore.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE)
+            .build();
 
     runner.runAndWaitForStartup();
 
@@ -103,7 +107,8 @@ public class WaggleDanceRateLimitIntegrationTest {
     assertTokensUsed(client);
   }
 
-  private void assertTokensUsed(HiveMetaStoreClient client) throws MetaException, NoSuchObjectException, TException {
+  private void assertTokensUsed(HiveMetaStoreClient client)
+      throws MetaException, NoSuchObjectException, TException {
     List<String> allDatabases = client.getAllDatabases();
     assertThat(allDatabases.size(), is(2));
     Database database = client.getDatabase("default");
@@ -133,14 +138,18 @@ public class WaggleDanceRateLimitIntegrationTest {
     extraServerConfig.put("waggledance.extensions.ratelimit.storage", "REDIS");
     extraServerConfig.put("waggledance.extensions.ratelimit.capacity", "1");
     extraServerConfig.put("waggledance.extensions.ratelimit.tokenPerMinute", "1");
-    extraServerConfig.put("waggledance.extensions.ratelimit.reddison.embedded.config", reddisonYaml);
+    extraServerConfig.put(
+        "waggledance.extensions.ratelimit.reddison.embedded.config", reddisonYaml);
 
-    runner = WaggleDanceRunner
-        .builder(temporaryFolder.newFolder("config"))
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .extraServerConfig(extraServerConfig)
-        .primary("primary", metastore.getThriftConnectionUri(), AccessControlType.READ_AND_WRITE_AND_CREATE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(temporaryFolder.newFolder("config"))
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .extraServerConfig(extraServerConfig)
+            .primary(
+                "primary",
+                metastore.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE)
+            .build();
 
     runner.runAndWaitForStartup();
 

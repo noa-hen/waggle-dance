@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client.compatibility;
@@ -42,7 +40,6 @@ import org.apache.hadoop.hive.metastore.api.UniqueConstraintsRequest;
 import org.apache.hadoop.hive.metastore.api.UniqueConstraintsResponse;
 import org.apache.thrift.TException;
 
-
 /**
  * This interface contains methods that are missing from Hive 2.x.x but added in Hive 3.x.x
  * https://github.com/apache/hive/blob/rel/release-3.1.3/standalone-metastore/src/main/java/org/apache/hadoop/hive/metastore/IMetaStoreClient.java
@@ -57,30 +54,36 @@ public interface HiveThriftMetaStoreIfaceCompatibility2x {
       List<SQLNotNullConstraint> notNullConstraints,
       List<SQLDefaultConstraint> defaultConstraints,
       List<SQLCheckConstraint> checkConstraints)
-    throws AlreadyExistsException, InvalidObjectException, MetaException, NoSuchObjectException, TException;
+      throws AlreadyExistsException,
+          InvalidObjectException,
+          MetaException,
+          NoSuchObjectException,
+          TException;
 
   void add_unique_constraint(AddUniqueConstraintRequest addUniqueConstraintRequest)
-    throws NoSuchObjectException, MetaException, TException;
+      throws NoSuchObjectException, MetaException, TException;
 
   void add_not_null_constraint(AddNotNullConstraintRequest addNotNullConstraintRequest)
-    throws NoSuchObjectException, MetaException, TException;
+      throws NoSuchObjectException, MetaException, TException;
 
   void add_default_constraint(AddDefaultConstraintRequest addDefaultConstraintRequest)
-    throws NoSuchObjectException, MetaException, TException;
+      throws NoSuchObjectException, MetaException, TException;
 
   void add_check_constraint(AddCheckConstraintRequest addCheckConstraintRequest)
-    throws NoSuchObjectException, MetaException, TException;
+      throws NoSuchObjectException, MetaException, TException;
 
-  UniqueConstraintsResponse get_unique_constraints(UniqueConstraintsRequest uniqueConstraintsRequest)
-    throws MetaException, NoSuchObjectException, TException;
+  UniqueConstraintsResponse get_unique_constraints(
+      UniqueConstraintsRequest uniqueConstraintsRequest)
+      throws MetaException, NoSuchObjectException, TException;
 
-  NotNullConstraintsResponse get_not_null_constraints(NotNullConstraintsRequest notNullConstraintsRequest)
-    throws MetaException, NoSuchObjectException, TException;
+  NotNullConstraintsResponse get_not_null_constraints(
+      NotNullConstraintsRequest notNullConstraintsRequest)
+      throws MetaException, NoSuchObjectException, TException;
 
-  DefaultConstraintsResponse get_default_constraints(DefaultConstraintsRequest defaultConstraintsRequest)
-    throws MetaException, NoSuchObjectException, TException;
+  DefaultConstraintsResponse get_default_constraints(
+      DefaultConstraintsRequest defaultConstraintsRequest)
+      throws MetaException, NoSuchObjectException, TException;
 
   CheckConstraintsResponse get_check_constraints(CheckConstraintsRequest checkConstraintsRequest)
-    throws MetaException, NoSuchObjectException, TException;
-
+      throws MetaException, NoSuchObjectException, TException;
 }

@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client;
@@ -35,10 +33,11 @@ import com.hotels.hcommon.hive.metastore.exception.MetastoreUnavailableException
 
 public class DefaultMetaStoreClientFactory implements MetaStoreClientFactory {
 
-  static final Class<?>[] INTERFACES = new Class<?>[] { CloseableThriftHiveMetastoreIface.class };
+  static final Class<?>[] INTERFACES = new Class<?>[] {CloseableThriftHiveMetastoreIface.class};
 
   private static class ReconnectingMetastoreClientInvocationHandler implements InvocationHandler {
-    private static final Logger log = LoggerFactory.getLogger(ReconnectingMetastoreClientInvocationHandler.class);
+    private static final Logger log =
+        LoggerFactory.getLogger(ReconnectingMetastoreClientInvocationHandler.class);
 
     private final AbstractThriftMetastoreClientManager base;
     private final String name;
@@ -47,9 +46,7 @@ public class DefaultMetaStoreClientFactory implements MetaStoreClientFactory {
     private HiveUgiArgs cachedUgi = null;
 
     private ReconnectingMetastoreClientInvocationHandler(
-        String name,
-        int maxRetries,
-        AbstractThriftMetastoreClientManager base) {
+        String name, int maxRetries, AbstractThriftMetastoreClientManager base) {
       this.name = name;
       this.maxRetries = maxRetries;
       this.base = base;
@@ -79,12 +76,14 @@ public class DefaultMetaStoreClientFactory implements MetaStoreClientFactory {
           List<String> groups = (List<String>) args[1];
           cachedUgi = new HiveUgiArgs(user, groups);
           if (base.isOpen()) {
-            log
-                .info("calling #set_ugi (on already open client) for user '{}',  on metastore {}", cachedUgi.getUser(),
-                    name);
+            log.info(
+                "calling #set_ugi (on already open client) for user '{}',  on metastore {}",
+                cachedUgi.getUser(),
+                name);
             return doRealCall(method, args, attempt);
           } else {
-            // delay call until we get the next non set_ugi call, this helps doing unnecessary calls to Federated
+            // delay call until we get the next non set_ugi call, this helps doing unnecessary calls
+            // to Federated
             // Metastores.
             return Lists.newArrayList(user);
           }
@@ -94,7 +93,8 @@ public class DefaultMetaStoreClientFactory implements MetaStoreClientFactory {
       }
     }
 
-    private Object doRealCall(Method method, Object[] args, int attempt) throws IllegalAccessException, Throwable {
+    private Object doRealCall(Method method, Object[] args, int attempt)
+        throws IllegalAccessException, Throwable {
       do {
         try {
           return method.invoke(base.getClient(), args);
@@ -116,9 +116,10 @@ public class DefaultMetaStoreClientFactory implements MetaStoreClientFactory {
     }
 
     /**
-     * Decides whether a method should be retried. Only 'get' methods are retried. Alters/creates methods are not
-     * retried as there are cases where this is not idempotent. TODO Potentially in the future we should remove the
-     * whole retry mechanic and just leave that up to the caller/client.
+     * Decides whether a method should be retried. Only 'get' methods are retried. Alters/creates
+     * methods are not retried as there are cases where this is not idempotent. TODO Potentially in
+     * the future we should remove the whole retry mechanic and just leave that up to the
+     * caller/client.
      */
     private boolean shouldRetry(Method method) {
       if (method.getName().startsWith("get")) {
@@ -136,7 +137,6 @@ public class DefaultMetaStoreClientFactory implements MetaStoreClientFactory {
         throw new MetastoreUnavailableException("Client " + name + " is not available", e);
       }
     }
-
   }
 
   /*
@@ -146,12 +146,10 @@ public class DefaultMetaStoreClientFactory implements MetaStoreClientFactory {
    */
   @Override
   public CloseableThriftHiveMetastoreIface newInstance(
-      HiveConf hiveConf,
-      String name,
-      int reconnectionRetries,
-      int connectionTimeout) {
+      HiveConf hiveConf, String name, int reconnectionRetries, int connectionTimeout) {
     boolean useSasl = hiveConf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_SASL);
-    HiveCompatibleThriftHiveMetastoreIfaceFactory factory = new HiveCompatibleThriftHiveMetastoreIfaceFactory();
+    HiveCompatibleThriftHiveMetastoreIfaceFactory factory =
+        new HiveCompatibleThriftHiveMetastoreIfaceFactory();
     AbstractThriftMetastoreClientManager base = null;
     if (useSasl) {
       base = new SaslThriftMetastoreClientManager(hiveConf, factory, connectionTimeout);
@@ -163,13 +161,10 @@ public class DefaultMetaStoreClientFactory implements MetaStoreClientFactory {
 
   @VisibleForTesting
   CloseableThriftHiveMetastoreIface newInstance(
-      String name,
-      int reconnectionRetries,
-      AbstractThriftMetastoreClientManager base) {
-    ReconnectingMetastoreClientInvocationHandler reconnectingHandler = new ReconnectingMetastoreClientInvocationHandler(
-        name, reconnectionRetries, base);
-    return (CloseableThriftHiveMetastoreIface) Proxy
-        .newProxyInstance(getClass().getClassLoader(), INTERFACES, reconnectingHandler);
+      String name, int reconnectionRetries, AbstractThriftMetastoreClientManager base) {
+    ReconnectingMetastoreClientInvocationHandler reconnectingHandler =
+        new ReconnectingMetastoreClientInvocationHandler(name, reconnectionRetries, base);
+    return (CloseableThriftHiveMetastoreIface)
+        Proxy.newProxyInstance(getClass().getClassLoader(), INTERFACES, reconnectingHandler);
   }
-
 }

@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.service.impl;
@@ -30,7 +28,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
@@ -94,14 +92,15 @@ public class StaticDatabaseMappingService implements MappingEventListener {
         AllowList allowedDatabases = new AllowList(metaStore.getMappedDatabases());
         mappableDatabases = applyAllowList(allDatabases, allowedDatabases);
       } catch (TException e) {
-        log.error("Could not get databases for metastore {}", metaStore.getRemoteMetaStoreUris(), e);
+        log.error(
+            "Could not get databases for metastore {}", metaStore.getRemoteMetaStoreUris(), e);
       }
     }
     DatabaseMapping databaseMapping = createDatabaseMapping(metaStoreMapping);
-    mappableDatabases = mappableDatabases
-        .stream()
-        .flatMap(n -> databaseMapping.transformOutboundDatabaseNameMultiple(n).stream())
-        .collect(toList());
+    mappableDatabases =
+        mappableDatabases.stream()
+            .flatMap(n -> databaseMapping.transformOutboundDatabaseNameMultiple(n).stream())
+            .collect(toList());
     validateMappableDatabases(mappableDatabases, metaStore);
 
     if (metaStore.getFederationType() == PRIMARY) {
@@ -115,7 +114,8 @@ public class StaticDatabaseMappingService implements MappingEventListener {
     addTableMappings(metaStore);
   }
 
-  private void validateMappableDatabases(List<String> mappableDatabases, AbstractMetaStore metaStore) {
+  private void validateMappableDatabases(
+      List<String> mappableDatabases, AbstractMetaStore metaStore) {
     int uniqueMappableDatabasesSize = new HashSet<>(mappableDatabases).size();
     if (uniqueMappableDatabasesSize != mappableDatabases.size()) {
       throw new WaggleDanceException(
@@ -126,15 +126,17 @@ public class StaticDatabaseMappingService implements MappingEventListener {
     }
   }
 
-  private void validateMetastoreDatabases(List<String> databases, MetaStoreMapping metaStoreMapping) {
+  private void validateMetastoreDatabases(
+      List<String> databases, MetaStoreMapping metaStoreMapping) {
     for (String database : databases) {
       if (mappingsByDatabaseName.containsKey(database.toLowerCase(Locale.ROOT))) {
-        throw new WaggleDanceException("Database clash, found '"
-            + database
-            + "' to be mapped for the federated metastore '"
-            + metaStoreMapping.getMetastoreMappingName()
-            + "' already present in another federated metastore, please remove the database from the list it can't"
-            + " be accessed via Waggle Dance");
+        throw new WaggleDanceException(
+            "Database clash, found '"
+                + database
+                + "' to be mapped for the federated metastore '"
+                + metaStoreMapping.getMetastoreMappingName()
+                + "' already present in another federated metastore, please remove the database from the list it can't"
+                + " be accessed via Waggle Dance");
       }
     }
   }
@@ -188,15 +190,20 @@ public class StaticDatabaseMappingService implements MappingEventListener {
 
   @Override
   public void onRegister(AbstractMetaStore metaStore) {
-    // Synchronizing on the mappingsByMetaStoreName map field so we ensure the implemented FederationEventListener
+    // Synchronizing on the mappingsByMetaStoreName map field so we ensure the implemented
+    // FederationEventListener
     // methods are processed sequentially
     synchronized (mappingsByMetaStoreName) {
       if (mappingsByMetaStoreName.containsKey(metaStore.getName())) {
         throw new WaggleDanceException(
-            "Metastore with name '" + metaStore.getName() + "' already registered, remove old one first or update");
+            "Metastore with name '"
+                + metaStore.getName()
+                + "' already registered, remove old one first or update");
       }
-      if ((metaStore.getFederationType() == FederationType.PRIMARY) && (primaryDatabaseMapping != null)) {
-        throw new WaggleDanceException("Primary metastore already registered, remove old one first or update");
+      if ((metaStore.getFederationType() == FederationType.PRIMARY)
+          && (primaryDatabaseMapping != null)) {
+        throw new WaggleDanceException(
+            "Primary metastore already registered, remove old one first or update");
       }
       add(metaStore);
     }
@@ -204,7 +211,8 @@ public class StaticDatabaseMappingService implements MappingEventListener {
 
   @Override
   public void onUpdate(AbstractMetaStore oldMetaStore, AbstractMetaStore newMetaStore) {
-    // Synchronizing on the mappingsByMetaStoreName map field so we ensure the implemented FederationEventListener
+    // Synchronizing on the mappingsByMetaStoreName map field so we ensure the implemented
+    // FederationEventListener
     // methods are processed sequentially
     synchronized (mappingsByMetaStoreName) {
       remove(oldMetaStore);
@@ -214,7 +222,8 @@ public class StaticDatabaseMappingService implements MappingEventListener {
 
   @Override
   public void onUnregister(AbstractMetaStore metaStore) {
-    // Synchronizing on the mappingsByMetaStoreName map field so we ensure the implemented FederationEventListener
+    // Synchronizing on the mappingsByMetaStoreName map field so we ensure the implemented
+    // FederationEventListener
     // methods are processed sequentially
     synchronized (mappingsByMetaStoreName) {
       remove(metaStore);
@@ -224,7 +233,8 @@ public class StaticDatabaseMappingService implements MappingEventListener {
   @Override
   public DatabaseMapping primaryDatabaseMapping() {
     if (primaryDatabaseMapping == null) {
-      throw new NoPrimaryMetastoreException("Waggle Dance error no primary database mapping available");
+      throw new NoPrimaryMetastoreException(
+          "Waggle Dance error no primary database mapping available");
     }
     return primaryDatabaseMapping;
   }
@@ -234,13 +244,16 @@ public class StaticDatabaseMappingService implements MappingEventListener {
   }
 
   @Override
-  public DatabaseMapping databaseMapping(@NotNull String databaseName) throws NoSuchObjectException {
+  public DatabaseMapping databaseMapping(@NotNull String databaseName)
+      throws NoSuchObjectException {
     databaseName = GrammarUtils.removeCatName(databaseName);
-    DatabaseMapping databaseMapping = mappingsByDatabaseName.get(databaseName.toLowerCase(Locale.ROOT));
+    DatabaseMapping databaseMapping =
+        mappingsByDatabaseName.get(databaseName.toLowerCase(Locale.ROOT));
     if (databaseMapping != null) {
-      log
-          .debug("Database Name `{}` maps to metastore with name '{}'", databaseName,
-              databaseMapping.getMetastoreMappingName());
+      log.debug(
+          "Database Name `{}` maps to metastore with name '{}'",
+          databaseName,
+          databaseMapping.getMetastoreMappingName());
       return databaseMapping;
     }
     log.debug("Database Name `{}` not mapped", databaseName);
@@ -249,15 +262,17 @@ public class StaticDatabaseMappingService implements MappingEventListener {
 
   @Override
   public void checkTableAllowed(String databaseName, String tableName, DatabaseMapping mapping)
-    throws NoSuchObjectException {
+      throws NoSuchObjectException {
     databaseName = GrammarUtils.removeCatName(databaseName);
     if (!isTableAllowed(databaseName, tableName)) {
-      throw new NoSuchObjectException(String.format("%s.%s table not found in any mappings", databaseName, tableName));
+      throw new NoSuchObjectException(
+          String.format("%s.%s table not found in any mappings", databaseName, tableName));
     }
   }
 
   @Override
-  public List<String> filterTables(String databaseName, List<String> tableNames, DatabaseMapping mapping) {
+  public List<String> filterTables(
+      String databaseName, List<String> tableNames, DatabaseMapping mapping) {
     List<String> allowedTables = new ArrayList<>();
     databaseName = GrammarUtils.removeCatName(databaseName);
     String db = databaseName.toLowerCase(Locale.ROOT);
@@ -309,10 +324,12 @@ public class StaticDatabaseMappingService implements MappingEventListener {
     return new PanopticOperationHandler() {
 
       @Override
-      public List<TableMeta> getTableMeta(String db_patterns, String tbl_patterns, List<String> tbl_types) {
+      public List<TableMeta> getTableMeta(
+          String db_patterns, String tbl_patterns, List<String> tbl_types) {
 
-        BiFunction<TableMeta, DatabaseMapping, Boolean> filter = (tableMeta, mapping) -> databaseAndTableAllowed(
-            tableMeta.getDbName(), tableMeta.getTableName(), mapping);
+        BiFunction<TableMeta, DatabaseMapping, Boolean> filter =
+            (tableMeta, mapping) ->
+                databaseAndTableAllowed(tableMeta.getDbName(), tableMeta.getTableName(), mapping);
 
         Map<DatabaseMapping, String> mappingsForPattern = new LinkedHashMap<>();
         for (DatabaseMapping mapping : getAvailableDatabaseMappings()) {
@@ -323,11 +340,15 @@ public class StaticDatabaseMappingService implements MappingEventListener {
 
       @Override
       public List<String> getAllDatabases(String pattern) {
-        BiFunction<String, DatabaseMapping, Boolean> filter = (database, mapping) -> mappingsByDatabaseName
-            .containsKey(database);
+        BiFunction<String, DatabaseMapping, Boolean> filter =
+            (database, mapping) -> mappingsByDatabaseName.containsKey(database);
 
-        BiFunction<String, DatabaseMapping, Boolean> filter1 = (database, mapping) -> filter.apply(database, mapping)
-            && databaseMappingToDatabaseList.get(mapping.getMetastoreMappingName()).contains(database);
+        BiFunction<String, DatabaseMapping, Boolean> filter1 =
+            (database, mapping) ->
+                filter.apply(database, mapping)
+                    && databaseMappingToDatabaseList
+                        .get(mapping.getMetastoreMappingName())
+                        .contains(database);
 
         Map<DatabaseMapping, String> mappingsForPattern = new LinkedHashMap<>();
         for (DatabaseMapping mapping : getAllDatabaseMappings()) {
@@ -357,5 +378,4 @@ public class StaticDatabaseMappingService implements MappingEventListener {
       }
     }
   }
-
 }

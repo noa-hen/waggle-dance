@@ -1,20 +1,17 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client;
-
 
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import com.hotels.bdp.waggledance.client.compatibility.HiveCompatibleThriftHiveMetastoreIfaceFactory;
 
-
 class ThriftMetastoreClientManager extends AbstractThriftMetastoreClientManager {
 
   private static final Logger log = LoggerFactory.getLogger(ThriftMetastoreClientManager.class);
@@ -53,12 +49,14 @@ class ThriftMetastoreClientManager extends AbstractThriftMetastoreClientManager 
     TException te = null;
     boolean useFramedTransport = conf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_FRAMED_TRANSPORT);
     boolean useCompactProtocol = conf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_COMPACT_PROTOCOL);
-    int clientSocketTimeout = (int) conf.getTimeVar(ConfVars.METASTORE_CLIENT_SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
+    int clientSocketTimeout =
+        (int) conf.getTimeVar(ConfVars.METASTORE_CLIENT_SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
 
     for (int attempt = 0; !isConnected && (attempt < retries); ++attempt) {
       for (URI store : metastoreUris) {
         log.debug("Trying to connect to metastore with URI {}", store);
-        transport = new TSocket(store.getHost(), store.getPort(), clientSocketTimeout, connectionTimeout);
+        transport =
+            new TSocket(store.getHost(), store.getPort(), clientSocketTimeout, connectionTimeout);
         if (useFramedTransport) {
           transport = new TFramedTransport(transport);
         }
@@ -68,11 +66,13 @@ class ThriftMetastoreClientManager extends AbstractThriftMetastoreClientManager 
         } else {
           protocol = new TBinaryProtocol(transport);
         }
-        client = hiveCompatibleThriftHiveMetastoreIfaceFactory.newInstance(new ThriftHiveMetastore.Client(protocol));
+        client =
+            hiveCompatibleThriftHiveMetastoreIfaceFactory.newInstance(
+                new ThriftHiveMetastore.Client(protocol));
         try {
           transport.open();
-          log
-              .info("Opened a connection to metastore '"
+          log.info(
+              "Opened a connection to metastore '"
                   + store
                   + "', total current connections to all metastores: "
                   + CONN_COUNT.incrementAndGet());
@@ -92,7 +92,7 @@ class ThriftMetastoreClientManager extends AbstractThriftMetastoreClientManager 
             // Don't print full exception trace if DEBUG is not on.
             log.warn("Failed to connect to the MetaStore Server, URI {}", store);
           }
-          }
+        }
         if (isConnected) {
           break;
         }
@@ -102,15 +102,18 @@ class ThriftMetastoreClientManager extends AbstractThriftMetastoreClientManager 
         try {
           log.info("Waiting {} seconds before next connection attempt.", retryDelaySeconds);
           Thread.sleep(retryDelaySeconds * 1000);
-        } catch (InterruptedException ignore) {}
+        } catch (InterruptedException ignore) {
+        }
       }
     }
 
     if (!isConnected) {
-      log.debug("Could not connect to meta store using any of the URIs ["
-          + msUri
-          + "] provided. Most recent failure: "
-          + StringUtils.stringifyException(te), te);
+      log.debug(
+          "Could not connect to meta store using any of the URIs ["
+              + msUri
+              + "] provided. Most recent failure: "
+              + StringUtils.stringifyException(te),
+          te);
       throw te;
     }
     log.debug("Connected to metastore.");

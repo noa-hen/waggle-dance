@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2021 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.manifest;
@@ -38,7 +36,7 @@ import fm.last.commons.test.file.ClassDataFolder;
 import com.google.common.base.Preconditions;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ ManifestAttributes.class })
+@PrepareForTest({ManifestAttributes.class})
 @PowerMockIgnore("javax.management.*")
 public class ManifestAttributesTest {
 
@@ -81,7 +79,8 @@ public class ManifestAttributesTest {
 
   @Test
   public void exceptionWhileReadingManifest() throws Exception {
-    when(clazzLoader.getResource(ManifestAttributes.META_INF_MANIFEST_MF)).thenThrow(new IllegalStateException());
+    when(clazzLoader.getResource(ManifestAttributes.META_INF_MANIFEST_MF))
+        .thenThrow(new IllegalStateException());
     ManifestAttributes manifestAttributes = new ManifestAttributes(clazzProtectionDomain);
     assertThat(manifestAttributes.toString(), startsWith("Error getting manifest"));
   }
@@ -90,7 +89,9 @@ public class ManifestAttributesTest {
   public void loadFromSourceJar() {
     ManifestAttributes manifestAttributes = new ManifestAttributes(Preconditions.class);
 
-    assertThat(manifestAttributes.getAttribute("Bundle-Name"), is("Guava: Google Core Libraries for Java"));
+    assertThat(
+        manifestAttributes.getAttribute("Bundle-Name"),
+        is("Guava: Google Core Libraries for Java"));
     assertThat(manifestAttributes.getAttribute("Bundle-SymbolicName"), is("com.google.guava"));
   }
 
@@ -102,5 +103,4 @@ public class ManifestAttributesTest {
     assertThat(manifestAttributes.getAttribute("Maven-GroupId"), is("com.hotels.bdp.waggledance"));
     assertThat(manifestAttributes.getAttribute("Maven-ArtifactId"), is("good-job"));
   }
-
 }

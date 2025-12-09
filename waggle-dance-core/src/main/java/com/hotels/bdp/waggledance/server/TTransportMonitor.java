@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.server;
@@ -21,8 +19,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.annotation.PreDestroy;
 import javax.annotation.WillClose;
+
+import jakarta.annotation.PreDestroy;
 
 import org.apache.thrift.transport.TTransport;
 import org.slf4j.Logger;
@@ -41,7 +40,8 @@ import com.hotels.bdp.waggledance.conf.WaggleDanceConfiguration;
 @Component
 public class TTransportMonitor {
   private static Logger log = LoggerFactory.getLogger(TTransportMonitor.class);
-  static final String METRIC_NAME_OPEN_TRANSPORTS = "com_hotels_bdp_waggledance_open_transports_gauge";
+  static final String METRIC_NAME_OPEN_TRANSPORTS =
+      "com_hotels_bdp_waggledance_open_transports_gauge";
   private static final Logger LOG = LoggerFactory.getLogger(TTransportMonitor.class);
 
   @AllArgsConstructor
@@ -54,7 +54,8 @@ public class TTransportMonitor {
   private final ConcurrentLinkedQueue<ActionContainer> transports = new ConcurrentLinkedQueue<>();
 
   @Autowired
-  public TTransportMonitor(WaggleDanceConfiguration waggleDanceConfiguration, MeterRegistry meterRegistry) {
+  public TTransportMonitor(
+      WaggleDanceConfiguration waggleDanceConfiguration, MeterRegistry meterRegistry) {
     this(waggleDanceConfiguration, Executors.newScheduledThreadPool(1), meterRegistry);
   }
 
@@ -64,32 +65,37 @@ public class TTransportMonitor {
       ScheduledExecutorService scheduler,
       MeterRegistry meterRegistry) {
     this.scheduler = scheduler;
-    Gauge.builder(METRIC_NAME_OPEN_TRANSPORTS, transports, ConcurrentLinkedQueue::size).register(meterRegistry);
-    Runnable monitor = () -> {
-      log.debug("Releasing disconnected sessions");
-      Iterator<ActionContainer> iterator = transports.iterator();
-      while (iterator.hasNext()) {
-        ActionContainer actionContainer = iterator.next();
-        if (actionContainer.transport.peek()) {
-          continue;
-        }
-        try {
-          actionContainer.action.close();
-        } catch (Exception e) {
-          log.warn("Error closing action", e);
-        }
-        try {
-          actionContainer.transport.close();
-        } catch (Exception e) {
-          log.warn("Error closing transport", e);
-        }
-        iterator.remove();
-      }
-      LOG.info("Number of open transports (#connections clients -> WD ): {}", transports.size());
-    };
-    this.scheduler
-        .scheduleAtFixedRate(monitor, waggleDanceConfiguration.getDisconnectConnectionDelay(),
-            waggleDanceConfiguration.getDisconnectConnectionDelay(), waggleDanceConfiguration.getDisconnectTimeUnit());
+    Gauge.builder(METRIC_NAME_OPEN_TRANSPORTS, transports, ConcurrentLinkedQueue::size)
+        .register(meterRegistry);
+    Runnable monitor =
+        () -> {
+          log.debug("Releasing disconnected sessions");
+          Iterator<ActionContainer> iterator = transports.iterator();
+          while (iterator.hasNext()) {
+            ActionContainer actionContainer = iterator.next();
+            if (actionContainer.transport.peek()) {
+              continue;
+            }
+            try {
+              actionContainer.action.close();
+            } catch (Exception e) {
+              log.warn("Error closing action", e);
+            }
+            try {
+              actionContainer.transport.close();
+            } catch (Exception e) {
+              log.warn("Error closing transport", e);
+            }
+            iterator.remove();
+          }
+          LOG.info(
+              "Number of open transports (#connections clients -> WD ): {}", transports.size());
+        };
+    this.scheduler.scheduleAtFixedRate(
+        monitor,
+        waggleDanceConfiguration.getDisconnectConnectionDelay(),
+        waggleDanceConfiguration.getDisconnectConnectionDelay(),
+        waggleDanceConfiguration.getDisconnectTimeUnit());
   }
 
   @PreDestroy
@@ -100,5 +106,4 @@ public class TTransportMonitor {
   public void monitor(@WillClose TTransport transport, @WillClose Closeable action) {
     transports.offer(new ActionContainer(transport, action));
   }
-
 }

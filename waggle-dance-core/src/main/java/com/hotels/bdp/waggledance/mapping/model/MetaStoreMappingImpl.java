@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.model;
@@ -42,10 +40,9 @@ import com.hotels.bdp.waggledance.client.CloseableThriftHiveMetastoreIface;
 import com.hotels.bdp.waggledance.server.security.AccessControlHandler;
 import com.hotels.bdp.waggledance.server.security.NotAllowedException;
 
-
 class MetaStoreMappingImpl implements MetaStoreMapping {
 
-  private final static Logger log = LoggerFactory.getLogger(MetaStoreMappingImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(MetaStoreMappingImpl.class);
 
   // MilliSeconds
   static final long DEFAULT_AVAILABILITY_TIMEOUT = 2000;
@@ -118,28 +115,34 @@ class MetaStoreMappingImpl implements MetaStoreMapping {
     executor.shutdownNow();
   }
 
-  /**
-   * This is potentially slow so a best effort is made and false is returned after a timeout.
-   */
+  /** This is potentially slow so a best effort is made and false is returned after a timeout. */
   @Override
   public boolean isAvailable() {
-    Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
-      try {
-        boolean isOpen = client.isOpen();
-        if (isOpen && connectionType == ConnectionType.TUNNELED) {
-          client.getStatus();
-        }
-        return isOpen;
-      } catch (Exception e) {
-        log.error("Metastore Mapping {} unavailable", name, e);
-        return false;
-      }
-    }, executor);
+    Future<Boolean> future =
+        CompletableFuture.supplyAsync(
+            () -> {
+              try {
+                boolean isOpen = client.isOpen();
+                if (isOpen && connectionType == ConnectionType.TUNNELED) {
+                  client.getStatus();
+                }
+                return isOpen;
+              } catch (Exception e) {
+                log.error("Metastore Mapping {} unavailable", name, e);
+                return false;
+              }
+            },
+            executor);
     long timeout = DEFAULT_AVAILABILITY_TIMEOUT + getLatency();
     try {
       return future.get(timeout, TimeUnit.MILLISECONDS);
     } catch (TimeoutException e) {
-      log.info("Took too long (>" + timeout + "ms) to check availability of '" + name + "', assuming unavailable");
+      log.info(
+          "Took too long (>"
+              + timeout
+              + "ms) to check availability of '"
+              + name
+              + "', assuming unavailable");
       future.cancel(true);
     } catch (InterruptedException | ExecutionException e) {
       log.error("Error while checking availability '" + name + "', assuming unavailable");
@@ -158,7 +161,7 @@ class MetaStoreMappingImpl implements MetaStoreMapping {
 
   @Override
   public void createDatabase(Database database)
-    throws AlreadyExistsException, InvalidObjectException, MetaException, TException {
+      throws AlreadyExistsException, InvalidObjectException, MetaException, TException {
     if (accessControlHandler.hasCreatePermission()) {
       getClient().create_database(database);
       accessControlHandler.databaseCreatedNotification(database.getName());
@@ -176,5 +179,4 @@ class MetaStoreMappingImpl implements MetaStoreMapping {
   public long getLatency() {
     return latency;
   }
-
 }

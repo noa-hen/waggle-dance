@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.service;
@@ -26,15 +24,15 @@ public class HivePrefixPattern {
   private final List<String> subPatterns = new ArrayList<>();
 
   /**
-   * Using a dynamic programming algorithm to match a given pattern with an input string,
-   * where '*' represents matching any number of any characters,
-   * and '.' represents matching a single arbitrary character.
+   * Using a dynamic programming algorithm to match a given pattern with an input string, where '*'
+   * represents matching any number of any characters, and '.' represents matching a single
+   * arbitrary character.
    *
    * @param input input string.
    * @param pattern regular expression.
-   * @return A boolean array with a length of one more than the length of the pattern.
-   * If the substring of the pattern from index 0 to i+1 can match the input string,
-   * the value at index i of the boolean array is true; otherwise, it is false.
+   * @return A boolean array with a length of one more than the length of the pattern. If the
+   *     substring of the pattern from index 0 to i+1 can match the input string, the value at index
+   *     i of the boolean array is true; otherwise, it is false.
    */
   @VisibleForTesting
   static boolean[] matchDp(String input, String pattern) {
@@ -54,10 +52,12 @@ public class HivePrefixPattern {
       matchingResult[0] = false;
       for (int j = 1; j < n; j++) {
         if (pattern.charAt(j - 1) == '*') {
-          matchingResult[j] = prevMatchingResult[j] || prevMatchingResult[j - 1] || matchingResult[j - 1];
+          matchingResult[j] =
+              prevMatchingResult[j] || prevMatchingResult[j - 1] || matchingResult[j - 1];
         } else {
-          matchingResult[j] = prevMatchingResult[j - 1] && (pattern.charAt(j - 1) == '.'
-              || input.charAt(i - 1) == pattern.charAt(j - 1));
+          matchingResult[j] =
+              prevMatchingResult[j - 1]
+                  && (pattern.charAt(j - 1) == '.' || input.charAt(i - 1) == pattern.charAt(j - 1));
         }
       }
     }
@@ -89,8 +89,10 @@ public class HivePrefixPattern {
       if (!match[j]) {
         continue;
       }
-      String subPattern = this.pattern.charAt(j - 1) == '*' ?
-          this.pattern.substring(j - 1, n) : this.pattern.substring(j, n);
+      String subPattern =
+          this.pattern.charAt(j - 1) == '*'
+              ? this.pattern.substring(j - 1, n)
+              : this.pattern.substring(j, n);
       if (subPattern.isEmpty()) {
         continue;
       }
@@ -112,10 +114,15 @@ public class HivePrefixPattern {
 
   @Override
   public String toString() {
-    return "HivePrefixPattern{" +
-        "prefix='" + prefix + '\'' +
-        ", pattern='" + pattern + '\'' +
-        ", subPatterns=" + subPatterns +
-        '}';
+    return "HivePrefixPattern{"
+        + "prefix='"
+        + prefix
+        + '\''
+        + ", pattern='"
+        + pattern
+        + '\''
+        + ", subPatterns="
+        + subPatterns
+        + '}';
   }
 }

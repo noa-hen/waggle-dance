@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.service.impl;
@@ -100,14 +98,19 @@ public class StaticDatabaseMappingServiceTest {
     when(federatedDatabaseClient.get_all_databases()).thenReturn(mappedFederatedDatabases);
 
     when(metaStoreMappingFactory.newInstance(primaryMetastore)).thenReturn(metaStoreMappingPrimary);
-    when(metaStoreMappingFactory.newInstance(federatedMetastore)).thenReturn(metaStoreMappingFederated);
+    when(metaStoreMappingFactory.newInstance(federatedMetastore))
+        .thenReturn(metaStoreMappingFederated);
 
-    AbstractMetaStore unavailableMetastore = newFederatedInstance("unavailable", "thrift:host:port");
+    AbstractMetaStore unavailableMetastore =
+        newFederatedInstance("unavailable", "thrift:host:port");
     MetaStoreMapping unavailableMapping = mockNewMapping(false, "unavailable");
     when(metaStoreMappingFactory.newInstance(unavailableMetastore)).thenReturn(unavailableMapping);
 
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore, unavailableMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore, unavailableMetastore),
+            queryMapping);
   }
 
   private MetaStoreMapping mockNewMapping(boolean isAvailable, String name) {
@@ -123,29 +126,26 @@ public class StaticDatabaseMappingServiceTest {
     when(result.getMetastoreMappingName()).thenReturn(metaStore.getName());
     when(result.transformOutboundDatabaseName(anyString())).then(returnsFirstArg());
     when(result.transformOutboundDatabaseNameMultiple(anyString()))
-        .then((Answer<List<String>>) invocation -> Lists.newArrayList((String) invocation.getArguments()[0]));
+        .then(
+            (Answer<List<String>>)
+                invocation -> Lists.newArrayList((String) invocation.getArguments()[0]));
     return result;
   }
 
   private FederatedMetaStore newFederatedInstanceWithClient(
-      String name,
-      String uri,
-      List<String> mappedDatabases,
-      boolean availableMapping)
-    throws TException {
+      String name, String uri, List<String> mappedDatabases, boolean availableMapping)
+      throws TException {
     FederatedMetaStore newMetastore = newFederatedInstance(name, uri);
     newMetastore.setMappedDatabases(mappedDatabases);
     MetaStoreMapping newMapping = mockNewMapping(availableMapping, newMetastore);
     when(metaStoreMappingFactory.newInstance(newMetastore)).thenReturn(newMapping);
     when(newMapping.getClient()).thenReturn(federatedDatabaseClient);
-    List<String> allLowerCased = mappedDatabases
-        .stream()
-        .map(s -> s.toLowerCase(Locale.ROOT))
-        .collect(Collectors.toList());
+    List<String> allLowerCased =
+        mappedDatabases.stream().map(s -> s.toLowerCase(Locale.ROOT)).collect(Collectors.toList());
     when(federatedDatabaseClient.get_all_databases()).thenReturn(allLowerCased);
     return newMetastore;
   }
-  
+
   @Test
   public void databaseMappingPrimary() throws NoSuchObjectException {
     DatabaseMapping databaseMapping = service.databaseMapping(PRIMARY_DB);
@@ -173,10 +173,14 @@ public class StaticDatabaseMappingServiceTest {
     when(primaryDatabaseClient.get_all_databases()).thenReturn(Lists.newArrayList("db"));
     when(metaStoreMappingFactory.newInstance(primaryMetastore)).thenReturn(metaStoreMappingPrimary);
 
-    federatedMetastore = newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
+    federatedMetastore =
+        newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
 
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
   }
 
   @Test(expected = WaggleDanceException.class)
@@ -186,54 +190,71 @@ public class StaticDatabaseMappingServiceTest {
     when(primaryDatabaseClient.get_all_databases()).thenReturn(Lists.newArrayList("primary_db"));
     when(metaStoreMappingFactory.newInstance(primaryMetastore)).thenReturn(metaStoreMappingPrimary);
 
-    federatedMetastore = newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
-    AbstractMetaStore secondFederatedMetastore = newFederatedInstanceWithClient("second", URI, Lists.newArrayList("db"),
-        true);
+    federatedMetastore =
+        newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
+    AbstractMetaStore secondFederatedMetastore =
+        newFederatedInstanceWithClient("second", URI, Lists.newArrayList("db"), true);
 
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore, secondFederatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore, secondFederatedMetastore),
+            queryMapping);
   }
 
   @Test(expected = WaggleDanceException.class)
   public void validatePrimaryMetaStoreClashThrowsException() throws TException {
-    federatedMetastore = newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
+    federatedMetastore =
+        newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
 
     metaStoreMappingPrimary = mockNewMapping(true, primaryMetastore);
     when(metaStoreMappingPrimary.getClient()).thenReturn(primaryDatabaseClient);
     when(primaryDatabaseClient.get_all_databases()).thenReturn(Lists.newArrayList("db"));
     when(metaStoreMappingFactory.newInstance(primaryMetastore)).thenReturn(metaStoreMappingPrimary);
 
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(federatedMetastore, primaryMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(federatedMetastore, primaryMetastore),
+            queryMapping);
   }
-  
 
   @Test
   public void validateNoPrimaryMetaStoreClashWhenMapped() throws TException {
-    federatedMetastore = newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
+    federatedMetastore =
+        newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
 
     primaryMetastore.setMappedDatabases(Lists.newArrayList("mapped_db"));
     metaStoreMappingPrimary = mockNewMapping(true, primaryMetastore);
     when(metaStoreMappingPrimary.getClient()).thenReturn(primaryDatabaseClient);
-    when(primaryDatabaseClient.get_all_databases()).thenReturn(Lists.newArrayList("db", "mapped_db"));
+    when(primaryDatabaseClient.get_all_databases())
+        .thenReturn(Lists.newArrayList("db", "mapped_db"));
     when(metaStoreMappingFactory.newInstance(primaryMetastore)).thenReturn(metaStoreMappingPrimary);
 
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
   }
-  
+
   @Test
   public void validateNoPrimaryMetaStoreClashWhenMappedPrimarySpecifiedLast() throws TException {
-    federatedMetastore = newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
+    federatedMetastore =
+        newFederatedInstanceWithClient(FEDERATED_NAME, URI, Lists.newArrayList("db"), true);
 
     primaryMetastore.setMappedDatabases(Lists.newArrayList("mapped_db"));
     metaStoreMappingPrimary = mockNewMapping(true, primaryMetastore);
     when(metaStoreMappingPrimary.getClient()).thenReturn(primaryDatabaseClient);
-    when(primaryDatabaseClient.get_all_databases()).thenReturn(Lists.newArrayList("db", "mapped_db"));
+    when(primaryDatabaseClient.get_all_databases())
+        .thenReturn(Lists.newArrayList("db", "mapped_db"));
     when(metaStoreMappingFactory.newInstance(primaryMetastore)).thenReturn(metaStoreMappingPrimary);
 
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(federatedMetastore, primaryMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(federatedMetastore, primaryMetastore),
+            queryMapping);
   }
 
   @Test(expected = WaggleDanceException.class)
@@ -244,7 +265,8 @@ public class StaticDatabaseMappingServiceTest {
 
   @Test
   public void onRegister() throws TException {
-    FederatedMetaStore newMetastore = newFederatedInstanceWithClient("fed1", "abc", Lists.newArrayList("db1"), true);
+    FederatedMetaStore newMetastore =
+        newFederatedInstanceWithClient("fed1", "abc", Lists.newArrayList("db1"), true);
     service.onRegister(newMetastore);
     DatabaseMapping databaseMapping = service.databaseMapping("db1");
     assertThat(databaseMapping.getMetastoreMappingName(), is("fed1"));
@@ -265,8 +287,9 @@ public class StaticDatabaseMappingServiceTest {
 
   @Test
   public void onUpdate() throws TException {
-    FederatedMetaStore newMetastore = newFederatedInstanceWithClient(FEDERATED_NAME, "abc",
-        Lists.newArrayList("db1", "federated_DB"), true);
+    FederatedMetaStore newMetastore =
+        newFederatedInstanceWithClient(
+            FEDERATED_NAME, "abc", Lists.newArrayList("db1", "federated_DB"), true);
     service.onUpdate(federatedMetastore, newMetastore);
 
     DatabaseMapping databaseMapping = service.databaseMapping("db1");
@@ -300,7 +323,8 @@ public class StaticDatabaseMappingServiceTest {
   @Test
   public void onUpdateDifferentName() throws TException {
     String newName = "new";
-    FederatedMetaStore newMetastore = newFederatedInstanceWithClient(newName, "abc", mappedFederatedDatabases, true);
+    FederatedMetaStore newMetastore =
+        newFederatedInstanceWithClient(newName, "abc", mappedFederatedDatabases, true);
 
     service.onUpdate(federatedMetastore, newMetastore);
 
@@ -311,8 +335,8 @@ public class StaticDatabaseMappingServiceTest {
 
   @Test(expected = WaggleDanceException.class)
   public void onInitDuplicatesThrowsException() {
-    List<AbstractMetaStore> duplicates = Arrays
-        .asList(primaryMetastore, federatedMetastore, primaryMetastore, federatedMetastore);
+    List<AbstractMetaStore> duplicates =
+        Arrays.asList(primaryMetastore, federatedMetastore, primaryMetastore, federatedMetastore);
     service = new StaticDatabaseMappingService(metaStoreMappingFactory, duplicates, queryMapping);
   }
 
@@ -367,7 +391,8 @@ public class StaticDatabaseMappingServiceTest {
   }
 
   @Test(expected = NoSuchObjectException.class)
-  public void databaseMappingDefaultsToPrimaryEvenWhenNothingMatchesAndUnavailable() throws NoSuchObjectException {
+  public void databaseMappingDefaultsToPrimaryEvenWhenNothingMatchesAndUnavailable()
+      throws NoSuchObjectException {
     AbstractMetaStore newPrimary = newPrimaryInstance("primary", "abc");
     MetaStoreMapping unavailablePrimaryMapping = mockNewMapping(false, newPrimary);
     when(metaStoreMappingFactory.newInstance(newPrimary)).thenReturn(unavailablePrimaryMapping);
@@ -378,7 +403,8 @@ public class StaticDatabaseMappingServiceTest {
 
   @Test(expected = NoSuchObjectException.class)
   public void databaseMappingsIgnoreDisconnected() throws TException {
-    FederatedMetaStore newMetastore = newFederatedInstanceWithClient("name2", "abc", Lists.newArrayList("db2"), false);
+    FederatedMetaStore newMetastore =
+        newFederatedInstanceWithClient("name2", "abc", Lists.newArrayList("db2"), false);
     service.onRegister(newMetastore);
     service.databaseMapping("db2");
   }
@@ -388,8 +414,9 @@ public class StaticDatabaseMappingServiceTest {
     List<DatabaseMapping> databaseMappings = service.getAvailableDatabaseMappings();
     assertThat(databaseMappings.size(), is(2));
     assertThat(
-        ImmutableSet
-            .of(databaseMappings.get(0).getMetastoreMappingName(), databaseMappings.get(1).getMetastoreMappingName()),
+        ImmutableSet.of(
+            databaseMappings.get(0).getMetastoreMappingName(),
+            databaseMappings.get(1).getMetastoreMappingName()),
         is(ImmutableSet.of(PRIMARY_NAME, FEDERATED_NAME)));
   }
 
@@ -398,9 +425,10 @@ public class StaticDatabaseMappingServiceTest {
     List<DatabaseMapping> databaseMappings = service.getAllDatabaseMappings();
     assertThat(databaseMappings.size(), is(3));
     assertThat(
-        ImmutableSet
-            .of(databaseMappings.get(0).getMetastoreMappingName(), databaseMappings.get(1).getMetastoreMappingName(),
-                databaseMappings.get(2).getMetastoreMappingName()),
+        ImmutableSet.of(
+            databaseMappings.get(0).getMetastoreMappingName(),
+            databaseMappings.get(1).getMetastoreMappingName(),
+            databaseMappings.get(2).getMetastoreMappingName()),
         is(ImmutableSet.of(PRIMARY_NAME, FEDERATED_NAME, "unavailable")));
   }
 
@@ -414,8 +442,11 @@ public class StaticDatabaseMappingServiceTest {
     federatedMetastore.setMappedDatabases(Collections.singletonList(FEDERATED_DB));
     MappedTables mappedTables = new MappedTables(FEDERATED_DB, Lists.newArrayList("table"));
     federatedMetastore.setMappedTables(Collections.singletonList(mappedTables));
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
     service.checkTableAllowed(FEDERATED_DB, "table_not_mapped", null);
   }
 
@@ -424,8 +455,11 @@ public class StaticDatabaseMappingServiceTest {
     primaryMetastore.setMappedDatabases(Collections.singletonList(PRIMARY_DB));
     MappedTables mappedTables = new MappedTables(PRIMARY_DB, Lists.newArrayList("table"));
     primaryMetastore.setMappedTables(Collections.singletonList(mappedTables));
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
     service.checkTableAllowed(PRIMARY_DB, "table_not_mapped", null);
   }
 
@@ -436,8 +470,11 @@ public class StaticDatabaseMappingServiceTest {
     MappedTables mappedTables1 = new MappedTables(PRIMARY_DB, Lists.newArrayList("table"));
     MappedTables mappedTables2 = new MappedTables(otherDb, Lists.newArrayList("table1"));
     primaryMetastore.setMappedTables(Lists.newArrayList(mappedTables1, mappedTables2));
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
     service.checkTableAllowed(PRIMARY_DB, "table", null);
     service.checkTableAllowed(otherDb, "table1", null);
   }
@@ -446,8 +483,11 @@ public class StaticDatabaseMappingServiceTest {
   public void checkTableAllowedMappedTablesEmptyList() throws NoSuchObjectException {
     primaryMetastore.setMappedDatabases(Lists.newArrayList(PRIMARY_DB));
     primaryMetastore.setMappedTables(Collections.emptyList());
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
     DatabaseMapping mapping = service.databaseMapping(PRIMARY_DB);
     service.checkTableAllowed(PRIMARY_DB, "table", mapping);
   }
@@ -458,10 +498,14 @@ public class StaticDatabaseMappingServiceTest {
     primaryMetastore.setMappedDatabases(Collections.singletonList(PRIMARY_DB));
     MappedTables mappedTables = new MappedTables(PRIMARY_DB, allowedTables);
     primaryMetastore.setMappedTables(Collections.singletonList(mappedTables));
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
-    List<String> result = service
-        .filterTables(PRIMARY_DB, Lists.newArrayList("table", "table_not_mapped", "another_table"), null);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
+    List<String> result =
+        service.filterTables(
+            PRIMARY_DB, Lists.newArrayList("table", "table_not_mapped", "another_table"), null);
     assertThat(result, is(allowedTables));
   }
 
@@ -474,7 +518,9 @@ public class StaticDatabaseMappingServiceTest {
 
   @Test
   public void closeOnEmptyInit() throws Exception {
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory, Collections.emptyList(), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory, Collections.emptyList(), queryMapping);
     service.close();
     verify(metaStoreMappingPrimary, never()).close();
     verify(metaStoreMappingFederated, never()).close();
@@ -491,8 +537,11 @@ public class StaticDatabaseMappingServiceTest {
   public void panopticOperationsHandlerGetAllDatabasesWithEmptyMappedDatabases() {
     federatedMetastore.setMappedDatabases(Collections.emptyList());
     primaryMetastore.setMappedDatabases(Collections.emptyList());
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
 
     PanopticOperationHandler handler = service.getPanopticOperationHandler();
     assertThat(handler.getAllDatabases(), is(Collections.emptyList()));
@@ -502,8 +551,11 @@ public class StaticDatabaseMappingServiceTest {
   public void panopticOperationsHandlerGetAllDatabasesWithMappedDatabases() {
     primaryMetastore.setMappedDatabases(Collections.singletonList(PRIMARY_DB));
     federatedMetastore.setMappedDatabases(Collections.singletonList(FEDERATED_DB));
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
 
     PanopticOperationHandler handler = service.getPanopticOperationHandler();
     assertThat(handler.getAllDatabases().size(), is(2));
@@ -523,13 +575,17 @@ public class StaticDatabaseMappingServiceTest {
   }
 
   @Test
-  public void panopticOperationsHandlerGetAllDatabasesByPatternWithEmptyMappedDatabases() throws Exception {
+  public void panopticOperationsHandlerGetAllDatabasesByPatternWithEmptyMappedDatabases()
+      throws Exception {
     String pattern = "pattern";
 
     federatedMetastore.setMappedDatabases(Collections.emptyList());
     primaryMetastore.setMappedDatabases(Collections.emptyList());
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
 
     when(primaryDatabaseClient.get_databases(pattern))
         .thenReturn(Lists.newArrayList(PRIMARY_DB, " primary_db_that_is_not_mapped"));
@@ -541,13 +597,17 @@ public class StaticDatabaseMappingServiceTest {
   }
 
   @Test
-  public void panopticOperationsHandlerGetAllDatabasesByPatternWithMappedDatabases() throws Exception {
+  public void panopticOperationsHandlerGetAllDatabasesByPatternWithMappedDatabases()
+      throws Exception {
     String pattern = "pattern";
 
     primaryMetastore.setMappedDatabases(Collections.singletonList(PRIMARY_DB));
     federatedMetastore.setMappedDatabases(Collections.singletonList(FEDERATED_DB));
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
 
     when(primaryDatabaseClient.get_databases(pattern))
         .thenReturn(Lists.newArrayList(PRIMARY_DB, "primary_db_that_is_not_mapped"));
@@ -581,12 +641,17 @@ public class StaticDatabaseMappingServiceTest {
 
   @Test
   public void panopticOperationsHandlerGetTableMetaWithMappedTables() throws Exception {
-    MappedTables mappedTablesFederated = new MappedTables(FEDERATED_DB, Collections.singletonList("tbl"));
-    MappedTables mappedTablesPrimary = new MappedTables(PRIMARY_DB, Collections.singletonList("no_match"));
+    MappedTables mappedTablesFederated =
+        new MappedTables(FEDERATED_DB, Collections.singletonList("tbl"));
+    MappedTables mappedTablesPrimary =
+        new MappedTables(PRIMARY_DB, Collections.singletonList("no_match"));
     federatedMetastore.setMappedTables(Lists.newArrayList(mappedTablesFederated));
     primaryMetastore.setMappedTables(Lists.newArrayList(mappedTablesPrimary));
-    service = new StaticDatabaseMappingService(metaStoreMappingFactory,
-        Arrays.asList(primaryMetastore, federatedMetastore), queryMapping);
+    service =
+        new StaticDatabaseMappingService(
+            metaStoreMappingFactory,
+            Arrays.asList(primaryMetastore, federatedMetastore),
+            queryMapping);
 
     TableMeta federatedTableMeta = new TableMeta(FEDERATED_DB, "tbl", null);
     TableMeta primaryTableMeta = new TableMeta(PRIMARY_DB, "tbl", null);
@@ -597,7 +662,8 @@ public class StaticDatabaseMappingServiceTest {
     when(metaStoreMappingFederated.getClient()).thenReturn(federatedDatabaseClient);
     when(federatedDatabaseClient.get_table_meta("*_db", "*", null))
         .thenReturn(Arrays.asList(federatedTableMeta, ignoredTableMeta));
-    when(metaStoreMappingFederated.transformOutboundDatabaseName(FEDERATED_DB)).thenReturn("name_federated_db");
+    when(metaStoreMappingFederated.transformOutboundDatabaseName(FEDERATED_DB))
+        .thenReturn("name_federated_db");
 
     PanopticOperationHandler handler = service.getPanopticOperationHandler();
     // table from primary was filtered out
@@ -613,7 +679,8 @@ public class StaticDatabaseMappingServiceTest {
     when(primaryDatabaseClient.set_ugi(user, groups)).thenReturn(Lists.newArrayList("ugi"));
 
     when(metaStoreMappingFederated.getClient()).thenReturn(federatedDatabaseClient);
-    when(federatedDatabaseClient.set_ugi(user, groups)).thenReturn(Lists.newArrayList("ugi", "ugi2"));
+    when(federatedDatabaseClient.set_ugi(user, groups))
+        .thenReturn(Lists.newArrayList("ugi", "ugi2"));
 
     PanopticOperationHandler handler = service.getPanopticOperationHandler();
     List<DatabaseMapping> databaseMappings = service.getAvailableDatabaseMappings();
@@ -633,7 +700,8 @@ public class StaticDatabaseMappingServiceTest {
     when(federatedDatabaseClient.get_all_functions()).thenReturn(responseFederated);
 
     PanopticOperationHandler handler = service.getPanopticOperationHandler();
-    GetAllFunctionsResponse result = handler.getAllFunctions(service.getAvailableDatabaseMappings());
+    GetAllFunctionsResponse result =
+        handler.getAllFunctions(service.getAvailableDatabaseMappings());
     assertThat(result.getFunctionsSize(), is(2));
     assertThat(result.getFunctions().get(0).getFunctionName(), is("fn1"));
     assertThat(result.getFunctions().get(1).getFunctionName(), is("fn2"));

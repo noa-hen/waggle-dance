@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2024 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.server;
@@ -38,13 +36,11 @@ import com.hotels.bdp.waggledance.util.SaslHelper;
 public class SaslServerWrapper {
 
   private MetastoreDelegationTokenManager delegationTokenManager;
-  @Getter
-  private static boolean useSasl;
+  @Getter private static boolean useSasl;
 
   private HadoopThriftAuthBridge.Server saslServer = null;
 
-  protected SaslServerWrapper(HiveConf conf)
-      throws TTransportException {
+  protected SaslServerWrapper(HiveConf conf) throws TTransportException {
     useSasl = conf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_SASL);
     if (!useSasl) {
       return;
@@ -54,17 +50,18 @@ public class SaslServerWrapper {
 
     if (SaslHelper.isSASLWithKerberizedHadoop(conf)) {
       saslServer =
-          HadoopThriftAuthBridge.getBridge().createServer(
-              conf.getVar(HiveConf.ConfVars.HIVE_SERVER2_KERBEROS_KEYTAB),
-              conf.getVar(HiveConf.ConfVars.HIVE_SERVER2_KERBEROS_PRINCIPAL),
-              conf.getVar(HiveConf.ConfVars.HIVE_SERVER2_CLIENT_KERBEROS_PRINCIPAL));
+          HadoopThriftAuthBridge.getBridge()
+              .createServer(
+                  conf.getVar(HiveConf.ConfVars.HIVE_SERVER2_KERBEROS_KEYTAB),
+                  conf.getVar(HiveConf.ConfVars.HIVE_SERVER2_KERBEROS_PRINCIPAL),
+                  conf.getVar(HiveConf.ConfVars.HIVE_SERVER2_CLIENT_KERBEROS_PRINCIPAL));
 
       // Start delegation token manager
       delegationTokenManager = new MetastoreDelegationTokenManager();
       try {
         Object baseHandler = null;
-        String tokenStoreClass = conf.getVar(
-            HiveConf.ConfVars.METASTORE_CLUSTER_DELEGATION_TOKEN_STORE_CLS);
+        String tokenStoreClass =
+            conf.getVar(HiveConf.ConfVars.METASTORE_CLUSTER_DELEGATION_TOKEN_STORE_CLS);
 
         if (tokenStoreClass.equals(DBTokenStore.class.getName())) {
           // IMetaStoreClient is needed to access token store if DBTokenStore is to be used. It
@@ -78,13 +75,12 @@ public class SaslServerWrapper {
           baseHandler = Hive.class;
         }
 
-        delegationTokenManager.startDelegationTokenSecretManager(conf, baseHandler,
-            HadoopThriftAuthBridge.Server.ServerMode.METASTORE);
+        delegationTokenManager.startDelegationTokenSecretManager(
+            conf, baseHandler, HadoopThriftAuthBridge.Server.ServerMode.METASTORE);
         saslServer.setSecretManager(delegationTokenManager.getSecretManager());
       } catch (IOException e) {
         throw new TTransportException("Failed to start token manager", e);
       }
-
     }
   }
 
@@ -95,5 +91,4 @@ public class SaslServerWrapper {
   public Server getSaslServer() {
     return saslServer;
   }
-
 }

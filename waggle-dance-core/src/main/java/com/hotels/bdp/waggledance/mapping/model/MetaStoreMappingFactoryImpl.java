@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.model;
@@ -72,14 +70,22 @@ public class MetaStoreMappingFactoryImpl implements MetaStoreMappingFactory {
   @SuppressWarnings("resource")
   @Override
   public MetaStoreMapping newInstance(AbstractMetaStore metaStore) {
-    log
-        .debug("Mapping databases with name '{}' to metastore: {}", metaStore.getName(),
-            metaStore.getRemoteMetaStoreUris());
-    MetaStoreMapping metaStoreMapping = new MetaStoreMappingImpl(prefixNameFor(metaStore), metaStore.getName(),
-        createClient(metaStore), accessControlHandlerFactory.newInstance(metaStore), metaStore.getConnectionType(),
-        metaStore.getLatency(), loadMetastoreFilterHook(metaStore));
+    log.debug(
+        "Mapping databases with name '{}' to metastore: {}",
+        metaStore.getName(),
+        metaStore.getRemoteMetaStoreUris());
+    MetaStoreMapping metaStoreMapping =
+        new MetaStoreMappingImpl(
+            prefixNameFor(metaStore),
+            metaStore.getName(),
+            createClient(metaStore),
+            accessControlHandlerFactory.newInstance(metaStore),
+            metaStore.getConnectionType(),
+            metaStore.getLatency(),
+            loadMetastoreFilterHook(metaStore));
     if (waggleDanceConfiguration.getDatabaseResolution() == DatabaseResolution.PREFIXED) {
-      return new DatabaseNameMapping(new PrefixMapping(metaStoreMapping), metaStore.getDatabaseNameBiMapping());
+      return new DatabaseNameMapping(
+          new PrefixMapping(metaStoreMapping), metaStore.getDatabaseNameBiMapping());
     } else {
       return new DatabaseNameMapping(metaStoreMapping, metaStore.getDatabaseNameBiMapping());
     }
@@ -90,9 +96,12 @@ public class MetaStoreMappingFactoryImpl implements MetaStoreMappingFactory {
     return prefixNamingStrategy.apply(federatedMetaStore);
   }
 
-  private CloseableThriftHiveMetastoreIface newUnreachableMetastoreClient(AbstractMetaStore metaStore) {
-    return (CloseableThriftHiveMetastoreIface) Proxy
-        .newProxyInstance(getClass().getClassLoader(), new Class[] { CloseableThriftHiveMetastoreIface.class },
+  private CloseableThriftHiveMetastoreIface newUnreachableMetastoreClient(
+      AbstractMetaStore metaStore) {
+    return (CloseableThriftHiveMetastoreIface)
+        Proxy.newProxyInstance(
+            getClass().getClassLoader(),
+            new Class[] {CloseableThriftHiveMetastoreIface.class},
             new UnreachableMetastoreClientInvocationHandler(metaStore.getName()));
   }
 
@@ -102,7 +111,8 @@ public class MetaStoreMappingFactoryImpl implements MetaStoreMappingFactory {
     if (metaStoreFilterHook == null || metaStoreFilterHook.isEmpty()) {
       return new DefaultMetaStoreFilterHookImpl(conf);
     }
-    Map<String, String> configurationProperties = waggleDanceConfiguration.getConfigurationProperties();
+    Map<String, String> configurationProperties =
+        waggleDanceConfiguration.getConfigurationProperties();
     if (configurationProperties != null) {
       for (Map.Entry<String, String> property : configurationProperties.entrySet()) {
         conf.set(property.getKey(), property.getValue());
@@ -116,19 +126,23 @@ public class MetaStoreMappingFactoryImpl implements MetaStoreMappingFactory {
     }
     conf.set(HiveConf.ConfVars.METASTORE_FILTER_HOOK.varname, metaStoreFilterHook);
     try {
-      Class<? extends MetaStoreFilterHook> filterHookClass = conf
-          .getClass(HiveConf.ConfVars.METASTORE_FILTER_HOOK.varname, DefaultMetaStoreFilterHookImpl.class,
+      Class<? extends MetaStoreFilterHook> filterHookClass =
+          conf.getClass(
+              HiveConf.ConfVars.METASTORE_FILTER_HOOK.varname,
+              DefaultMetaStoreFilterHookImpl.class,
               MetaStoreFilterHook.class);
-      Constructor<? extends MetaStoreFilterHook> constructor = filterHookClass.getConstructor(HiveConf.class);
+      Constructor<? extends MetaStoreFilterHook> constructor =
+          filterHookClass.getConstructor(HiveConf.class);
       return constructor.newInstance(conf);
     } catch (Exception e) {
-      throw new WaggleDanceServerException("Unable to create instance of " + metaStoreFilterHook, e);
+      throw new WaggleDanceServerException(
+          "Unable to create instance of " + metaStoreFilterHook, e);
     }
   }
 
   /**
-   * Handler that refuses to be open and will throw exceptions for any of the methods, serves as a dummy client if the
-   * real one can't be created due to connection (i.e. tunneling) issues.
+   * Handler that refuses to be open and will throw exceptions for any of the methods, serves as a
+   * dummy client if the real one can't be created due to connection (i.e. tunneling) issues.
    */
   private static class UnreachableMetastoreClientInvocationHandler implements InvocationHandler {
 
@@ -141,12 +155,12 @@ public class MetaStoreMappingFactoryImpl implements MetaStoreMappingFactory {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
       switch (method.getName()) {
-      case "isOpen":
-        return false;
-      case "close":
-        return null;
-      default:
-        throw new TException("Metastore '" + name + "' unavailable");
+        case "isOpen":
+          return false;
+        case "close":
+          return null;
+        default:
+          throw new TException("Metastore '" + name + "' unavailable");
       }
     }
   }

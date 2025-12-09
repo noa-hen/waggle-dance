@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.metrics;
@@ -102,7 +100,7 @@ public class MonitoredAspectTest {
     rs = meterRegistry.get("timer.Type_Anonymous.myMethod.all.duration");
     assertThat(rs.timer().count(), is(1L));
   }
-  
+
   @Test
   public void monitorSuccessOnNoSuchObjectException() throws Throwable {
     testOnExpectedException(new NoSuchObjectException());
@@ -122,7 +120,7 @@ public class MonitoredAspectTest {
   public void monitorSuccessOnAlreadyExistsException() throws Throwable {
     testOnExpectedException(new AlreadyExistsException());
   }
-  
+
   private void testOnExpectedException(TException expectedException) throws Throwable {
     when(pjp.proceed()).thenThrow(expectedException);
     try {
@@ -188,7 +186,6 @@ public class MonitoredAspectTest {
     assertThat(successMeter.getId().getTag("method_name"), is("myMethod"));
   }
 
-
   @Test
   public void monitorFailuresForSpecificMetastore() throws Throwable {
     CurrentMonitoredMetaStoreHolder.monitorMetastore("metastoreName");
@@ -233,5 +230,4 @@ public class MonitoredAspectTest {
     aspect.setMeterRegistry(null);
     aspect.monitor(pjp, monitored);
   }
-
 }

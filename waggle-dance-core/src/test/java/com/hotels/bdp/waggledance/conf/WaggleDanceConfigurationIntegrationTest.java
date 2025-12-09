@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2023 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.conf;
@@ -31,15 +29,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.google.common.collect.ImmutableMap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestPropertySource(properties = {
-    "port: 123",
-    "verbose: true",
-    "reserved-prefix: my_prefix_",
-    "disconnect-connection-delay: 15",
-    "disconnect-time-unit: seconds",
-    "configuration-properties.prop1: val1",
-    "queryFunctionsAcrossAllMetastores: false" })
-@ContextConfiguration(classes = { WaggleDanceConfiguration.class })
+@TestPropertySource(
+    properties = {
+      "port: 123",
+      "verbose: true",
+      "reserved-prefix: my_prefix_",
+      "disconnect-connection-delay: 15",
+      "disconnect-time-unit: seconds",
+      "configuration-properties.prop1: val1",
+      "queryFunctionsAcrossAllMetastores: false"
+    })
+@ContextConfiguration(classes = {WaggleDanceConfiguration.class})
 public class WaggleDanceConfigurationIntegrationTest {
 
   private @Autowired WaggleDanceConfiguration waggleDanceConfiguration;
@@ -55,5 +55,4 @@ public class WaggleDanceConfigurationIntegrationTest {
     assertThat(waggleDanceConfiguration.getConfigurationProperties(), is(props));
     assertThat(waggleDanceConfiguration.isQueryFunctionsAcrossAllMetastores(), is(false));
   }
-
 }

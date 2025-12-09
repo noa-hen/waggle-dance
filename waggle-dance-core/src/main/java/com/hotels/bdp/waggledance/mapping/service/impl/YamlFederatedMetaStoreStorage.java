@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2023 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.service.impl;
@@ -23,12 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -58,7 +56,8 @@ import com.hotels.bdp.waggledance.yaml.YamlFactory;
 @Log4j2
 public class YamlFederatedMetaStoreStorage implements FederatedMetaStoreStorage {
 
-  private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
+  private static final Validator VALIDATOR =
+      Validation.buildDefaultValidatorFactory().getValidator();
 
   static class YamlMarshaller {
     private final FileSystemManager fsManager;
@@ -82,19 +81,21 @@ public class YamlFederatedMetaStoreStorage implements FederatedMetaStoreStorage 
         validate(federations);
         return federations;
       } catch (IOException e) {
-        throw new RuntimeException("Unable to initialize federations from '" + federationConfigLocation + "'", e);
+        throw new RuntimeException(
+            "Unable to initialize federations from '" + federationConfigLocation + "'", e);
       }
     }
 
     public void marshall(String federationConfigLocation, Federations federations) {
       try (FileObject target = fsManager.resolveFile(federationConfigLocation);
-          Writer writer = new OutputStreamWriter(target.getContent().getOutputStream(), Charsets.UTF_8)) {
+          Writer writer =
+              new OutputStreamWriter(target.getContent().getOutputStream(), Charsets.UTF_8)) {
         yaml.dump(federations, writer);
       } catch (IOException e) {
-        throw new RuntimeException("Unable to write federations to '" + federationConfigLocation + "'", e);
+        throw new RuntimeException(
+            "Unable to write federations to '" + federationConfigLocation + "'", e);
       }
     }
-
   }
 
   private static void validate(Federations federations) {
@@ -105,16 +106,19 @@ public class YamlFederatedMetaStoreStorage implements FederatedMetaStoreStorage 
   }
 
   private static void validate(AbstractMetaStore federatedMetaStore) {
-    Set<ConstraintViolation<AbstractMetaStore>> constraintViolations = VALIDATOR.validate(federatedMetaStore);
+    Set<ConstraintViolation<AbstractMetaStore>> constraintViolations =
+        VALIDATOR.validate(federatedMetaStore);
     if (!constraintViolations.isEmpty()) {
       throw new ConstraintViolationException("Invalid federated metastore", constraintViolations);
     }
   }
 
-  private static void insert(AbstractMetaStore federatedMetaStore, Map<String, AbstractMetaStore> federationsMap) {
+  private static void insert(
+      AbstractMetaStore federatedMetaStore, Map<String, AbstractMetaStore> federationsMap) {
     validate(federatedMetaStore);
     if (federationsMap.containsKey(federatedMetaStore.getName())) {
-      throw new IllegalArgumentException("Name '" + federatedMetaStore.getName() + "' is already registered");
+      throw new IllegalArgumentException(
+          "Name '" + federatedMetaStore.getName() + "' is already registered");
     }
     if (!uniqueMetaStorePrefix(federatedMetaStore.getDatabasePrefix(), federationsMap)) {
       throw new IllegalArgumentException(
@@ -124,7 +128,8 @@ public class YamlFederatedMetaStoreStorage implements FederatedMetaStoreStorage 
     federationsMap.put(federatedMetaStore.getName(), federatedMetaStore);
   }
 
-  private static boolean uniqueMetaStorePrefix(String prefix, Map<String, AbstractMetaStore> federationsMap) {
+  private static boolean uniqueMetaStorePrefix(
+      String prefix, Map<String, AbstractMetaStore> federationsMap) {
     for (AbstractMetaStore metaStore : federationsMap.values()) {
       if (metaStore.getDatabasePrefix().equalsIgnoreCase(prefix)) {
         return false;
@@ -144,7 +149,10 @@ public class YamlFederatedMetaStoreStorage implements FederatedMetaStoreStorage 
   public YamlFederatedMetaStoreStorage(
       @Value("${federation-config}") String federationConfigLocation,
       YamlStorageConfiguration configuration) {
-    this(federationConfigLocation, new YamlMarshaller(), configuration.isOverwriteConfigOnShutdown());
+    this(
+        federationConfigLocation,
+        new YamlMarshaller(),
+        configuration.isOverwriteConfigOnShutdown());
   }
 
   YamlFederatedMetaStoreStorage(
@@ -170,7 +178,8 @@ public class YamlFederatedMetaStoreStorage implements FederatedMetaStoreStorage 
       for (AbstractMetaStore federatedMetaStore : federations.getFederatedMetaStores()) {
         if (federatedMetaStore.getFederationType() == FederationType.PRIMARY) {
           // This can only happen through wrong manual configuration
-          throw new RuntimeException("Found 'PRIMARY' metastore that should be configured as 'FEDERATED'");
+          throw new RuntimeException(
+              "Found 'PRIMARY' metastore that should be configured as 'FEDERATED'");
         }
         insert(federatedMetaStore, newFederationsMap);
       }
@@ -185,8 +194,9 @@ public class YamlFederatedMetaStoreStorage implements FederatedMetaStoreStorage 
   @Override
   public void saveFederation() {
     if (writeConfigOnShutdown) {
-      yamlMarshaller
-          .marshall(federationConfigLocation, new Federations(getPrimaryMetaStore(), getAllFederatedMetaStores()));
+      yamlMarshaller.marshall(
+          federationConfigLocation,
+          new Federations(getPrimaryMetaStore(), getAllFederatedMetaStores()));
     }
   }
 
@@ -219,7 +229,8 @@ public class YamlFederatedMetaStoreStorage implements FederatedMetaStoreStorage 
     AbstractMetaStore federatedMetaStore;
     synchronized (federationsMapLock) {
       federatedMetaStore = federationsMap.remove(name);
-      if (federatedMetaStore != null && federatedMetaStore.getFederationType() == FederationType.PRIMARY) {
+      if (federatedMetaStore != null
+          && federatedMetaStore.getFederationType() == FederationType.PRIMARY) {
         primaryMetaStore = null;
       }
     }
@@ -249,5 +260,4 @@ public class YamlFederatedMetaStoreStorage implements FederatedMetaStoreStorage 
   private PrimaryMetaStore getPrimaryMetaStore() {
     return primaryMetaStore;
   }
-
 }

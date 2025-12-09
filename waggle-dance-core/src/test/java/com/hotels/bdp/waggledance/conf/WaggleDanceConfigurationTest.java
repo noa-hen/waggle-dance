@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2021 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.conf;
@@ -21,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.hibernate.validator.HibernateValidator;
 import org.junit.Before;
@@ -46,76 +44,86 @@ public class WaggleDanceConfigurationTest {
     waggleDanceConfiguration.setVerbose(true);
     waggleDanceConfiguration.setDisconnectConnectionDelay(15);
     waggleDanceConfiguration.setDisconnectTimeUnit(TimeUnit.SECONDS);
-    waggleDanceConfiguration
-        .setConfigurationProperties(ImmutableMap.<String, String>builder().put("prop1", "val1").build());
+    waggleDanceConfiguration.setConfigurationProperties(
+        ImmutableMap.<String, String>builder().put("prop1", "val1").build());
   }
 
   @Test
   public void typical() {
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(0));
   }
 
   @Test
   public void nullPort() {
     waggleDanceConfiguration.setPort(null);
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(1));
   }
 
   @Test
   public void zeroPort() {
     waggleDanceConfiguration.setPort(0);
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(1));
   }
 
   @Test
   public void negativePort() {
     waggleDanceConfiguration.setPort(-1);
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(1));
   }
 
   @Test
   public void zeroDisconnectConnectionDelay() {
     waggleDanceConfiguration.setDisconnectConnectionDelay(0);
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(1));
   }
 
   @Test
   public void negativeDisconnectConnectionDelay() {
     waggleDanceConfiguration.setDisconnectConnectionDelay(-1);
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(1));
   }
 
   @Test
   public void nullDisconnectTimeUnit() {
     waggleDanceConfiguration.setDisconnectTimeUnit(null);
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(1));
   }
 
   @Test
   public void nullConfigurationProperties() {
     waggleDanceConfiguration.setConfigurationProperties(null);
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(0));
   }
 
   @Test
   public void emptyConfigurationProperties() {
     waggleDanceConfiguration.setConfigurationProperties(ImmutableMap.of());
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(0));
   }
 
   @Test
   public void nullDatabaseResolution() {
     waggleDanceConfiguration.setDatabaseResolution(null);
-    Set<ConstraintViolation<WaggleDanceConfiguration>> violations = validator.validate(waggleDanceConfiguration);
+    Set<ConstraintViolation<WaggleDanceConfiguration>> violations =
+        validator.validate(waggleDanceConfiguration);
     assertThat(violations.size(), is(1));
   }
 
@@ -169,5 +177,4 @@ public class WaggleDanceConfigurationTest {
     waggleDanceConfiguration.setStatusPollingDelayTimeUnit(timeUnit);
     assertThat(waggleDanceConfiguration.getStatusPollingDelayTimeUnit(), is(timeUnit));
   }
-
 }

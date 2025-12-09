@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2023 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.model;
@@ -138,7 +136,8 @@ public interface DatabaseMapping extends MetaStoreMapping {
 
   DropPartitionsRequest transformInboundDropPartitionRequest(DropPartitionsRequest req);
 
-  DropPartitionsResult transformOutboundDropPartitionsResult(DropPartitionsResult dropPartitionsResult);
+  DropPartitionsResult transformOutboundDropPartitionsResult(
+      DropPartitionsResult dropPartitionsResult);
 
   List<Partition> transformOutboundPartitions(List<Partition> partitions);
 
@@ -152,15 +151,18 @@ public interface DatabaseMapping extends MetaStoreMapping {
 
   ColumnStatistics transformOutboundColumnStatistics(ColumnStatistics columnStatistics);
 
-  SetPartitionsStatsRequest transformInboundSetPartitionStatsRequest(SetPartitionsStatsRequest request);
+  SetPartitionsStatsRequest transformInboundSetPartitionStatsRequest(
+      SetPartitionsStatsRequest request);
 
   Function transformInboundFunction(Function function);
 
-  List<HiveObjectPrivilege> transformOutboundHiveObjectPrivileges(List<HiveObjectPrivilege> privileges);
+  List<HiveObjectPrivilege> transformOutboundHiveObjectPrivileges(
+      List<HiveObjectPrivilege> privileges);
 
   PrivilegeBag transformInboundPrivilegeBag(PrivilegeBag privilegeBag);
 
-  GrantRevokePrivilegeRequest transformInboundGrantRevokePrivilegesRequest(GrantRevokePrivilegeRequest request);
+  GrantRevokePrivilegeRequest transformInboundGrantRevokePrivilegesRequest(
+      GrantRevokePrivilegeRequest request);
 
   LockRequest transformInboundLockRequest(LockRequest request);
 
@@ -184,17 +186,23 @@ public interface DatabaseMapping extends MetaStoreMapping {
 
   List<SQLForeignKey> transformInboundSQLForeignKeys(List<SQLForeignKey> sqlForeignKeys);
 
-  List<SQLUniqueConstraint> transformInboundSQLUniqueConstraints(List<SQLUniqueConstraint> sqlUniqueConstraints);
+  List<SQLUniqueConstraint> transformInboundSQLUniqueConstraints(
+      List<SQLUniqueConstraint> sqlUniqueConstraints);
 
-  List<SQLNotNullConstraint> transformInboundSQLNotNullConstraints(List<SQLNotNullConstraint> sqlNotNullConstraints);
+  List<SQLNotNullConstraint> transformInboundSQLNotNullConstraints(
+      List<SQLNotNullConstraint> sqlNotNullConstraints);
 
-  List<SQLDefaultConstraint> transformInboundSQLDefaultConstraints(List<SQLDefaultConstraint> sqlDefaultConstraints);
+  List<SQLDefaultConstraint> transformInboundSQLDefaultConstraints(
+      List<SQLDefaultConstraint> sqlDefaultConstraints);
 
-  List<SQLCheckConstraint> transformInboundSQLCheckConstraints(List<SQLCheckConstraint> sqlCheckConstraints);
+  List<SQLCheckConstraint> transformInboundSQLCheckConstraints(
+      List<SQLCheckConstraint> sqlCheckConstraints);
 
-  ReplTblWriteIdStateRequest transformInboundReplTblWriteIdStateRequest(ReplTblWriteIdStateRequest request);
+  ReplTblWriteIdStateRequest transformInboundReplTblWriteIdStateRequest(
+      ReplTblWriteIdStateRequest request);
 
-  AllocateTableWriteIdsRequest transformInboundAllocateTableWriteIdsRequest(AllocateTableWriteIdsRequest request);
+  AllocateTableWriteIdsRequest transformInboundAllocateTableWriteIdsRequest(
+      AllocateTableWriteIdsRequest request);
 
   AlterISchemaRequest transformInboundAlterISchemaRequest(AlterISchemaRequest request);
 
@@ -210,39 +218,53 @@ public interface DatabaseMapping extends MetaStoreMapping {
 
   AddForeignKeyRequest transformInboundAddForeignKeyRequest(AddForeignKeyRequest request);
 
-  AddUniqueConstraintRequest transformInboundAddUniqueConstraintRequest(AddUniqueConstraintRequest request);
+  AddUniqueConstraintRequest transformInboundAddUniqueConstraintRequest(
+      AddUniqueConstraintRequest request);
 
-  AddNotNullConstraintRequest transformInboundAddNotNullConstraintRequest(AddNotNullConstraintRequest request);
+  AddNotNullConstraintRequest transformInboundAddNotNullConstraintRequest(
+      AddNotNullConstraintRequest request);
 
-  AddDefaultConstraintRequest transformInboundAddDefaultConstraintRequest(AddDefaultConstraintRequest request);
+  AddDefaultConstraintRequest transformInboundAddDefaultConstraintRequest(
+      AddDefaultConstraintRequest request);
 
-  AddCheckConstraintRequest transformInboundAddCheckConstraintRequest(AddCheckConstraintRequest request);
+  AddCheckConstraintRequest transformInboundAddCheckConstraintRequest(
+      AddCheckConstraintRequest request);
 
   FindSchemasByColsResp transformOutboundFindSchemasByColsResp(FindSchemasByColsResp response);
 
   SchemaVersionDescriptor transformInboundSchemaVersionDescriptor(SchemaVersionDescriptor request);
 
-  MapSchemaVersionToSerdeRequest transformInboundMapSchemaVersionToSerdeRequest(MapSchemaVersionToSerdeRequest request);
+  MapSchemaVersionToSerdeRequest transformInboundMapSchemaVersionToSerdeRequest(
+      MapSchemaVersionToSerdeRequest request);
 
-  SetSchemaVersionStateRequest transformInboundSetSchemaVersionStateRequest(SetSchemaVersionStateRequest request);
+  SetSchemaVersionStateRequest transformInboundSetSchemaVersionStateRequest(
+      SetSchemaVersionStateRequest request);
 
-  NotificationEventsCountRequest transformInboundNotificationEventsCountRequest(NotificationEventsCountRequest request);
+  NotificationEventsCountRequest transformInboundNotificationEventsCountRequest(
+      NotificationEventsCountRequest request);
 
-  UniqueConstraintsRequest transformInboundUniqueConstraintsRequest(UniqueConstraintsRequest request);
+  UniqueConstraintsRequest transformInboundUniqueConstraintsRequest(
+      UniqueConstraintsRequest request);
 
-  UniqueConstraintsResponse transformOutboundUniqueConstraintsResponse(UniqueConstraintsResponse response);
+  UniqueConstraintsResponse transformOutboundUniqueConstraintsResponse(
+      UniqueConstraintsResponse response);
 
-  NotNullConstraintsRequest transformInboundNotNullConstraintsRequest(NotNullConstraintsRequest request);
+  NotNullConstraintsRequest transformInboundNotNullConstraintsRequest(
+      NotNullConstraintsRequest request);
 
-  NotNullConstraintsResponse transformOutboundNotNullConstraintsResponse(NotNullConstraintsResponse response);
+  NotNullConstraintsResponse transformOutboundNotNullConstraintsResponse(
+      NotNullConstraintsResponse response);
 
-  DefaultConstraintsRequest transformInboundDefaultConstraintsRequest(DefaultConstraintsRequest request);
+  DefaultConstraintsRequest transformInboundDefaultConstraintsRequest(
+      DefaultConstraintsRequest request);
 
-  DefaultConstraintsResponse transformOutboundDefaultConstraintsResponse(DefaultConstraintsResponse response);
+  DefaultConstraintsResponse transformOutboundDefaultConstraintsResponse(
+      DefaultConstraintsResponse response);
 
   CheckConstraintsRequest transformInboundCheckConstraintsRequest(CheckConstraintsRequest request);
 
-  CheckConstraintsResponse transformOutboundCheckConstraintsResponse(CheckConstraintsResponse response);
+  CheckConstraintsResponse transformOutboundCheckConstraintsResponse(
+      CheckConstraintsResponse response);
 
   CreationMetadata transformInboundCreationMetadata(CreationMetadata request);
 

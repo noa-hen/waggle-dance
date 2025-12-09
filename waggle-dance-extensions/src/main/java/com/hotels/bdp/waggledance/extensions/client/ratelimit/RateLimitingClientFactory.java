@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2024 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.extensions.client.ratelimit;
@@ -25,7 +23,8 @@ import com.hotels.bdp.waggledance.client.ThriftClientFactory;
 
 public class RateLimitingClientFactory implements ThriftClientFactory {
 
-  private static final Class<?>[] INTERFACES = new Class<?>[] { CloseableThriftHiveMetastoreIface.class };
+  private static final Class<?>[] INTERFACES =
+      new Class<?>[] {CloseableThriftHiveMetastoreIface.class};
 
   private final ThriftClientFactory thriftClientFactory;
   private final BucketService bucketService;
@@ -35,7 +34,8 @@ public class RateLimitingClientFactory implements ThriftClientFactory {
   public RateLimitingClientFactory(
       ThriftClientFactory thriftClientFactory,
       BucketService bucketService,
-      BucketKeyGenerator bucketKeyGenerator, MeterRegistry meterRegistry) {
+      BucketKeyGenerator bucketKeyGenerator,
+      MeterRegistry meterRegistry) {
     this.thriftClientFactory = thriftClientFactory;
     this.bucketService = bucketService;
     this.bucketKeyGenerator = bucketKeyGenerator;
@@ -45,10 +45,11 @@ public class RateLimitingClientFactory implements ThriftClientFactory {
   @Override
   public CloseableThriftHiveMetastoreIface newInstance(AbstractMetaStore metaStore) {
     CloseableThriftHiveMetastoreIface client = thriftClientFactory.newInstance(metaStore);
-    return (CloseableThriftHiveMetastoreIface) Proxy
-        .newProxyInstance(getClass().getClassLoader(), INTERFACES,
-            new RateLimitingInvocationHandler(client, metaStore.getName(), bucketService, bucketKeyGenerator, meterRegistry));
-
+    return (CloseableThriftHiveMetastoreIface)
+        Proxy.newProxyInstance(
+            getClass().getClassLoader(),
+            INTERFACES,
+            new RateLimitingInvocationHandler(
+                client, metaStore.getName(), bucketService, bucketKeyGenerator, meterRegistry));
   }
-
 }

@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2021 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.yaml;
@@ -30,6 +28,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.introspector.MethodProperty;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.MappingNode;
@@ -84,7 +83,7 @@ public class AdvancedRepresenterTest {
     }
   }
 
-  private final AdvancedRepresenter representer = new AdvancedRepresenter();
+  private final AdvancedRepresenter representer = new AdvancedRepresenter(new DumperOptions());
   private TestBean bean;
   private BeanInfo beanInfo;
 
@@ -107,7 +106,8 @@ public class AdvancedRepresenterTest {
   public void notNullProperty() throws Exception {
     bean.setProperty("value");
     Property property = new MethodProperty(getPropertyDescriptor("property"));
-    NodeTuple nodeTuple = representer.representJavaBeanProperty(bean, property, bean.getProperty(), null);
+    NodeTuple nodeTuple =
+        representer.representJavaBeanProperty(bean, property, bean.getProperty(), null);
     assertThat(nodeTuple, is(notNullValue()));
     assertThat(nodeTuple.getKeyNode(), is(instanceOf(ScalarNode.class)));
     assertThat(((ScalarNode) nodeTuple.getKeyNode()).getValue(), is("property"));
@@ -118,7 +118,8 @@ public class AdvancedRepresenterTest {
   @Test
   public void nullProperty() {
     Property property = new MethodProperty(getPropertyDescriptor("property"));
-    NodeTuple nodeTuple = representer.representJavaBeanProperty(bean, property, bean.getProperty(), null);
+    NodeTuple nodeTuple =
+        representer.representJavaBeanProperty(bean, property, bean.getProperty(), null);
     assertThat(nodeTuple, is(nullValue()));
   }
 
@@ -126,22 +127,32 @@ public class AdvancedRepresenterTest {
   public void notNullCollectionProperty() {
     bean.setCollectionProperty(ImmutableList.<String>builder().add("1").add("2").build());
     Property property = new MethodProperty(getPropertyDescriptor("collectionProperty"));
-    NodeTuple nodeTuple = representer.representJavaBeanProperty(bean, property, bean.getCollectionProperty(), null);
+    NodeTuple nodeTuple =
+        representer.representJavaBeanProperty(bean, property, bean.getCollectionProperty(), null);
     assertThat(nodeTuple, is(notNullValue()));
     assertThat(nodeTuple.getKeyNode(), is(instanceOf(ScalarNode.class)));
     assertThat(((ScalarNode) nodeTuple.getKeyNode()).getValue(), is("collection-property"));
     assertThat(nodeTuple.getValueNode(), is(instanceOf(SequenceNode.class)));
     assertThat(((SequenceNode) nodeTuple.getValueNode()).getValue().size(), is(2));
-    assertThat(((SequenceNode) nodeTuple.getValueNode()).getValue().get(0), is(instanceOf(ScalarNode.class)));
-    assertThat(((ScalarNode) ((SequenceNode) nodeTuple.getValueNode()).getValue().get(0)).getValue(), is("1"));
-    assertThat(((SequenceNode) nodeTuple.getValueNode()).getValue().get(1), is(instanceOf(ScalarNode.class)));
-    assertThat(((ScalarNode) ((SequenceNode) nodeTuple.getValueNode()).getValue().get(1)).getValue(), is("2"));
+    assertThat(
+        ((SequenceNode) nodeTuple.getValueNode()).getValue().get(0),
+        is(instanceOf(ScalarNode.class)));
+    assertThat(
+        ((ScalarNode) ((SequenceNode) nodeTuple.getValueNode()).getValue().get(0)).getValue(),
+        is("1"));
+    assertThat(
+        ((SequenceNode) nodeTuple.getValueNode()).getValue().get(1),
+        is(instanceOf(ScalarNode.class)));
+    assertThat(
+        ((ScalarNode) ((SequenceNode) nodeTuple.getValueNode()).getValue().get(1)).getValue(),
+        is("2"));
   }
 
   @Test
   public void nullCollectionProperty() {
     Property property = new MethodProperty(getPropertyDescriptor("collectionProperty"));
-    NodeTuple nodeTuple = representer.representJavaBeanProperty(bean, property, bean.getCollectionProperty(), null);
+    NodeTuple nodeTuple =
+        representer.representJavaBeanProperty(bean, property, bean.getCollectionProperty(), null);
     assertThat(nodeTuple, is(nullValue()));
   }
 
@@ -149,35 +160,49 @@ public class AdvancedRepresenterTest {
   public void emptyCollectionProperty() {
     bean.setCollectionProperty(ImmutableList.of());
     Property property = new MethodProperty(getPropertyDescriptor("collectionProperty"));
-    NodeTuple nodeTuple = representer.representJavaBeanProperty(bean, property, bean.getCollectionProperty(), null);
+    NodeTuple nodeTuple =
+        representer.representJavaBeanProperty(bean, property, bean.getCollectionProperty(), null);
     assertThat(nodeTuple, is(nullValue()));
   }
 
   @Test
   public void notNullMapProperty() {
-    bean.setMapProperty(ImmutableMap.<String, Long>builder().put("first", 1L).put("second", 2L).build());
+    bean.setMapProperty(
+        ImmutableMap.<String, Long>builder().put("first", 1L).put("second", 2L).build());
     Property property = new MethodProperty(getPropertyDescriptor("mapProperty"));
-    NodeTuple nodeTuple = representer.representJavaBeanProperty(bean, property, bean.getMapProperty(), null);
+    NodeTuple nodeTuple =
+        representer.representJavaBeanProperty(bean, property, bean.getMapProperty(), null);
     assertThat(nodeTuple, is(notNullValue()));
     assertThat(nodeTuple.getKeyNode(), is(instanceOf(ScalarNode.class)));
     assertThat(((ScalarNode) nodeTuple.getKeyNode()).getValue(), is("map-property"));
     assertThat(nodeTuple.getValueNode(), is(instanceOf(MappingNode.class)));
     assertThat(((MappingNode) nodeTuple.getValueNode()).getValue().size(), is(2));
-    assertThat(((MappingNode) nodeTuple.getValueNode()).getValue().get(0), is(instanceOf(NodeTuple.class)));
-    assertThat(((ScalarNode) ((MappingNode) nodeTuple.getValueNode()).getValue().get(0).getKeyNode()).getValue(),
+    assertThat(
+        ((MappingNode) nodeTuple.getValueNode()).getValue().get(0),
+        is(instanceOf(NodeTuple.class)));
+    assertThat(
+        ((ScalarNode) ((MappingNode) nodeTuple.getValueNode()).getValue().get(0).getKeyNode())
+            .getValue(),
         is("first"));
-    assertThat(((ScalarNode) ((MappingNode) nodeTuple.getValueNode()).getValue().get(0).getValueNode()).getValue(),
+    assertThat(
+        ((ScalarNode) ((MappingNode) nodeTuple.getValueNode()).getValue().get(0).getValueNode())
+            .getValue(),
         is("1"));
-    assertThat(((ScalarNode) ((MappingNode) nodeTuple.getValueNode()).getValue().get(1).getKeyNode()).getValue(),
+    assertThat(
+        ((ScalarNode) ((MappingNode) nodeTuple.getValueNode()).getValue().get(1).getKeyNode())
+            .getValue(),
         is("second"));
-    assertThat(((ScalarNode) ((MappingNode) nodeTuple.getValueNode()).getValue().get(1).getValueNode()).getValue(),
+    assertThat(
+        ((ScalarNode) ((MappingNode) nodeTuple.getValueNode()).getValue().get(1).getValueNode())
+            .getValue(),
         is("2"));
   }
 
   @Test
   public void nullMapProperty() {
     Property property = new MethodProperty(getPropertyDescriptor("mapProperty"));
-    NodeTuple nodeTuple = representer.representJavaBeanProperty(bean, property, bean.getMapProperty(), null);
+    NodeTuple nodeTuple =
+        representer.representJavaBeanProperty(bean, property, bean.getMapProperty(), null);
     assertThat(nodeTuple, is(nullValue()));
   }
 
@@ -185,8 +210,8 @@ public class AdvancedRepresenterTest {
   public void emptyMapProperty() {
     bean.setMapProperty(ImmutableMap.of());
     Property property = new MethodProperty(getPropertyDescriptor("mapProperty"));
-    NodeTuple nodeTuple = representer.representJavaBeanProperty(bean, property, bean.getMapProperty(), null);
+    NodeTuple nodeTuple =
+        representer.representJavaBeanProperty(bean, property, bean.getMapProperty(), null);
     assertThat(nodeTuple, is(nullValue()));
   }
-
 }

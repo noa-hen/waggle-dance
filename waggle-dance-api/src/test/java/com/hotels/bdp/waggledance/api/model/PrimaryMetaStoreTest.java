@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.api.model;
@@ -23,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.junit.Test;
 
@@ -35,7 +33,8 @@ public class PrimaryMetaStoreTest extends AbstractMetaStoreTest<PrimaryMetaStore
   private final String name = "name";
   private final String remoteMetaStoreUris = "remoteMetaStoreUris";
   private final List<String> whitelist = new ArrayList<>();
-  private final AccessControlType accessControlType = AccessControlType.READ_AND_WRITE_ON_DATABASE_WHITELIST;
+  private final AccessControlType accessControlType =
+      AccessControlType.READ_AND_WRITE_ON_DATABASE_WHITELIST;
   private final String databasePrefix = "primary_";
 
   public PrimaryMetaStoreTest() {
@@ -48,7 +47,9 @@ public class PrimaryMetaStoreTest extends AbstractMetaStoreTest<PrimaryMetaStore
 
     // override
     metaStore.setAccessControlType(AccessControlType.READ_AND_WRITE_ON_DATABASE_WHITELIST);
-    assertThat(metaStore.getAccessControlType(), is(AccessControlType.READ_AND_WRITE_ON_DATABASE_WHITELIST));
+    assertThat(
+        metaStore.getAccessControlType(),
+        is(AccessControlType.READ_AND_WRITE_ON_DATABASE_WHITELIST));
   }
 
   @Test
@@ -90,7 +91,8 @@ public class PrimaryMetaStoreTest extends AbstractMetaStoreTest<PrimaryMetaStore
 
   @Test
   public void toJson() throws Exception {
-    String expected = "{\"accessControlType\":\"READ_ONLY\",\"configurationProperties\":{},\"connectionType\":\"DIRECT\",\"databaseNameMapping\":{},\"databasePrefix\":\"\",\"federationType\":\"PRIMARY\",\"glueConfig\":null,\"hiveMetastoreFilterHook\":null,\"impersonationEnabled\":false,\"latency\":0,\"mappedDatabases\":null,\"mappedTables\":null,\"metastoreTunnel\":null,\"name\":\"name\",\"readOnlyGlueConfig\":null,\"readOnlyRemoteMetaStoreUris\":null,\"remoteMetaStoreUris\":\"uri\",\"status\":\"UNKNOWN\",\"writableDatabaseWhiteList\":[]}";
+    String expected =
+        "{\"accessControlType\":\"READ_ONLY\",\"configurationProperties\":{},\"connectionType\":\"DIRECT\",\"databaseNameMapping\":{},\"databasePrefix\":\"\",\"federationType\":\"PRIMARY\",\"glueConfig\":null,\"hiveMetastoreFilterHook\":null,\"impersonationEnabled\":false,\"latency\":0,\"mappedDatabases\":null,\"mappedTables\":null,\"metastoreTunnel\":null,\"name\":\"name\",\"readOnlyGlueConfig\":null,\"readOnlyRemoteMetaStoreUris\":null,\"remoteMetaStoreUris\":\"uri\",\"status\":\"UNKNOWN\",\"writableDatabaseWhiteList\":[]}";
     ObjectMapper mapper = new ObjectMapper();
     // Sorting to get deterministic test behaviour
     mapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
@@ -102,8 +104,9 @@ public class PrimaryMetaStoreTest extends AbstractMetaStoreTest<PrimaryMetaStore
   public void nonEmptyConstructor() {
     whitelist.add("databaseOne");
     whitelist.add("databaseTwo");
-    PrimaryMetaStore store = new PrimaryMetaStore(name, remoteMetaStoreUris, accessControlType, whitelist.get(0),
-        whitelist.get(1));
+    PrimaryMetaStore store =
+        new PrimaryMetaStore(
+            name, remoteMetaStoreUris, accessControlType, whitelist.get(0), whitelist.get(1));
     assertThat(store.getName(), is(name));
     assertThat(store.getRemoteMetaStoreUris(), is(remoteMetaStoreUris));
     assertThat(store.getAccessControlType(), is(accessControlType));
@@ -114,7 +117,8 @@ public class PrimaryMetaStoreTest extends AbstractMetaStoreTest<PrimaryMetaStore
   public void constructorWithArrayListForWhitelist() {
     whitelist.add("databaseOne");
     whitelist.add("databaseTwo");
-    PrimaryMetaStore store = new PrimaryMetaStore(name, remoteMetaStoreUris, accessControlType, whitelist);
+    PrimaryMetaStore store =
+        new PrimaryMetaStore(name, remoteMetaStoreUris, accessControlType, whitelist);
     assertThat(store.getName(), is(name));
     assertThat(store.getRemoteMetaStoreUris(), is(remoteMetaStoreUris));
     assertThat(store.getAccessControlType(), is(accessControlType));
@@ -125,7 +129,13 @@ public class PrimaryMetaStoreTest extends AbstractMetaStoreTest<PrimaryMetaStore
   public void nonEmptyPrefixConstructor() {
     whitelist.add("databaseOne");
     whitelist.add("databaseTwo");
-    PrimaryMetaStore store = new PrimaryMetaStore(name, remoteMetaStoreUris, databasePrefix, accessControlType, whitelist.get(0),
+    PrimaryMetaStore store =
+        new PrimaryMetaStore(
+            name,
+            remoteMetaStoreUris,
+            databasePrefix,
+            accessControlType,
+            whitelist.get(0),
             whitelist.get(1));
     assertThat(store.getName(), is(name));
     assertThat(store.getRemoteMetaStoreUris(), is(remoteMetaStoreUris));
@@ -138,12 +148,13 @@ public class PrimaryMetaStoreTest extends AbstractMetaStoreTest<PrimaryMetaStore
   public void constructorWithPrefixArrayListForWhitelist() {
     whitelist.add("databaseOne");
     whitelist.add("databaseTwo");
-    PrimaryMetaStore store = new PrimaryMetaStore(name, remoteMetaStoreUris, databasePrefix, accessControlType, whitelist);
+    PrimaryMetaStore store =
+        new PrimaryMetaStore(
+            name, remoteMetaStoreUris, databasePrefix, accessControlType, whitelist);
     assertThat(store.getName(), is(name));
     assertThat(store.getRemoteMetaStoreUris(), is(remoteMetaStoreUris));
     assertThat(store.getDatabasePrefix(), is(databasePrefix));
     assertThat(store.getAccessControlType(), is(accessControlType));
     assertThat(store.getWritableDatabaseWhiteList(), is(whitelist));
   }
-
 }

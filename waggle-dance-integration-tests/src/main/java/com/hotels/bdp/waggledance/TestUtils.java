@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2024 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance;
@@ -35,18 +33,19 @@ public final class TestUtils {
 
   private TestUtils() {}
 
-  public static final List<FieldSchema> DATA_COLUMNS = Arrays.asList(new FieldSchema("id", "bigint", ""),
-      new FieldSchema("name", "string", ""), new FieldSchema("city", "tinyint", ""));
+  public static final List<FieldSchema> DATA_COLUMNS =
+      Arrays.asList(
+          new FieldSchema("id", "bigint", ""),
+          new FieldSchema("name", "string", ""),
+          new FieldSchema("city", "tinyint", ""));
 
-  public static final List<FieldSchema> PARTITION_COLUMNS = Arrays.asList(new FieldSchema("continent", "string", ""),
-      new FieldSchema("country", "string", ""));
+  public static final List<FieldSchema> PARTITION_COLUMNS =
+      Arrays.asList(
+          new FieldSchema("continent", "string", ""), new FieldSchema("country", "string", ""));
 
   static Table createUnpartitionedTable(
-      HiveMetaStoreClient metaStoreClient,
-      String database,
-      String table,
-      File location)
-    throws TException {
+      HiveMetaStoreClient metaStoreClient, String database, String table, File location)
+      throws TException {
     Table hiveTable = new Table();
     hiveTable.setDbName(database);
     hiveTable.setTableName(table);
@@ -66,8 +65,9 @@ public final class TestUtils {
     return hiveTable;
   }
 
-  static Table createPartitionedTable(HiveMetaStoreClient metaStoreClient, String database, String table, File location)
-    throws Exception {
+  static Table createPartitionedTable(
+      HiveMetaStoreClient metaStoreClient, String database, String table, File location)
+      throws Exception {
 
     Table hiveTable = new Table();
     hiveTable.setDbName(database);

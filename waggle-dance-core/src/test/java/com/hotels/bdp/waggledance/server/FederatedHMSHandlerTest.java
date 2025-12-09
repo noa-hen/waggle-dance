@@ -1,31 +1,27 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 /**
  * Copyright (C) 2016-2024 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.server;
@@ -249,12 +245,12 @@ import com.hotels.bdp.waggledance.mapping.service.impl.NotifyingFederationServic
 @RunWith(MockitoJUnitRunner.class)
 public class FederatedHMSHandlerTest {
 
-  private final static String DB_P = "db_primary";
-  private final static String DB_S = "db_second";
-  private final static String TBL_1 = "table1";
-  private final static String CAT_1 = "cat1";
-  private final static String CAT_2 = "cat2";
-  private final static String SCH_1 = "sch1";
+  private static final String DB_P = "db_primary";
+  private static final String DB_S = "db_second";
+  private static final String TBL_1 = "table1";
+  private static final String CAT_1 = "cat1";
+  private static final String CAT_2 = "cat2";
+  private static final String SCH_1 = "sch1";
 
   private @Mock MappingEventListener databaseMappingService;
   private @Mock NotifyingFederationService notifyingFederationService;
@@ -268,12 +264,18 @@ public class FederatedHMSHandlerTest {
 
   @Before
   public void setUp() throws NoSuchObjectException {
-    handler = new FederatedHMSHandler(databaseMappingService, notifyingFederationService,
-        waggleDanceConfiguration, saslServerWrapper);
+    handler =
+        new FederatedHMSHandler(
+            databaseMappingService,
+            notifyingFederationService,
+            waggleDanceConfiguration,
+            saslServerWrapper);
     when(databaseMappingService.primaryDatabaseMapping()).thenReturn(primaryMapping);
-    when(databaseMappingService.getAvailableDatabaseMappings()).thenReturn(Collections.singletonList(primaryMapping));
+    when(databaseMappingService.getAvailableDatabaseMappings())
+        .thenReturn(Collections.singletonList(primaryMapping));
     when(primaryMapping.getClient()).thenReturn(primaryClient);
-    when(primaryMapping.getMetastoreFilter()).thenReturn(new DefaultMetaStoreFilterHookImpl(new HiveConf()));
+    when(primaryMapping.getMetastoreFilter())
+        .thenReturn(new DefaultMetaStoreFilterHookImpl(new HiveConf()));
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn(DB_P);
     when(databaseMappingService.databaseMapping(DB_P)).thenReturn(primaryMapping);
   }
@@ -451,7 +453,8 @@ public class FederatedHMSHandlerTest {
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
     handler.drop_table_with_environment_context(DB_P, "table", false, environmentContext);
     verify(primaryMapping).checkWritePermissions(DB_P);
-    verify(primaryClient).drop_table_with_environment_context("inbound", "table", false, environmentContext);
+    verify(primaryClient)
+        .drop_table_with_environment_context("inbound", "table", false, environmentContext);
   }
 
   @Test
@@ -470,7 +473,8 @@ public class FederatedHMSHandlerTest {
     List<String> tables = Lists.newArrayList("table1", "table2");
     List<String> filteredTables = Lists.newArrayList("table2");
     when(primaryClient.get_all_tables("inbound")).thenReturn(tables);
-    when(databaseMappingService.filterTables(DB_P, tables, primaryMapping)).thenReturn(filteredTables);
+    when(databaseMappingService.filterTables(DB_P, tables, primaryMapping))
+        .thenReturn(filteredTables);
     List<String> result = handler.get_all_tables(DB_P);
     assertThat(result, is(filteredTables));
   }
@@ -492,7 +496,8 @@ public class FederatedHMSHandlerTest {
     Table table = new Table();
     Table outbound = new Table();
     List<String> tables = Lists.newArrayList("table");
-    when(primaryClient.get_table_objects_by_name("inbound", tables)).thenReturn(Lists.newArrayList(table));
+    when(primaryClient.get_table_objects_by_name("inbound", tables))
+        .thenReturn(Lists.newArrayList(table));
     when(primaryMapping.transformOutboundTable(table)).thenReturn(outbound);
     when(databaseMappingService.filterTables(DB_P, tables, primaryMapping)).thenReturn(tables);
     List<Table> result = handler.get_table_objects_by_name(DB_P, tables);
@@ -532,7 +537,8 @@ public class FederatedHMSHandlerTest {
     when(primaryMapping.transformInboundTable(table)).thenReturn(inbound);
     handler.alter_table_with_environment_context(DB_P, "table", table, environmentContext);
     verify(primaryMapping, times(2)).checkWritePermissions(DB_P);
-    verify(primaryClient).alter_table_with_environment_context("inbound", "table", inbound, environmentContext);
+    verify(primaryClient)
+        .alter_table_with_environment_context("inbound", "table", inbound, environmentContext);
   }
 
   @Test
@@ -557,9 +563,11 @@ public class FederatedHMSHandlerTest {
     Partition inbound = new Partition();
     Partition outbound = new Partition();
     when(primaryMapping.transformInboundPartition(newPartition)).thenReturn(inbound);
-    when(primaryClient.add_partition_with_environment_context(inbound, environmentContext)).thenReturn(inbound);
+    when(primaryClient.add_partition_with_environment_context(inbound, environmentContext))
+        .thenReturn(inbound);
     when(primaryMapping.transformOutboundPartition(inbound)).thenReturn(outbound);
-    Partition result = handler.add_partition_with_environment_context(newPartition, environmentContext);
+    Partition result =
+        handler.add_partition_with_environment_context(newPartition, environmentContext);
     assertThat(result, is(outbound));
     verify(primaryMapping).checkWritePermissions(DB_P);
   }
@@ -586,7 +594,8 @@ public class FederatedHMSHandlerTest {
     PartitionSpec newPartitionPspec2 = new PartitionSpec();
     newPartitionPspec2.setDbName(DB_P);
     List<PartitionSpec> inbound = Lists.newArrayList(new PartitionSpec());
-    List<PartitionSpec> partitionsPspec = Lists.newArrayList(newPartitionPSpec1, newPartitionPspec2);
+    List<PartitionSpec> partitionsPspec =
+        Lists.newArrayList(newPartitionPSpec1, newPartitionPspec2);
     when(primaryMapping.transformInboundPartitionSpecs(partitionsPspec)).thenReturn(inbound);
     when(primaryClient.add_partitions_pspec(inbound)).thenReturn(2);
     int result = handler.add_partitions_pspec(partitionsPspec);
@@ -622,7 +631,8 @@ public class FederatedHMSHandlerTest {
     AddPartitionsResult outbound = new AddPartitionsResult();
     when(primaryMapping.transformInboundAddPartitionsRequest(request)).thenReturn(inbound);
     when(primaryClient.add_partitions_req(inbound)).thenReturn(addPartitionResult);
-    when(primaryMapping.transformOutboundAddPartitionsResult(addPartitionResult)).thenReturn(outbound);
+    when(primaryMapping.transformOutboundAddPartitionsResult(addPartitionResult))
+        .thenReturn(outbound);
 
     AddPartitionsResult result = handler.add_partitions_req(request);
     assertThat(result, is(outbound));
@@ -636,10 +646,13 @@ public class FederatedHMSHandlerTest {
     Partition outbound = new Partition();
     List<String> partVals = Lists.newArrayList();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.append_partition_with_environment_context("inbound", "table1", partVals, environmentContext))
+    when(primaryClient.append_partition_with_environment_context(
+            "inbound", "table1", partVals, environmentContext))
         .thenReturn(inbound);
     when(primaryMapping.transformOutboundPartition(inbound)).thenReturn(outbound);
-    Partition result = handler.append_partition_with_environment_context(DB_P, "table1", partVals, environmentContext);
+    Partition result =
+        handler.append_partition_with_environment_context(
+            DB_P, "table1", partVals, environmentContext);
     assertThat(result, is(outbound));
     verify(primaryMapping).checkWritePermissions(DB_P);
   }
@@ -649,7 +662,8 @@ public class FederatedHMSHandlerTest {
     Partition inbound = new Partition();
     Partition outbound = new Partition();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.append_partition_by_name("inbound", "table1", "partName")).thenReturn(inbound);
+    when(primaryClient.append_partition_by_name("inbound", "table1", "partName"))
+        .thenReturn(inbound);
     when(primaryMapping.transformOutboundPartition(inbound)).thenReturn(outbound);
     Partition result = handler.append_partition_by_name(DB_P, "table1", "partName");
     assertThat(result, is(outbound));
@@ -662,12 +676,13 @@ public class FederatedHMSHandlerTest {
     Partition inbound = new Partition();
     Partition outbound = new Partition();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient
-        .append_partition_by_name_with_environment_context("inbound", "table1", "partName", environmentContext))
-            .thenReturn(inbound);
+    when(primaryClient.append_partition_by_name_with_environment_context(
+            "inbound", "table1", "partName", environmentContext))
+        .thenReturn(inbound);
     when(primaryMapping.transformOutboundPartition(inbound)).thenReturn(outbound);
-    Partition result = handler
-        .append_partition_by_name_with_environment_context(DB_P, "table1", "partName", environmentContext);
+    Partition result =
+        handler.append_partition_by_name_with_environment_context(
+            DB_P, "table1", "partName", environmentContext);
     assertThat(result, is(outbound));
     verify(primaryMapping).checkWritePermissions(DB_P);
   }
@@ -687,11 +702,12 @@ public class FederatedHMSHandlerTest {
     EnvironmentContext environmentContext = new EnvironmentContext();
     List<String> partVals = Lists.newArrayList();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(
-        primaryClient.drop_partition_with_environment_context("inbound", "table1", partVals, false, environmentContext))
-            .thenReturn(true);
-    boolean result = handler
-        .drop_partition_with_environment_context(DB_P, "table1", partVals, false, environmentContext);
+    when(primaryClient.drop_partition_with_environment_context(
+            "inbound", "table1", partVals, false, environmentContext))
+        .thenReturn(true);
+    boolean result =
+        handler.drop_partition_with_environment_context(
+            DB_P, "table1", partVals, false, environmentContext);
     assertThat(result, is(true));
     verify(primaryMapping).checkWritePermissions(DB_P);
   }
@@ -699,7 +715,8 @@ public class FederatedHMSHandlerTest {
   @Test
   public void drop_partition_by_name() throws TException {
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.drop_partition_by_name("inbound", "table1", "partName", false)).thenReturn(true);
+    when(primaryClient.drop_partition_by_name("inbound", "table1", "partName", false))
+        .thenReturn(true);
     boolean result = handler.drop_partition_by_name(DB_P, "table1", "partName", false);
     assertThat(result, is(true));
     verify(primaryMapping).checkWritePermissions(DB_P);
@@ -709,11 +726,12 @@ public class FederatedHMSHandlerTest {
   public void drop_partition_by_name_with_environment_context() throws TException {
     EnvironmentContext environmentContext = new EnvironmentContext();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient
-        .drop_partition_by_name_with_environment_context("inbound", "table1", "partName", false, environmentContext))
-            .thenReturn(true);
-    boolean result = handler
-        .drop_partition_by_name_with_environment_context(DB_P, "table1", "partName", false, environmentContext);
+    when(primaryClient.drop_partition_by_name_with_environment_context(
+            "inbound", "table1", "partName", false, environmentContext))
+        .thenReturn(true);
+    boolean result =
+        handler.drop_partition_by_name_with_environment_context(
+            DB_P, "table1", "partName", false, environmentContext);
     assertThat(result, is(true));
     verify(primaryMapping).checkWritePermissions(DB_P);
   }
@@ -727,7 +745,8 @@ public class FederatedHMSHandlerTest {
     DropPartitionsResult outbound = new DropPartitionsResult();
     when(primaryMapping.transformInboundDropPartitionRequest(req)).thenReturn(inbound);
     when(primaryClient.drop_partitions_req(inbound)).thenReturn(dropPartitionResult);
-    when(primaryMapping.transformOutboundDropPartitionsResult(dropPartitionResult)).thenReturn(outbound);
+    when(primaryMapping.transformOutboundDropPartitionsResult(dropPartitionResult))
+        .thenReturn(outbound);
     DropPartitionsResult result = handler.drop_partitions_req(req);
     assertThat(result, is(outbound));
     verify(primaryMapping).checkWritePermissions(DB_P);
@@ -770,7 +789,8 @@ public class FederatedHMSHandlerTest {
     when(primaryClient.get_partition_with_auth("inbound", "table1", partVals, "user", groupNames))
         .thenReturn(partition);
     when(primaryMapping.transformOutboundPartition(partition)).thenReturn(outbound);
-    Partition result = handler.get_partition_with_auth(DB_P, "table1", partVals, "user", groupNames);
+    Partition result =
+        handler.get_partition_with_auth(DB_P, "table1", partVals, "user", groupNames);
     assertThat(result, is(outbound));
     verify(primaryMapping, never()).checkWritePermissions(DB_P);
   }
@@ -780,7 +800,8 @@ public class FederatedHMSHandlerTest {
     Partition partition = new Partition();
     Partition outbound = new Partition();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.get_partition_by_name("inbound", "table1", "partName")).thenReturn(partition);
+    when(primaryClient.get_partition_by_name("inbound", "table1", "partName"))
+        .thenReturn(partition);
     when(primaryMapping.transformOutboundPartition(partition)).thenReturn(outbound);
     Partition result = handler.get_partition_by_name(DB_P, "table1", "partName");
     assertThat(result, is(outbound));
@@ -808,7 +829,8 @@ public class FederatedHMSHandlerTest {
     when(primaryClient.get_partitions_with_auth("inbound", "table", (short) 10, "user", groupNames))
         .thenReturn(partitions);
     when(primaryMapping.transformOutboundPartitions(partitions)).thenReturn(outbound);
-    List<Partition> result = handler.get_partitions_with_auth(DB_P, "table", (short) 10, "user", groupNames);
+    List<Partition> result =
+        handler.get_partitions_with_auth(DB_P, "table", (short) 10, "user", groupNames);
     assertThat(result, is(outbound));
     verify(primaryMapping, never()).checkWritePermissions(DB_P);
   }
@@ -818,7 +840,8 @@ public class FederatedHMSHandlerTest {
     List<PartitionSpec> partitionSpecs = Lists.newArrayList();
     List<PartitionSpec> outbound = Lists.newArrayList();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.get_partitions_pspec("inbound", "table", (short) 10)).thenReturn(partitionSpecs);
+    when(primaryClient.get_partitions_pspec("inbound", "table", (short) 10))
+        .thenReturn(partitionSpecs);
     when(primaryMapping.transformOutboundPartitionSpecs(partitionSpecs)).thenReturn(outbound);
     List<PartitionSpec> result = handler.get_partitions_pspec(DB_P, "table", (short) 10);
     assertThat(result, is(outbound));
@@ -841,7 +864,8 @@ public class FederatedHMSHandlerTest {
     List<Partition> outbound = Lists.newArrayList();
     List<String> partVals = Lists.newArrayList();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.get_partitions_ps("inbound", "table", partVals, (short) 10)).thenReturn(partitions);
+    when(primaryClient.get_partitions_ps("inbound", "table", partVals, (short) 10))
+        .thenReturn(partitions);
     when(primaryMapping.transformOutboundPartitions(partitions)).thenReturn(outbound);
     List<Partition> result = handler.get_partitions_ps(DB_P, "table", partVals, (short) 10);
     assertThat(result, is(outbound));
@@ -856,11 +880,13 @@ public class FederatedHMSHandlerTest {
     List<String> groupNames = new ArrayList<>();
 
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.get_partitions_ps_with_auth("inbound", "table", partVals, (short) 10, "user", groupNames))
+    when(primaryClient.get_partitions_ps_with_auth(
+            "inbound", "table", partVals, (short) 10, "user", groupNames))
         .thenReturn(partitions);
     when(primaryMapping.transformOutboundPartitions(partitions)).thenReturn(outbound);
-    List<Partition> result = handler
-        .get_partitions_ps_with_auth(DB_P, "table", partVals, (short) 10, "user", groupNames);
+    List<Partition> result =
+        handler.get_partitions_ps_with_auth(
+            DB_P, "table", partVals, (short) 10, "user", groupNames);
     assertThat(result, is(outbound));
     verify(primaryMapping, never()).checkWritePermissions(DB_P);
   }
@@ -871,7 +897,8 @@ public class FederatedHMSHandlerTest {
     List<String> outbound = Lists.newArrayList();
     List<String> partVals = Lists.newArrayList();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.get_partition_names_ps("inbound", "table", partVals, (short) 10)).thenReturn(partitions);
+    when(primaryClient.get_partition_names_ps("inbound", "table", partVals, (short) 10))
+        .thenReturn(partitions);
     List<String> result = handler.get_partition_names_ps(DB_P, "table", partVals, (short) 10);
     assertThat(result, is(outbound));
     verify(primaryMapping, never()).checkWritePermissions(DB_P);
@@ -882,7 +909,8 @@ public class FederatedHMSHandlerTest {
     List<Partition> partitions = Lists.newArrayList();
     List<Partition> outbound = Lists.newArrayList();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.get_partitions_by_filter("inbound", "table", "*", (short) 10)).thenReturn(partitions);
+    when(primaryClient.get_partitions_by_filter("inbound", "table", "*", (short) 10))
+        .thenReturn(partitions);
     when(primaryMapping.transformOutboundPartitions(partitions)).thenReturn(outbound);
     List<Partition> result = handler.get_partitions_by_filter(DB_P, "table", "*", (short) 10);
     assertThat(result, is(outbound));
@@ -894,7 +922,8 @@ public class FederatedHMSHandlerTest {
     List<PartitionSpec> partitionSpecs = Lists.newArrayList();
     List<PartitionSpec> outbound = Lists.newArrayList();
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn("inbound");
-    when(primaryClient.get_part_specs_by_filter("inbound", "table", "*", (short) 10)).thenReturn(partitionSpecs);
+    when(primaryClient.get_part_specs_by_filter("inbound", "table", "*", (short) 10))
+        .thenReturn(partitionSpecs);
     when(primaryMapping.transformOutboundPartitionSpecs(partitionSpecs)).thenReturn(outbound);
     List<PartitionSpec> result = handler.get_part_specs_by_filter(DB_P, "table", "*", (short) 10);
     assertThat(result, is(outbound));
@@ -910,7 +939,8 @@ public class FederatedHMSHandlerTest {
     PartitionsByExprResult outbound = new PartitionsByExprResult();
     when(primaryMapping.transformInboundPartitionsByExprRequest(req)).thenReturn(inbound);
     when(primaryClient.get_partitions_by_expr(inbound)).thenReturn(partitionResult);
-    when(primaryMapping.transformOutboundPartitionsByExprResult(partitionResult)).thenReturn(outbound);
+    when(primaryMapping.transformOutboundPartitionsByExprResult(partitionResult))
+        .thenReturn(outbound);
     PartitionsByExprResult result = handler.get_partitions_by_expr(req);
     assertThat(result, is(outbound));
     verify(primaryMapping, never()).checkWritePermissions(DB_P);
@@ -963,7 +993,8 @@ public class FederatedHMSHandlerTest {
   public void set_ugi() throws TException {
     PanopticOperationHandler panopticHandler = Mockito.mock(PanopticOperationHandler.class);
     when(databaseMappingService.getPanopticOperationHandler()).thenReturn(panopticHandler);
-    when(databaseMappingService.getAllDatabaseMappings()).thenReturn(Collections.singletonList(primaryMapping));
+    when(databaseMappingService.getAllDatabaseMappings())
+        .thenReturn(Collections.singletonList(primaryMapping));
     String user_name = "user";
     List<String> group_names = Lists.newArrayList("group");
     when(panopticHandler.setUgi(user_name, group_names, Collections.singletonList(primaryMapping)))
@@ -979,7 +1010,8 @@ public class FederatedHMSHandlerTest {
     List<String> tables = Arrays.asList("tbl0", "tbl1");
     when(primaryClient.get_tables_by_type(DB_P, "tbl*", "EXTERNAL_TABLE")).thenReturn(tables);
     when(databaseMappingService.filterTables(DB_P, tables, primaryMapping)).thenReturn(tables);
-    List<String> tablesResult = handler.get_tables_by_type(DB_P, "tbl*", TableType.EXTERNAL_TABLE.name());
+    List<String> tablesResult =
+        handler.get_tables_by_type(DB_P, "tbl*", TableType.EXTERNAL_TABLE.name());
     verify(primaryClient).get_tables_by_type(DB_P, "tbl*", "EXTERNAL_TABLE");
     assertThat(tablesResult.size(), is(2));
     assertThat(tablesResult.get(0), is("tbl0"));
@@ -1035,7 +1067,8 @@ public class FederatedHMSHandlerTest {
     key.setFktable_name("table");
     ForeignKeysResponse response = new ForeignKeysResponse(Collections.singletonList(key));
 
-    when(databaseMappingService.databaseMapping(request.getForeign_db_name())).thenReturn(primaryMapping);
+    when(databaseMappingService.databaseMapping(request.getForeign_db_name()))
+        .thenReturn(primaryMapping);
     when(primaryMapping.transformInboundForeignKeysRequest(request)).thenReturn(request);
     when(primaryClient.get_foreign_keys(request)).thenReturn(response);
     response.getForeignKeys().get(0).setFktable_db(DB_P);
@@ -1065,7 +1098,8 @@ public class FederatedHMSHandlerTest {
     when(databaseMappingService.databaseMapping(DB_P)).thenReturn(primaryMapping);
     when(primaryMapping.transformInboundHiveObjectRef(hiveObjectRef)).thenReturn(hiveObjectRef);
     PrincipalPrivilegeSet principalPrivilegeSet = new PrincipalPrivilegeSet();
-    when(primaryClient.get_privilege_set(hiveObjectRef, userName, groupNames)).thenReturn(principalPrivilegeSet);
+    when(primaryClient.get_privilege_set(hiveObjectRef, userName, groupNames))
+        .thenReturn(principalPrivilegeSet);
     PrincipalPrivilegeSet result = handler.get_privilege_set(hiveObjectRef, userName, groupNames);
     assertThat(result, is(principalPrivilegeSet));
   }
@@ -1078,7 +1112,8 @@ public class FederatedHMSHandlerTest {
     hiveObjectRef.setDbName(null);
     when(primaryMapping.transformInboundHiveObjectRef(hiveObjectRef)).thenReturn(hiveObjectRef);
     PrincipalPrivilegeSet principalPrivilegeSet = new PrincipalPrivilegeSet();
-    when(primaryClient.get_privilege_set(hiveObjectRef, userName, groupNames)).thenReturn(principalPrivilegeSet);
+    when(primaryClient.get_privilege_set(hiveObjectRef, userName, groupNames))
+        .thenReturn(principalPrivilegeSet);
     PrincipalPrivilegeSet result = handler.get_privilege_set(hiveObjectRef, userName, groupNames);
     assertThat(result, is(principalPrivilegeSet));
     verify(databaseMappingService, never()).databaseMapping(DB_P);
@@ -1116,9 +1151,11 @@ public class FederatedHMSHandlerTest {
     newPartition.setDbName(DB_P);
     Partition inbound = new Partition();
     when(primaryMapping.transformInboundPartition(newPartition)).thenReturn(inbound);
-    handler.alter_partition_with_environment_context(DB_P, "table", newPartition, environmentContext);
+    handler.alter_partition_with_environment_context(
+        DB_P, "table", newPartition, environmentContext);
     verify(primaryMapping, times(2)).checkWritePermissions(DB_P);
-    verify(primaryClient).alter_partition_with_environment_context(DB_P, "table", inbound, environmentContext);
+    verify(primaryClient)
+        .alter_partition_with_environment_context(DB_P, "table", inbound, environmentContext);
   }
 
   @Test
@@ -1175,8 +1212,11 @@ public class FederatedHMSHandlerTest {
   public void isPartitionMarkedForEvent() throws TException {
     Map<String, String> partitionValues = new HashMap<>();
     PartitionEventType partitionEventType = PartitionEventType.findByValue(1);
-    when(primaryClient.isPartitionMarkedForEvent(DB_P, "table", partitionValues, partitionEventType)).thenReturn(true);
-    boolean result = handler.isPartitionMarkedForEvent(DB_P, "table", partitionValues, partitionEventType);
+    when(primaryClient.isPartitionMarkedForEvent(
+            DB_P, "table", partitionValues, partitionEventType))
+        .thenReturn(true);
+    boolean result =
+        handler.isPartitionMarkedForEvent(DB_P, "table", partitionValues, partitionEventType);
     assertThat(result, is(true));
   }
 
@@ -1210,7 +1250,8 @@ public class FederatedHMSHandlerTest {
     alterISchemaRequest.setName(oldISchema);
     alterISchemaRequest.setNewSchema(newISchema);
 
-    when(primaryMapping.transformInboundAlterISchemaRequest(alterISchemaRequest)).thenReturn(new AlterISchemaRequest());
+    when(primaryMapping.transformInboundAlterISchemaRequest(alterISchemaRequest))
+        .thenReturn(new AlterISchemaRequest());
 
     handler.alter_ischema(alterISchemaRequest);
     verify(primaryMapping, times(2)).checkWritePermissions(DB_P);
@@ -1263,9 +1304,11 @@ public class FederatedHMSHandlerTest {
   @Test
   public void update_table_column_statistics() throws TException {
     ColumnStatisticsDesc columnStatisticsDesc = new ColumnStatisticsDesc(true, DB_P, "table");
-    ColumnStatistics columnStatistics = new ColumnStatistics(columnStatisticsDesc, Collections.emptyList());
+    ColumnStatistics columnStatistics =
+        new ColumnStatistics(columnStatisticsDesc, Collections.emptyList());
     ColumnStatistics inboundColumnStatistics = new ColumnStatistics();
-    when(primaryMapping.transformInboundColumnStatistics(columnStatistics)).thenReturn(inboundColumnStatistics);
+    when(primaryMapping.transformInboundColumnStatistics(columnStatistics))
+        .thenReturn(inboundColumnStatistics);
     when(primaryClient.update_table_column_statistics(inboundColumnStatistics)).thenReturn(true);
     boolean result = handler.update_table_column_statistics(columnStatistics);
     verify(primaryMapping).checkWritePermissions(DB_P);
@@ -1275,10 +1318,13 @@ public class FederatedHMSHandlerTest {
   @Test
   public void update_partition_column_statistics() throws TException {
     ColumnStatisticsDesc columnStatisticsDesc = new ColumnStatisticsDesc(true, DB_P, "table");
-    ColumnStatistics columnStatistics = new ColumnStatistics(columnStatisticsDesc, Collections.emptyList());
+    ColumnStatistics columnStatistics =
+        new ColumnStatistics(columnStatisticsDesc, Collections.emptyList());
     ColumnStatistics inboundColumnStatistics = new ColumnStatistics();
-    when(primaryMapping.transformInboundColumnStatistics(columnStatistics)).thenReturn(inboundColumnStatistics);
-    when(primaryClient.update_partition_column_statistics(inboundColumnStatistics)).thenReturn(true);
+    when(primaryMapping.transformInboundColumnStatistics(columnStatistics))
+        .thenReturn(inboundColumnStatistics);
+    when(primaryClient.update_partition_column_statistics(inboundColumnStatistics))
+        .thenReturn(true);
     boolean result = handler.update_partition_column_statistics(columnStatistics);
     verify(primaryMapping).checkWritePermissions(DB_P);
     assertThat(result, is(true));
@@ -1288,8 +1334,10 @@ public class FederatedHMSHandlerTest {
   public void get_table_column_statistics() throws TException {
     ColumnStatistics columnStatistics = new ColumnStatistics();
     ColumnStatistics outboundColumnStatistics = new ColumnStatistics();
-    when(primaryClient.get_table_column_statistics(DB_P, "table", "columnName")).thenReturn(columnStatistics);
-    when(primaryMapping.transformOutboundColumnStatistics(columnStatistics)).thenReturn(outboundColumnStatistics);
+    when(primaryClient.get_table_column_statistics(DB_P, "table", "columnName"))
+        .thenReturn(columnStatistics);
+    when(primaryMapping.transformOutboundColumnStatistics(columnStatistics))
+        .thenReturn(outboundColumnStatistics);
     ColumnStatistics result = handler.get_table_column_statistics(DB_P, "table", "columnName");
     assertThat(result, is(outboundColumnStatistics));
   }
@@ -1298,19 +1346,24 @@ public class FederatedHMSHandlerTest {
   public void get_partition_column_statistics() throws TException {
     ColumnStatistics columnStatistics = new ColumnStatistics();
     ColumnStatistics outboundColumnStatistics = new ColumnStatistics();
-    when(primaryClient.get_partition_column_statistics(DB_P, "table", "partitionName", "columnName"))
+    when(primaryClient.get_partition_column_statistics(
+            DB_P, "table", "partitionName", "columnName"))
         .thenReturn(columnStatistics);
-    when(primaryMapping.transformOutboundColumnStatistics(columnStatistics)).thenReturn(outboundColumnStatistics);
-    ColumnStatistics result = handler.get_partition_column_statistics(DB_P, "table", "partitionName", "columnName");
+    when(primaryMapping.transformOutboundColumnStatistics(columnStatistics))
+        .thenReturn(outboundColumnStatistics);
+    ColumnStatistics result =
+        handler.get_partition_column_statistics(DB_P, "table", "partitionName", "columnName");
     assertThat(result, is(outboundColumnStatistics));
   }
 
   @Test
   public void get_table_statistics_req() throws TException {
-    TableStatsRequest tableStatsRequest = new TableStatsRequest(DB_P, "table", Collections.emptyList());
+    TableStatsRequest tableStatsRequest =
+        new TableStatsRequest(DB_P, "table", Collections.emptyList());
     TableStatsRequest inboundTableStatsRequest = new TableStatsRequest();
     TableStatsResult expected = new TableStatsResult();
-    when(primaryMapping.transformInboundTableStatsRequest(tableStatsRequest)).thenReturn(inboundTableStatsRequest);
+    when(primaryMapping.transformInboundTableStatsRequest(tableStatsRequest))
+        .thenReturn(inboundTableStatsRequest);
     when(primaryClient.get_table_statistics_req(inboundTableStatsRequest)).thenReturn(expected);
     TableStatsResult result = handler.get_table_statistics_req(tableStatsRequest);
     assertThat(result, is(expected));
@@ -1318,8 +1371,8 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void get_partitions_statistics_req() throws TException {
-    PartitionsStatsRequest request = new PartitionsStatsRequest(DB_P, "table", Collections.emptyList(),
-        Collections.emptyList());
+    PartitionsStatsRequest request =
+        new PartitionsStatsRequest(DB_P, "table", Collections.emptyList(), Collections.emptyList());
     PartitionsStatsRequest inboundRequest = new PartitionsStatsRequest();
     PartitionsStatsResult expected = new PartitionsStatsResult();
     when(primaryMapping.transformInboundPartitionsStatsRequest(request)).thenReturn(inboundRequest);
@@ -1330,8 +1383,8 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void get_aggr_stats_for() throws TException {
-    PartitionsStatsRequest request = new PartitionsStatsRequest(DB_P, "table", Collections.emptyList(),
-        Collections.emptyList());
+    PartitionsStatsRequest request =
+        new PartitionsStatsRequest(DB_P, "table", Collections.emptyList(), Collections.emptyList());
     PartitionsStatsRequest inboundRequest = new PartitionsStatsRequest();
     AggrStats expected = new AggrStats();
     when(primaryMapping.transformInboundPartitionsStatsRequest(request)).thenReturn(inboundRequest);
@@ -1347,7 +1400,8 @@ public class FederatedHMSHandlerTest {
     List<ColumnStatistics> colStats = Collections.singletonList(colStatistics);
     SetPartitionsStatsRequest request = new SetPartitionsStatsRequest(colStats);
     SetPartitionsStatsRequest inboundRequest = new SetPartitionsStatsRequest();
-    when(primaryMapping.transformInboundSetPartitionStatsRequest(request)).thenReturn(inboundRequest);
+    when(primaryMapping.transformInboundSetPartitionStatsRequest(request))
+        .thenReturn(inboundRequest);
     when(primaryClient.set_aggr_stats_for(inboundRequest)).thenReturn(true);
     boolean result = handler.set_aggr_stats_for(request);
     assertThat(result, is(true));
@@ -1355,8 +1409,10 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void delete_partition_column_statistics() throws TException {
-    when(primaryClient.delete_partition_column_statistics(DB_P, "table", "partition", "column")).thenReturn(true);
-    boolean result = handler.delete_partition_column_statistics(DB_P, "table", "partition", "column");
+    when(primaryClient.delete_partition_column_statistics(DB_P, "table", "partition", "column"))
+        .thenReturn(true);
+    boolean result =
+        handler.delete_partition_column_statistics(DB_P, "table", "partition", "column");
     assertThat(result, is(true));
     verify(primaryMapping).checkWritePermissions(DB_P);
   }
@@ -1440,7 +1496,8 @@ public class FederatedHMSHandlerTest {
   public void grant_role() throws TException {
     PrincipalType principalType = PrincipalType.findByValue(3);
     handler.grant_role("role", "principal", principalType, "grantor", principalType, true);
-    verify(primaryClient).grant_role("role", "principal", principalType, "grantor", principalType, true);
+    verify(primaryClient)
+        .grant_role("role", "principal", principalType, "grantor", principalType, true);
   }
 
   @Test
@@ -1484,7 +1541,8 @@ public class FederatedHMSHandlerTest {
     HiveObjectRef hiveObjectRef = new HiveObjectRef();
     hiveObjectRef.setDbName(DB_P);
     HiveObjectRef inboundHiveObjectRef = new HiveObjectRef();
-    when(primaryMapping.transformInboundHiveObjectRef(hiveObjectRef)).thenReturn(inboundHiveObjectRef);
+    when(primaryMapping.transformInboundHiveObjectRef(hiveObjectRef))
+        .thenReturn(inboundHiveObjectRef);
     handler.list_privileges("name", principalType, hiveObjectRef);
     verify(primaryClient).list_privileges("name", principalType, inboundHiveObjectRef);
   }
@@ -1527,10 +1585,12 @@ public class FederatedHMSHandlerTest {
 
     GrantRevokeType grantRevokeType = GrantRevokeType.GRANT;
 
-    GrantRevokePrivilegeRequest request = new GrantRevokePrivilegeRequest(grantRevokeType, privileges);
+    GrantRevokePrivilegeRequest request =
+        new GrantRevokePrivilegeRequest(grantRevokeType, privileges);
     GrantRevokePrivilegeRequest inboundRequest = new GrantRevokePrivilegeRequest();
     GrantRevokePrivilegeResponse expected = new GrantRevokePrivilegeResponse();
-    when(primaryMapping.transformInboundGrantRevokePrivilegesRequest(request)).thenReturn(inboundRequest);
+    when(primaryMapping.transformInboundGrantRevokePrivilegesRequest(request))
+        .thenReturn(inboundRequest);
     when(primaryClient.grant_revoke_privileges(inboundRequest)).thenReturn(expected);
     GrantRevokePrivilegeResponse response = handler.grant_revoke_privileges(request);
     assertThat(response, is(expected));
@@ -1541,8 +1601,8 @@ public class FederatedHMSHandlerTest {
   public void get_delegation_token() throws TException, IOException, InterruptedException {
     String expected = "expected";
     when(saslServerWrapper.getDelegationTokenManager()).thenReturn(metastoreDelegationTokenManager);
-    when(metastoreDelegationTokenManager.getDelegationToken("owner", "kerberos_principal",
-        null)).thenReturn(expected);
+    when(metastoreDelegationTokenManager.getDelegationToken("owner", "kerberos_principal", null))
+        .thenReturn(expected);
     String result = handler.get_delegation_token("owner", "kerberos_principal");
     assertThat(result, is(expected));
   }
@@ -1605,7 +1665,8 @@ public class FederatedHMSHandlerTest {
   @Test
   public void lock() throws TException {
     LockComponent lockComponent = new LockComponent(LockType.EXCLUSIVE, LockLevel.DB, DB_P);
-    LockRequest lockRequest = new LockRequest(Collections.singletonList(lockComponent), "user", "host");
+    LockRequest lockRequest =
+        new LockRequest(Collections.singletonList(lockComponent), "user", "host");
     LockRequest inboundRequest = new LockRequest();
     LockResponse expected = new LockResponse();
     when(primaryMapping.transformInboundLockRequest(lockRequest)).thenReturn(inboundRequest);
@@ -1716,7 +1777,8 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void add_dynamic_partitions() throws TException {
-    AddDynamicPartitions request = new AddDynamicPartitions(1, 1, DB_P, "table", Collections.emptyList());
+    AddDynamicPartitions request =
+        new AddDynamicPartitions(1, 1, DB_P, "table", Collections.emptyList());
     AddDynamicPartitions inboundRequest = new AddDynamicPartitions();
     when(primaryMapping.transformInboundAddDynamicPartitions(request)).thenReturn(inboundRequest);
     handler.add_dynamic_partitions(request);
@@ -1764,7 +1826,8 @@ public class FederatedHMSHandlerTest {
     List<Partition> inbound = Lists.newArrayList(new Partition(), new Partition());
     List<Partition> partitions = Lists.newArrayList(newPartition1, newPartition2);
     when(primaryMapping.transformInboundPartitions(partitions)).thenReturn(inbound);
-    handler.alter_partitions_with_environment_context(DB_P, "table", partitions, environmentContext);
+    handler.alter_partitions_with_environment_context(
+        DB_P, "table", partitions, environmentContext);
     verify(primaryMapping, times(3)).checkWritePermissions(DB_P);
     verify(primaryClient)
         .alter_partitions_with_environment_context(DB_P, "table", inbound, environmentContext);
@@ -1787,7 +1850,8 @@ public class FederatedHMSHandlerTest {
     CacheFileMetadataRequest request = new CacheFileMetadataRequest(DB_P, "table");
     CacheFileMetadataRequest inboundRequest = new CacheFileMetadataRequest();
     CacheFileMetadataResult expected = new CacheFileMetadataResult();
-    when(primaryMapping.transformInboundCacheFileMetadataRequest(request)).thenReturn(inboundRequest);
+    when(primaryMapping.transformInboundCacheFileMetadataRequest(request))
+        .thenReturn(inboundRequest);
     when(primaryClient.cache_file_metadata(inboundRequest)).thenReturn(expected);
     CacheFileMetadataResult result = handler.cache_file_metadata(request);
     assertThat(result, is(expected));
@@ -1815,11 +1879,24 @@ public class FederatedHMSHandlerTest {
     List<SQLDefaultConstraint> defaultConstraints = Collections.emptyList();
     List<SQLCheckConstraint> checkConstraints = Collections.emptyList();
     when(primaryMapping.transformInboundTable(table)).thenReturn(inboundTable);
-    handler.create_table_with_constraints(table, primaryKeys, foreignKeys, uniqueConstraints, notNullConstraints,
-            defaultConstraints, checkConstraints);
+    handler.create_table_with_constraints(
+        table,
+        primaryKeys,
+        foreignKeys,
+        uniqueConstraints,
+        notNullConstraints,
+        defaultConstraints,
+        checkConstraints);
     verify(primaryMapping).checkWritePermissions(DB_P);
-    verify(primaryClient).create_table_with_constraints(table, primaryKeys, foreignKeys, uniqueConstraints, notNullConstraints,
-            defaultConstraints, checkConstraints);
+    verify(primaryClient)
+        .create_table_with_constraints(
+            table,
+            primaryKeys,
+            foreignKeys,
+            uniqueConstraints,
+            notNullConstraints,
+            defaultConstraints,
+            checkConstraints);
   }
 
   @Test
@@ -1841,7 +1918,8 @@ public class FederatedHMSHandlerTest {
     when(primaryMapping.transformOutboundPartitions(partitions)).thenReturn(expected);
     when(primaryClient.exchange_partitions(partitionSpecs, DB_P, "source", "dest_db", "dest_table"))
         .thenReturn(partitions);
-    List<Partition> result = handler.exchange_partitions(partitionSpecs, DB_P, "source", "dest_db", "dest_table");
+    List<Partition> result =
+        handler.exchange_partitions(partitionSpecs, DB_P, "source", "dest_db", "dest_table");
     verify(primaryMapping).checkWritePermissions(DB_P);
     verify(primaryMapping).checkWritePermissions("dest_db");
     assertThat(result, is(expected));
@@ -1876,9 +1954,10 @@ public class FederatedHMSHandlerTest {
   @Test
   public void get_fields_with_environment_context() throws TException {
     EnvironmentContext context = new EnvironmentContext();
-    List<FieldSchema> expected = Arrays
-        .asList(new FieldSchema("name1", "type1", ""), new FieldSchema("name2", "type2", ""));
-    when(primaryClient.get_fields_with_environment_context(DB_P, "table", context)).thenReturn(expected);
+    List<FieldSchema> expected =
+        Arrays.asList(new FieldSchema("name1", "type1", ""), new FieldSchema("name2", "type2", ""));
+    when(primaryClient.get_fields_with_environment_context(DB_P, "table", context))
+        .thenReturn(expected);
     List<FieldSchema> result = handler.get_fields_with_environment_context(DB_P, "table", context);
     assertThat(result, is(expected));
   }
@@ -1941,8 +2020,8 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void get_partition_values() throws TException {
-    PartitionValuesRequest request = new PartitionValuesRequest(DB_P, "table",
-        Collections.singletonList(new FieldSchema()));
+    PartitionValuesRequest request =
+        new PartitionValuesRequest(DB_P, "table", Collections.singletonList(new FieldSchema()));
     List<PartitionValuesRow> partitionValues = Collections.singletonList(new PartitionValuesRow());
     PartitionValuesResponse response = new PartitionValuesResponse(partitionValues);
     when(primaryClient.get_partition_values(request)).thenReturn(response);
@@ -1972,7 +2051,6 @@ public class FederatedHMSHandlerTest {
     handler.alter_catalog(alterCatalogRequest);
     verify(primaryClient, times(1)).alter_catalog(alterCatalogRequest);
   }
-
 
   @Test
   public void get_catalog() throws TException {
@@ -2004,7 +2082,7 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void truncate_table() throws TException {
-    List<String>partNames = Lists.newArrayList();
+    List<String> partNames = Lists.newArrayList();
     handler.truncate_table(DB_P, TBL_1, partNames);
     verify(primaryClient, times(1)).truncate_table(DB_P, TBL_1, partNames);
   }
@@ -2028,11 +2106,15 @@ public class FederatedHMSHandlerTest {
     GrantRevokePrivilegeResponse grantRevokePrivilegeResponse = new GrantRevokePrivilegeResponse();
 
     when(primaryMapping.transformInboundHiveObjectRef(hiveObjectRef)).thenReturn(hiveObjectRef);
-    when(primaryMapping.transformInboundGrantRevokePrivilegesRequest(grantRevokePrivilegeRequest)).thenReturn(grantRevokePrivilegeRequest);
-    when(primaryClient.refresh_privileges(hiveObjectRef, "dummy", grantRevokePrivilegeRequest)).thenReturn(grantRevokePrivilegeResponse);
-    GrantRevokePrivilegeResponse result = handler.refresh_privileges(hiveObjectRef, "dummy", grantRevokePrivilegeRequest);
+    when(primaryMapping.transformInboundGrantRevokePrivilegesRequest(grantRevokePrivilegeRequest))
+        .thenReturn(grantRevokePrivilegeRequest);
+    when(primaryClient.refresh_privileges(hiveObjectRef, "dummy", grantRevokePrivilegeRequest))
+        .thenReturn(grantRevokePrivilegeResponse);
+    GrantRevokePrivilegeResponse result =
+        handler.refresh_privileges(hiveObjectRef, "dummy", grantRevokePrivilegeRequest);
     assertThat(result, is(grantRevokePrivilegeResponse));
-    verify(primaryClient, times(1)).refresh_privileges(hiveObjectRef, "dummy", grantRevokePrivilegeRequest);
+    verify(primaryClient, times(1))
+        .refresh_privileges(hiveObjectRef, "dummy", grantRevokePrivilegeRequest);
   }
 
   @Test
@@ -2040,7 +2122,8 @@ public class FederatedHMSHandlerTest {
     ReplTblWriteIdStateRequest replTblWriteIdStateRequest = new ReplTblWriteIdStateRequest();
     replTblWriteIdStateRequest.setDbName(DB_P);
 
-    when(primaryMapping.transformInboundReplTblWriteIdStateRequest(replTblWriteIdStateRequest)).thenReturn(replTblWriteIdStateRequest);
+    when(primaryMapping.transformInboundReplTblWriteIdStateRequest(replTblWriteIdStateRequest))
+        .thenReturn(replTblWriteIdStateRequest);
     doNothing().when(primaryClient).repl_tbl_writeid_state(isA(ReplTblWriteIdStateRequest.class));
     handler.repl_tbl_writeid_state(replTblWriteIdStateRequest);
     verify(primaryMapping).checkWritePermissions(DB_P);
@@ -2052,7 +2135,8 @@ public class FederatedHMSHandlerTest {
     GetValidWriteIdsRequest getValidWriteIdsRequest = new GetValidWriteIdsRequest();
     GetValidWriteIdsResponse getValidWriteIdsResponse = new GetValidWriteIdsResponse();
 
-    when(primaryClient.get_valid_write_ids(getValidWriteIdsRequest)).thenReturn(getValidWriteIdsResponse);
+    when(primaryClient.get_valid_write_ids(getValidWriteIdsRequest))
+        .thenReturn(getValidWriteIdsResponse);
     GetValidWriteIdsResponse result = handler.get_valid_write_ids(getValidWriteIdsRequest);
     assertThat(result, is(getValidWriteIdsResponse));
     verify(primaryClient, times(1)).get_valid_write_ids(getValidWriteIdsRequest);
@@ -2062,12 +2146,16 @@ public class FederatedHMSHandlerTest {
   public void allocate_table_write_ids() throws TException {
     AllocateTableWriteIdsRequest allocateTableWriteIdsRequest = new AllocateTableWriteIdsRequest();
     allocateTableWriteIdsRequest.setDbName(DB_P);
-    AllocateTableWriteIdsResponse allocateTableWriteIdsResponse = new AllocateTableWriteIdsResponse();
+    AllocateTableWriteIdsResponse allocateTableWriteIdsResponse =
+        new AllocateTableWriteIdsResponse();
 
-    when(primaryMapping.transformInboundAllocateTableWriteIdsRequest(allocateTableWriteIdsRequest)).thenReturn(allocateTableWriteIdsRequest);
-    when(primaryClient.allocate_table_write_ids(allocateTableWriteIdsRequest)).thenReturn(allocateTableWriteIdsResponse);
+    when(primaryMapping.transformInboundAllocateTableWriteIdsRequest(allocateTableWriteIdsRequest))
+        .thenReturn(allocateTableWriteIdsRequest);
+    when(primaryClient.allocate_table_write_ids(allocateTableWriteIdsRequest))
+        .thenReturn(allocateTableWriteIdsResponse);
 
-    AllocateTableWriteIdsResponse result = handler.allocate_table_write_ids(allocateTableWriteIdsRequest);
+    AllocateTableWriteIdsResponse result =
+        handler.allocate_table_write_ids(allocateTableWriteIdsRequest);
     assertThat(result, is(allocateTableWriteIdsResponse));
     verify(primaryMapping).checkWritePermissions(DB_P);
     verify(primaryClient, times(1)).allocate_table_write_ids(allocateTableWriteIdsRequest);
@@ -2076,9 +2164,11 @@ public class FederatedHMSHandlerTest {
   @Test
   public void add_unique_constraint() throws TException {
     AddUniqueConstraintRequest addUniqueConstraintRequest = new AddUniqueConstraintRequest();
-    addUniqueConstraintRequest.setUniqueConstraintCols(Lists.newArrayList(new SQLUniqueConstraint()));
+    addUniqueConstraintRequest.setUniqueConstraintCols(
+        Lists.newArrayList(new SQLUniqueConstraint()));
 
-    when(primaryMapping.transformInboundAddUniqueConstraintRequest(addUniqueConstraintRequest)).thenReturn(addUniqueConstraintRequest);
+    when(primaryMapping.transformInboundAddUniqueConstraintRequest(addUniqueConstraintRequest))
+        .thenReturn(addUniqueConstraintRequest);
     doNothing().when(primaryClient).add_unique_constraint(isA(AddUniqueConstraintRequest.class));
     handler.add_unique_constraint(addUniqueConstraintRequest);
     verify(primaryClient, times(1)).add_unique_constraint(addUniqueConstraintRequest);
@@ -2087,9 +2177,11 @@ public class FederatedHMSHandlerTest {
   @Test
   public void add_not_null_constraint() throws TException {
     AddNotNullConstraintRequest addNotNullConstraintRequest = new AddNotNullConstraintRequest();
-    addNotNullConstraintRequest.setNotNullConstraintCols(Lists.newArrayList(new SQLNotNullConstraint()));
+    addNotNullConstraintRequest.setNotNullConstraintCols(
+        Lists.newArrayList(new SQLNotNullConstraint()));
 
-    when(primaryMapping.transformInboundAddNotNullConstraintRequest(addNotNullConstraintRequest)).thenReturn(addNotNullConstraintRequest);
+    when(primaryMapping.transformInboundAddNotNullConstraintRequest(addNotNullConstraintRequest))
+        .thenReturn(addNotNullConstraintRequest);
     doNothing().when(primaryClient).add_not_null_constraint(isA(AddNotNullConstraintRequest.class));
     handler.add_not_null_constraint(addNotNullConstraintRequest);
     verify(primaryClient, times(1)).add_not_null_constraint(addNotNullConstraintRequest);
@@ -2098,10 +2190,11 @@ public class FederatedHMSHandlerTest {
   @Test
   public void add_default_constraint() throws TException {
     AddDefaultConstraintRequest addDefaultConstraintRequest = new AddDefaultConstraintRequest();
-    addDefaultConstraintRequest.setDefaultConstraintCols(Lists.newArrayList(new SQLDefaultConstraint()));
+    addDefaultConstraintRequest.setDefaultConstraintCols(
+        Lists.newArrayList(new SQLDefaultConstraint()));
 
-    when(primaryMapping.transformInboundAddDefaultConstraintRequest(addDefaultConstraintRequest)).
-            thenReturn(addDefaultConstraintRequest);
+    when(primaryMapping.transformInboundAddDefaultConstraintRequest(addDefaultConstraintRequest))
+        .thenReturn(addDefaultConstraintRequest);
 
     doNothing().when(primaryClient).add_default_constraint(isA(AddDefaultConstraintRequest.class));
     handler.add_default_constraint(addDefaultConstraintRequest);
@@ -2113,7 +2206,8 @@ public class FederatedHMSHandlerTest {
     AddCheckConstraintRequest addCheckConstraintRequest = new AddCheckConstraintRequest();
     addCheckConstraintRequest.setCheckConstraintCols(Lists.newArrayList(new SQLCheckConstraint()));
 
-    when(primaryMapping.transformInboundAddCheckConstraintRequest(addCheckConstraintRequest)).thenReturn(addCheckConstraintRequest);
+    when(primaryMapping.transformInboundAddCheckConstraintRequest(addCheckConstraintRequest))
+        .thenReturn(addCheckConstraintRequest);
     doNothing().when(primaryClient).add_check_constraint(isA(AddCheckConstraintRequest.class));
     handler.add_check_constraint(addCheckConstraintRequest);
     verify(primaryClient, times(1)).add_check_constraint(addCheckConstraintRequest);
@@ -2132,7 +2226,8 @@ public class FederatedHMSHandlerTest {
     WMCreateResourcePlanRequest wmCreateResourcePlanRequest = new WMCreateResourcePlanRequest();
     WMCreateResourcePlanResponse wmCreateResourcePlanResponse = new WMCreateResourcePlanResponse();
 
-    when(primaryClient.create_resource_plan(wmCreateResourcePlanRequest)).thenReturn(wmCreateResourcePlanResponse);
+    when(primaryClient.create_resource_plan(wmCreateResourcePlanRequest))
+        .thenReturn(wmCreateResourcePlanResponse);
     WMCreateResourcePlanResponse result = handler.create_resource_plan(wmCreateResourcePlanRequest);
     assertThat(result, is(wmCreateResourcePlanResponse));
     verify(primaryClient, times(1)).create_resource_plan(wmCreateResourcePlanRequest);
@@ -2143,7 +2238,8 @@ public class FederatedHMSHandlerTest {
     WMGetResourcePlanRequest wmGetResourcePlanRequest = new WMGetResourcePlanRequest();
     WMGetResourcePlanResponse wmGetResourcePlanResponse = new WMGetResourcePlanResponse();
 
-    when(primaryClient.get_resource_plan(wmGetResourcePlanRequest)).thenReturn(wmGetResourcePlanResponse);
+    when(primaryClient.get_resource_plan(wmGetResourcePlanRequest))
+        .thenReturn(wmGetResourcePlanResponse);
     WMGetResourcePlanResponse result = handler.get_resource_plan(wmGetResourcePlanRequest);
     assertThat(result, is(wmGetResourcePlanResponse));
     verify(primaryClient, times(1)).get_resource_plan(wmGetResourcePlanRequest);
@@ -2151,11 +2247,15 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void get_active_resource_plan() throws TException {
-    WMGetActiveResourcePlanRequest wmGetActiveResourcePlanRequest = new WMGetActiveResourcePlanRequest();
-    WMGetActiveResourcePlanResponse wmGetActiveResourcePlanResponse = new WMGetActiveResourcePlanResponse();
+    WMGetActiveResourcePlanRequest wmGetActiveResourcePlanRequest =
+        new WMGetActiveResourcePlanRequest();
+    WMGetActiveResourcePlanResponse wmGetActiveResourcePlanResponse =
+        new WMGetActiveResourcePlanResponse();
 
-    when(primaryClient.get_active_resource_plan(wmGetActiveResourcePlanRequest)).thenReturn(wmGetActiveResourcePlanResponse);
-    WMGetActiveResourcePlanResponse result = handler.get_active_resource_plan(wmGetActiveResourcePlanRequest);
+    when(primaryClient.get_active_resource_plan(wmGetActiveResourcePlanRequest))
+        .thenReturn(wmGetActiveResourcePlanResponse);
+    WMGetActiveResourcePlanResponse result =
+        handler.get_active_resource_plan(wmGetActiveResourcePlanRequest);
     assertThat(result, is(wmGetActiveResourcePlanResponse));
     verify(primaryClient, times(1)).get_active_resource_plan(wmGetActiveResourcePlanRequest);
   }
@@ -2165,8 +2265,10 @@ public class FederatedHMSHandlerTest {
     WMGetAllResourcePlanRequest wmGetAllResourcePlanRequest = new WMGetAllResourcePlanRequest();
     WMGetAllResourcePlanResponse wmGetAllResourcePlanResponse = new WMGetAllResourcePlanResponse();
 
-    when(primaryClient.get_all_resource_plans(wmGetAllResourcePlanRequest)).thenReturn(wmGetAllResourcePlanResponse);
-    WMGetAllResourcePlanResponse result = handler.get_all_resource_plans(wmGetAllResourcePlanRequest);
+    when(primaryClient.get_all_resource_plans(wmGetAllResourcePlanRequest))
+        .thenReturn(wmGetAllResourcePlanResponse);
+    WMGetAllResourcePlanResponse result =
+        handler.get_all_resource_plans(wmGetAllResourcePlanRequest);
     assertThat(result, is(wmGetAllResourcePlanResponse));
     verify(primaryClient, times(1)).get_all_resource_plans(wmGetAllResourcePlanRequest);
   }
@@ -2176,7 +2278,8 @@ public class FederatedHMSHandlerTest {
     WMAlterResourcePlanRequest wmAlterResourcePlanRequest = new WMAlterResourcePlanRequest();
     WMAlterResourcePlanResponse wmAlterResourcePlanResponse = new WMAlterResourcePlanResponse();
 
-    when(primaryClient.alter_resource_plan(wmAlterResourcePlanRequest)).thenReturn(wmAlterResourcePlanResponse);
+    when(primaryClient.alter_resource_plan(wmAlterResourcePlanRequest))
+        .thenReturn(wmAlterResourcePlanResponse);
     WMAlterResourcePlanResponse result = handler.alter_resource_plan(wmAlterResourcePlanRequest);
     assertThat(result, is(wmAlterResourcePlanResponse));
     verify(primaryClient, times(1)).alter_resource_plan(wmAlterResourcePlanRequest);
@@ -2184,11 +2287,15 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void validate_resource_plan() throws TException {
-    WMValidateResourcePlanRequest wmValidateResourcePlanRequest = new WMValidateResourcePlanRequest();
-    WMValidateResourcePlanResponse wmValidateResourcePlanResponse = new WMValidateResourcePlanResponse();
+    WMValidateResourcePlanRequest wmValidateResourcePlanRequest =
+        new WMValidateResourcePlanRequest();
+    WMValidateResourcePlanResponse wmValidateResourcePlanResponse =
+        new WMValidateResourcePlanResponse();
 
-    when(primaryClient.validate_resource_plan(wmValidateResourcePlanRequest)).thenReturn(wmValidateResourcePlanResponse);
-    WMValidateResourcePlanResponse result = handler.validate_resource_plan(wmValidateResourcePlanRequest);
+    when(primaryClient.validate_resource_plan(wmValidateResourcePlanRequest))
+        .thenReturn(wmValidateResourcePlanResponse);
+    WMValidateResourcePlanResponse result =
+        handler.validate_resource_plan(wmValidateResourcePlanRequest);
     assertThat(result, is(wmValidateResourcePlanResponse));
     verify(primaryClient, times(1)).validate_resource_plan(wmValidateResourcePlanRequest);
   }
@@ -2198,7 +2305,8 @@ public class FederatedHMSHandlerTest {
     WMDropResourcePlanRequest wmDropResourcePlanRequest = new WMDropResourcePlanRequest();
     WMDropResourcePlanResponse wmDropResourcePlanResponse = new WMDropResourcePlanResponse();
 
-    when(primaryClient.drop_resource_plan(wmDropResourcePlanRequest)).thenReturn(wmDropResourcePlanResponse);
+    when(primaryClient.drop_resource_plan(wmDropResourcePlanRequest))
+        .thenReturn(wmDropResourcePlanResponse);
     WMDropResourcePlanResponse result = handler.drop_resource_plan(wmDropResourcePlanRequest);
     assertThat(result, is(wmDropResourcePlanResponse));
     verify(primaryClient, times(1)).drop_resource_plan(wmDropResourcePlanRequest);
@@ -2209,7 +2317,8 @@ public class FederatedHMSHandlerTest {
     WMCreateTriggerRequest wmCreateTriggerRequest = new WMCreateTriggerRequest();
     WMCreateTriggerResponse wmCreateTriggerResponse = new WMCreateTriggerResponse();
 
-    when(primaryClient.create_wm_trigger(wmCreateTriggerRequest)).thenReturn(wmCreateTriggerResponse);
+    when(primaryClient.create_wm_trigger(wmCreateTriggerRequest))
+        .thenReturn(wmCreateTriggerResponse);
     WMCreateTriggerResponse result = handler.create_wm_trigger(wmCreateTriggerRequest);
     assertThat(result, is(wmCreateTriggerResponse));
     verify(primaryClient, times(1)).create_wm_trigger(wmCreateTriggerRequest);
@@ -2239,13 +2348,18 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void get_triggers_for_resourceplan() throws TException {
-    WMGetTriggersForResourePlanRequest wmGetTriggersForResourePlanRequest = new WMGetTriggersForResourePlanRequest();
-    WMGetTriggersForResourePlanResponse wmGetTriggersForResourePlanResponse = new WMGetTriggersForResourePlanResponse();
+    WMGetTriggersForResourePlanRequest wmGetTriggersForResourePlanRequest =
+        new WMGetTriggersForResourePlanRequest();
+    WMGetTriggersForResourePlanResponse wmGetTriggersForResourePlanResponse =
+        new WMGetTriggersForResourePlanResponse();
 
-    when(primaryClient.get_triggers_for_resourceplan(wmGetTriggersForResourePlanRequest)).thenReturn(wmGetTriggersForResourePlanResponse);
-    WMGetTriggersForResourePlanResponse result = handler.get_triggers_for_resourceplan(wmGetTriggersForResourePlanRequest);
+    when(primaryClient.get_triggers_for_resourceplan(wmGetTriggersForResourePlanRequest))
+        .thenReturn(wmGetTriggersForResourePlanResponse);
+    WMGetTriggersForResourePlanResponse result =
+        handler.get_triggers_for_resourceplan(wmGetTriggersForResourePlanRequest);
     assertThat(result, is(wmGetTriggersForResourePlanResponse));
-    verify(primaryClient, times(1)).get_triggers_for_resourceplan(wmGetTriggersForResourePlanRequest);
+    verify(primaryClient, times(1))
+        .get_triggers_for_resourceplan(wmGetTriggersForResourePlanRequest);
   }
 
   @Test
@@ -2283,11 +2397,15 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void create_or_update_wm_mapping() throws TException {
-    WMCreateOrUpdateMappingRequest wmCreateOrUpdateMappingRequest = new WMCreateOrUpdateMappingRequest();
-    WMCreateOrUpdateMappingResponse wmCreateOrUpdateMappingResponse = new WMCreateOrUpdateMappingResponse();
+    WMCreateOrUpdateMappingRequest wmCreateOrUpdateMappingRequest =
+        new WMCreateOrUpdateMappingRequest();
+    WMCreateOrUpdateMappingResponse wmCreateOrUpdateMappingResponse =
+        new WMCreateOrUpdateMappingResponse();
 
-    when(primaryClient.create_or_update_wm_mapping(wmCreateOrUpdateMappingRequest)).thenReturn(wmCreateOrUpdateMappingResponse);
-    WMCreateOrUpdateMappingResponse result = handler.create_or_update_wm_mapping(wmCreateOrUpdateMappingRequest);
+    when(primaryClient.create_or_update_wm_mapping(wmCreateOrUpdateMappingRequest))
+        .thenReturn(wmCreateOrUpdateMappingResponse);
+    WMCreateOrUpdateMappingResponse result =
+        handler.create_or_update_wm_mapping(wmCreateOrUpdateMappingRequest);
     assertThat(result, is(wmCreateOrUpdateMappingResponse));
     verify(primaryClient, times(1)).create_or_update_wm_mapping(wmCreateOrUpdateMappingRequest);
   }
@@ -2305,13 +2423,20 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void create_or_drop_wm_trigger_to_pool_mapping() throws TException {
-    WMCreateOrDropTriggerToPoolMappingRequest wmCreateOrDropTriggerToPoolMappingRequest = new WMCreateOrDropTriggerToPoolMappingRequest();
-    WMCreateOrDropTriggerToPoolMappingResponse wmCreateOrDropTriggerToPoolMappingResponse = new WMCreateOrDropTriggerToPoolMappingResponse();
+    WMCreateOrDropTriggerToPoolMappingRequest wmCreateOrDropTriggerToPoolMappingRequest =
+        new WMCreateOrDropTriggerToPoolMappingRequest();
+    WMCreateOrDropTriggerToPoolMappingResponse wmCreateOrDropTriggerToPoolMappingResponse =
+        new WMCreateOrDropTriggerToPoolMappingResponse();
 
-    when(primaryClient.create_or_drop_wm_trigger_to_pool_mapping(wmCreateOrDropTriggerToPoolMappingRequest)).thenReturn(wmCreateOrDropTriggerToPoolMappingResponse);
-    WMCreateOrDropTriggerToPoolMappingResponse result = handler.create_or_drop_wm_trigger_to_pool_mapping(wmCreateOrDropTriggerToPoolMappingRequest);
+    when(primaryClient.create_or_drop_wm_trigger_to_pool_mapping(
+            wmCreateOrDropTriggerToPoolMappingRequest))
+        .thenReturn(wmCreateOrDropTriggerToPoolMappingResponse);
+    WMCreateOrDropTriggerToPoolMappingResponse result =
+        handler.create_or_drop_wm_trigger_to_pool_mapping(
+            wmCreateOrDropTriggerToPoolMappingRequest);
     assertThat(result, is(wmCreateOrDropTriggerToPoolMappingResponse));
-    verify(primaryClient, times(1)).create_or_drop_wm_trigger_to_pool_mapping(wmCreateOrDropTriggerToPoolMappingRequest);
+    verify(primaryClient, times(1))
+        .create_or_drop_wm_trigger_to_pool_mapping(wmCreateOrDropTriggerToPoolMappingRequest);
   }
 
   @Test
@@ -2345,7 +2470,8 @@ public class FederatedHMSHandlerTest {
 
     when(primaryMapping.transformInboundISchemaName(iSchemaName)).thenReturn(iSchemaName);
     when(primaryClient.get_schema_latest_version(iSchemaName)).thenReturn(schemaVersion);
-    when(primaryMapping.transformOutboundSchemaVersion(schemaVersion)).thenReturn(outboundSchemaVersion);
+    when(primaryMapping.transformOutboundSchemaVersion(schemaVersion))
+        .thenReturn(outboundSchemaVersion);
 
     SchemaVersion result = handler.get_schema_latest_version(iSchemaName);
     assertThat(result, is(outboundSchemaVersion));
@@ -2365,9 +2491,11 @@ public class FederatedHMSHandlerTest {
     SchemaVersion outboundSchemaVersion = new SchemaVersion();
     outboundSchemaVersion.setSchema(iSchemaName);
 
-    when(primaryClient.get_schema_all_versions(iSchemaName)).thenReturn(Lists.newArrayList(schemaVersion));
+    when(primaryClient.get_schema_all_versions(iSchemaName))
+        .thenReturn(Lists.newArrayList(schemaVersion));
     when(primaryMapping.transformInboundISchemaName(iSchemaName)).thenReturn(iSchemaName);
-    when(primaryMapping.transformOutboundSchemaVersions(Lists.newArrayList(schemaVersion))).thenReturn(Lists.newArrayList(outboundSchemaVersion));
+    when(primaryMapping.transformOutboundSchemaVersions(Lists.newArrayList(schemaVersion)))
+        .thenReturn(Lists.newArrayList(outboundSchemaVersion));
     List<SchemaVersion> result = handler.get_schema_all_versions(iSchemaName);
     assertThat(result, is(Lists.newArrayList(Lists.newArrayList(schemaVersion))));
     verify(primaryClient, times(1)).get_schema_all_versions(iSchemaName);
@@ -2382,7 +2510,8 @@ public class FederatedHMSHandlerTest {
     iSchemaName.setSchemaName(SCH_1);
     schemaVersionDescriptor.setSchema(iSchemaName);
 
-    when(primaryMapping.transformInboundSchemaVersionDescriptor(schemaVersionDescriptor)).thenReturn(schemaVersionDescriptor);
+    when(primaryMapping.transformInboundSchemaVersionDescriptor(schemaVersionDescriptor))
+        .thenReturn(schemaVersionDescriptor);
     doNothing().when(primaryClient).drop_schema_version(isA(SchemaVersionDescriptor.class));
     handler.drop_schema_version(schemaVersionDescriptor);
     verify(primaryClient, times(1)).drop_schema_version(schemaVersionDescriptor);
@@ -2393,8 +2522,10 @@ public class FederatedHMSHandlerTest {
     FindSchemasByColsRqst findSchemasByColsRqst = new FindSchemasByColsRqst();
     FindSchemasByColsResp findSchemasByColsResp = new FindSchemasByColsResp();
 
-    when(primaryMapping.transformOutboundFindSchemasByColsResp(findSchemasByColsResp)).thenReturn(findSchemasByColsResp);
-    when(primaryClient.get_schemas_by_cols(findSchemasByColsRqst)).thenReturn(findSchemasByColsResp);
+    when(primaryMapping.transformOutboundFindSchemasByColsResp(findSchemasByColsResp))
+        .thenReturn(findSchemasByColsResp);
+    when(primaryClient.get_schemas_by_cols(findSchemasByColsRqst))
+        .thenReturn(findSchemasByColsResp);
     FindSchemasByColsResp result = handler.get_schemas_by_cols(findSchemasByColsRqst);
     assertThat(result, is(findSchemasByColsResp));
     verify(primaryClient, times(1)).get_schemas_by_cols(findSchemasByColsRqst);
@@ -2402,12 +2533,16 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void map_schema_version_to_serde() throws TException {
-    MapSchemaVersionToSerdeRequest mapSchemaVersionToSerdeRequest = new MapSchemaVersionToSerdeRequest();
+    MapSchemaVersionToSerdeRequest mapSchemaVersionToSerdeRequest =
+        new MapSchemaVersionToSerdeRequest();
 
-    when(primaryMapping.transformInboundMapSchemaVersionToSerdeRequest(mapSchemaVersionToSerdeRequest)).
-            thenReturn(new MapSchemaVersionToSerdeRequest());
+    when(primaryMapping.transformInboundMapSchemaVersionToSerdeRequest(
+            mapSchemaVersionToSerdeRequest))
+        .thenReturn(new MapSchemaVersionToSerdeRequest());
 
-    doNothing().when(primaryClient).map_schema_version_to_serde(isA(MapSchemaVersionToSerdeRequest.class));
+    doNothing()
+        .when(primaryClient)
+        .map_schema_version_to_serde(isA(MapSchemaVersionToSerdeRequest.class));
     handler.map_schema_version_to_serde(mapSchemaVersionToSerdeRequest);
     verify(primaryClient, times(1)).map_schema_version_to_serde(mapSchemaVersionToSerdeRequest);
   }
@@ -2415,9 +2550,11 @@ public class FederatedHMSHandlerTest {
   @Test
   public void set_schema_version_state() throws TException {
     SetSchemaVersionStateRequest setSchemaVersionStateRequest = new SetSchemaVersionStateRequest();
-    doNothing().when(primaryClient).set_schema_version_state(isA(SetSchemaVersionStateRequest.class));
-    when(primaryMapping.transformInboundSetSchemaVersionStateRequest(setSchemaVersionStateRequest)).
-            thenReturn(new SetSchemaVersionStateRequest());
+    doNothing()
+        .when(primaryClient)
+        .set_schema_version_state(isA(SetSchemaVersionStateRequest.class));
+    when(primaryMapping.transformInboundSetSchemaVersionStateRequest(setSchemaVersionStateRequest))
+        .thenReturn(new SetSchemaVersionStateRequest());
     handler.set_schema_version_state(setSchemaVersionStateRequest);
     verify(primaryClient, times(1)).set_schema_version_state(setSchemaVersionStateRequest);
   }
@@ -2449,7 +2586,8 @@ public class FederatedHMSHandlerTest {
     lockResponse.setFieldValue(LockResponse._Fields.LOCKID, 1000L);
 
     when(primaryMapping.transformInboundDatabaseName(DB_P)).thenReturn(DB_P);
-    when(primaryClient.get_lock_materialization_rebuild(DB_P, CAT_1, 1000L)).thenReturn(lockResponse);
+    when(primaryClient.get_lock_materialization_rebuild(DB_P, CAT_1, 1000L))
+        .thenReturn(lockResponse);
     LockResponse result = handler.get_lock_materialization_rebuild(DB_P, CAT_1, 1000L);
     assertThat(result, is(lockResponse));
   }
@@ -2465,7 +2603,7 @@ public class FederatedHMSHandlerTest {
   @Test
   public void add_runtime_stats() throws TException {
     RuntimeStat runtimeStat = new RuntimeStat();
-    runtimeStat.setFieldValue( RuntimeStat._Fields.PAYLOAD, ByteBuffer.allocate(10));
+    runtimeStat.setFieldValue(RuntimeStat._Fields.PAYLOAD, ByteBuffer.allocate(10));
 
     handler.add_runtime_stats(runtimeStat);
     verify(primaryClient).add_runtime_stats(runtimeStat);
@@ -2474,7 +2612,7 @@ public class FederatedHMSHandlerTest {
   @Test
   public void get_runtime_stats() throws TException {
     GetRuntimeStatsRequest getRuntimeStatsRequest = new GetRuntimeStatsRequest();
-    getRuntimeStatsRequest.setFieldValue( MAX_WEIGHT, 1);
+    getRuntimeStatsRequest.setFieldValue(MAX_WEIGHT, 1);
 
     List<RuntimeStat> runtimeStatList = Lists.newArrayList(new RuntimeStat());
 
@@ -2486,7 +2624,7 @@ public class FederatedHMSHandlerTest {
   @Test
   public void cm_recycle() throws TException {
     CmRecycleRequest cmRecycleRequest = new CmRecycleRequest();
-    cmRecycleRequest.setFieldValue( DATA_PATH, "test");
+    cmRecycleRequest.setFieldValue(DATA_PATH, "test");
 
     CmRecycleResponse cmRecycleResponse = new CmRecycleResponse();
 
@@ -2497,16 +2635,22 @@ public class FederatedHMSHandlerTest {
 
   @Test
   public void get_notification_events_count() throws TException {
-    NotificationEventsCountRequest notificationEventsCountRequest = new NotificationEventsCountRequest();
+    NotificationEventsCountRequest notificationEventsCountRequest =
+        new NotificationEventsCountRequest();
     notificationEventsCountRequest.setDbName(DB_P);
     notificationEventsCountRequest.setCatName(CAT_1);
 
-    NotificationEventsCountResponse notificationEventsCountResponse = new NotificationEventsCountResponse();
+    NotificationEventsCountResponse notificationEventsCountResponse =
+        new NotificationEventsCountResponse();
     notificationEventsCountResponse.setEventsCount(10);
 
-    when(primaryMapping.transformInboundNotificationEventsCountRequest(notificationEventsCountRequest)).thenReturn(notificationEventsCountRequest);
-    when(primaryClient.get_notification_events_count(notificationEventsCountRequest)).thenReturn(notificationEventsCountResponse);
-    NotificationEventsCountResponse result = handler.get_notification_events_count(notificationEventsCountRequest);
+    when(primaryMapping.transformInboundNotificationEventsCountRequest(
+            notificationEventsCountRequest))
+        .thenReturn(notificationEventsCountRequest);
+    when(primaryClient.get_notification_events_count(notificationEventsCountRequest))
+        .thenReturn(notificationEventsCountResponse);
+    NotificationEventsCountResponse result =
+        handler.get_notification_events_count(notificationEventsCountRequest);
     assertThat(result, is(notificationEventsCountResponse));
   }
 
@@ -2520,12 +2664,13 @@ public class FederatedHMSHandlerTest {
     UniqueConstraintsResponse uniqueConstraintsResponse = new UniqueConstraintsResponse();
     uniqueConstraintsResponse.setUniqueConstraints(Lists.newArrayList(new SQLUniqueConstraint()));
 
-    when(primaryMapping.transformInboundUniqueConstraintsRequest(uniqueConstraintsRequest)).
-            thenReturn(uniqueConstraintsRequest);
-    when(primaryMapping.transformOutboundUniqueConstraintsResponse(uniqueConstraintsResponse)).
-            thenReturn(uniqueConstraintsResponse);
+    when(primaryMapping.transformInboundUniqueConstraintsRequest(uniqueConstraintsRequest))
+        .thenReturn(uniqueConstraintsRequest);
+    when(primaryMapping.transformOutboundUniqueConstraintsResponse(uniqueConstraintsResponse))
+        .thenReturn(uniqueConstraintsResponse);
 
-    when(primaryClient.get_unique_constraints(uniqueConstraintsRequest)).thenReturn(uniqueConstraintsResponse);
+    when(primaryClient.get_unique_constraints(uniqueConstraintsRequest))
+        .thenReturn(uniqueConstraintsResponse);
     UniqueConstraintsResponse result = handler.get_unique_constraints(uniqueConstraintsRequest);
     assertThat(result, is(uniqueConstraintsResponse));
   }
@@ -2538,12 +2683,16 @@ public class FederatedHMSHandlerTest {
     notNullConstraintsRequest.setCatName(CAT_1);
 
     NotNullConstraintsResponse notNullConstraintsResponse = new NotNullConstraintsResponse();
-    notNullConstraintsResponse.setNotNullConstraints(Lists.newArrayList(new SQLNotNullConstraint()));
+    notNullConstraintsResponse.setNotNullConstraints(
+        Lists.newArrayList(new SQLNotNullConstraint()));
 
-    when(primaryMapping.transformInboundNotNullConstraintsRequest(notNullConstraintsRequest)).thenReturn(notNullConstraintsRequest);
-    when(primaryMapping.transformOutboundNotNullConstraintsResponse(notNullConstraintsResponse)).thenReturn(notNullConstraintsResponse);
+    when(primaryMapping.transformInboundNotNullConstraintsRequest(notNullConstraintsRequest))
+        .thenReturn(notNullConstraintsRequest);
+    when(primaryMapping.transformOutboundNotNullConstraintsResponse(notNullConstraintsResponse))
+        .thenReturn(notNullConstraintsResponse);
 
-    when(primaryClient.get_not_null_constraints(notNullConstraintsRequest)).thenReturn(notNullConstraintsResponse);
+    when(primaryClient.get_not_null_constraints(notNullConstraintsRequest))
+        .thenReturn(notNullConstraintsResponse);
     NotNullConstraintsResponse result = handler.get_not_null_constraints(notNullConstraintsRequest);
     assertThat(result, is(notNullConstraintsResponse));
   }
@@ -2556,14 +2705,16 @@ public class FederatedHMSHandlerTest {
     defaultConstraintsRequest.setCatName(CAT_1);
 
     DefaultConstraintsResponse defaultConstraintsResponse = new DefaultConstraintsResponse();
-    defaultConstraintsResponse.setDefaultConstraints(Lists.newArrayList(new SQLDefaultConstraint()));
+    defaultConstraintsResponse.setDefaultConstraints(
+        Lists.newArrayList(new SQLDefaultConstraint()));
 
-    when(primaryMapping.transformInboundDefaultConstraintsRequest(defaultConstraintsRequest)).
-            thenReturn(defaultConstraintsRequest);
-    when(primaryMapping.transformOutboundDefaultConstraintsResponse(defaultConstraintsResponse)).
-            thenReturn(defaultConstraintsResponse);
+    when(primaryMapping.transformInboundDefaultConstraintsRequest(defaultConstraintsRequest))
+        .thenReturn(defaultConstraintsRequest);
+    when(primaryMapping.transformOutboundDefaultConstraintsResponse(defaultConstraintsResponse))
+        .thenReturn(defaultConstraintsResponse);
 
-    when(primaryClient.get_default_constraints(defaultConstraintsRequest)).thenReturn(defaultConstraintsResponse);
+    when(primaryClient.get_default_constraints(defaultConstraintsRequest))
+        .thenReturn(defaultConstraintsResponse);
     DefaultConstraintsResponse result = handler.get_default_constraints(defaultConstraintsRequest);
     assertThat(result, is(defaultConstraintsResponse));
   }
@@ -2578,10 +2729,13 @@ public class FederatedHMSHandlerTest {
     CheckConstraintsResponse checkConstraintsResponse = new CheckConstraintsResponse();
     checkConstraintsResponse.setCheckConstraints(Lists.newArrayList(new SQLCheckConstraint()));
 
-    when(primaryMapping.transformInboundCheckConstraintsRequest(checkConstraintsRequest)).thenReturn(checkConstraintsRequest);
-    when(primaryMapping.transformOutboundCheckConstraintsResponse(checkConstraintsResponse)).thenReturn(checkConstraintsResponse);
+    when(primaryMapping.transformInboundCheckConstraintsRequest(checkConstraintsRequest))
+        .thenReturn(checkConstraintsRequest);
+    when(primaryMapping.transformOutboundCheckConstraintsResponse(checkConstraintsResponse))
+        .thenReturn(checkConstraintsResponse);
 
-    when(primaryClient.get_check_constraints(checkConstraintsRequest)).thenReturn(checkConstraintsResponse);
+    when(primaryClient.get_check_constraints(checkConstraintsRequest))
+        .thenReturn(checkConstraintsResponse);
     CheckConstraintsResponse result = handler.get_check_constraints(checkConstraintsRequest);
     assertThat(result, is(checkConstraintsResponse));
   }

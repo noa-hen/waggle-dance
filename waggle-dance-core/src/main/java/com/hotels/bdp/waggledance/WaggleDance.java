@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2024 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance;
@@ -19,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.SpringApplication;
@@ -55,8 +53,8 @@ public class WaggleDance {
     void onStop(ApplicationContext context);
   }
 
-  private static final List<ContextListener> CONTEXT_LISTENERS = Collections
-      .synchronizedList(new ArrayList<>());
+  private static final List<ContextListener> CONTEXT_LISTENERS =
+      Collections.synchronizedList(new ArrayList<>());
 
   public static void main(String[] args) throws Exception {
     // below is output *before* logging is configured so will appear on console
@@ -64,11 +62,12 @@ public class WaggleDance {
 
     int exitCode = -1;
     try {
-      SpringApplication application = new SpringApplicationBuilder(WaggleDance.class)
-          .properties("spring.config.location:${server-config:null},${federation-config:null}")
-          .properties("server.port:${endpoint.port:18000}")
-          .registerShutdownHook(true)
-          .build();
+      SpringApplication application =
+          new SpringApplicationBuilder(WaggleDance.class)
+              .properties("spring.config.location:${server-config:null},${federation-config:null}")
+              .properties("server.port:${endpoint.port:18000}")
+              .registerShutdownHook(true)
+              .build();
       exitCode = SpringApplication.exit(registerListeners(application).run(args));
     } catch (BeanCreationException e) {
       Throwable mostSpecificCause = e.getMostSpecificCause();
@@ -81,27 +80,32 @@ public class WaggleDance {
       throw e;
     }
     if (exitCode != 0) {
-      throw new Exception("Waggle Dance didn't exit properly see logs for errors, exitCode=" + exitCode);
+      throw new Exception(
+          "Waggle Dance didn't exit properly see logs for errors, exitCode=" + exitCode);
     }
   }
 
   private static SpringApplication registerListeners(SpringApplication application) {
     // Ref:
     // http://docs.spring.io/spring/docs/4.3.x/spring-framework-reference/html/beans.html#context-functionality-events
-    application.addListeners((ApplicationListener<ContextRefreshedEvent>) event -> {
-      synchronized (CONTEXT_LISTENERS) {
-        for (ContextListener contextListener : CONTEXT_LISTENERS) {
-          contextListener.onStart(event.getApplicationContext());
-        }
-      }
-    });
-    application.addListeners((ApplicationListener<ContextClosedEvent>) event -> {
-      synchronized (CONTEXT_LISTENERS) {
-        for (ContextListener contextListener : CONTEXT_LISTENERS) {
-          contextListener.onStop(event.getApplicationContext());
-        }
-      }
-    });
+    application.addListeners(
+        (ApplicationListener<ContextRefreshedEvent>)
+            event -> {
+              synchronized (CONTEXT_LISTENERS) {
+                for (ContextListener contextListener : CONTEXT_LISTENERS) {
+                  contextListener.onStart(event.getApplicationContext());
+                }
+              }
+            });
+    application.addListeners(
+        (ApplicationListener<ContextClosedEvent>)
+            event -> {
+              synchronized (CONTEXT_LISTENERS) {
+                for (ContextListener contextListener : CONTEXT_LISTENERS) {
+                  contextListener.onStop(event.getApplicationContext());
+                }
+              }
+            });
     return application;
   }
 
@@ -114,12 +118,14 @@ public class WaggleDance {
   }
 
   private static void printHelp(List<ObjectError> allErrors) {
-    System.out.println(/* new FetaStoreHelp( */allErrors/* ) */);
+    System.out.println(/* new FetaStoreHelp( */ allErrors /* ) */);
   }
 
-  private static void logConstraintErrors(ConstraintViolationException constraintViolationException) {
+  private static void logConstraintErrors(
+      ConstraintViolationException constraintViolationException) {
     log.error("Validation errors:");
-    for (ConstraintViolation<?> violation : constraintViolationException.getConstraintViolations()) {
+    for (ConstraintViolation<?> violation :
+        constraintViolationException.getConstraintViolations()) {
       log.error(violation.toString());
     }
   }

@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2019 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.api;
@@ -41,7 +39,6 @@ public class ValidationError {
     public ValidationError build() {
       return error;
     }
-
   }
 
   public static ValidationErrorBuilder builder() {
@@ -49,8 +46,8 @@ public class ValidationError {
   }
 
   public static ValidationErrorBuilder builder(Errors errors) {
-    ValidationErrorBuilder builder = new ValidationErrorBuilder(
-        "Validation failed: " + errors.getErrorCount() + " error(s)");
+    ValidationErrorBuilder builder =
+        new ValidationErrorBuilder("Validation failed: " + errors.getErrorCount() + " error(s)");
     for (ObjectError objectError : errors.getAllErrors()) {
       builder.error(objectError.getDefaultMessage());
     }
@@ -59,6 +56,7 @@ public class ValidationError {
 
   @JsonInclude(JsonInclude.Include.NON_EMPTY)
   private final List<String> errors = new ArrayList<>();
+
   private final String errorMessage;
 
   private ValidationError(String errorMessage) {
@@ -76,5 +74,4 @@ public class ValidationError {
   public String getErrorMessage() {
     return errorMessage;
   }
-
 }

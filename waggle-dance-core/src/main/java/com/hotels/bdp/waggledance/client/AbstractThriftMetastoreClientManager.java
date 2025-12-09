@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client;
@@ -37,7 +35,8 @@ public abstract class AbstractThriftMetastoreClientManager implements Closeable 
 
   protected static final AtomicInteger CONN_COUNT = new AtomicInteger(0);
   protected final HiveConf conf;
-  protected final HiveCompatibleThriftHiveMetastoreIfaceFactory hiveCompatibleThriftHiveMetastoreIfaceFactory;
+  protected final HiveCompatibleThriftHiveMetastoreIfaceFactory
+      hiveCompatibleThriftHiveMetastoreIfaceFactory;
   protected final URI[] metastoreUris;
   protected ThriftHiveMetastore.Iface client = null;
   protected TTransport transport = null;
@@ -54,7 +53,8 @@ public abstract class AbstractThriftMetastoreClientManager implements Closeable 
       HiveCompatibleThriftHiveMetastoreIfaceFactory hiveCompatibleThriftHiveMetastoreIfaceFactory,
       int connectionTimeout) {
     this.conf = conf;
-    this.hiveCompatibleThriftHiveMetastoreIfaceFactory = hiveCompatibleThriftHiveMetastoreIfaceFactory;
+    this.hiveCompatibleThriftHiveMetastoreIfaceFactory =
+        hiveCompatibleThriftHiveMetastoreIfaceFactory;
     this.connectionTimeout = connectionTimeout;
     msUri = conf.getVar(ConfVars.METASTOREURIS);
 
@@ -64,7 +64,8 @@ public abstract class AbstractThriftMetastoreClientManager implements Closeable 
 
     // get the number retries
     retries = HiveConf.getIntVar(conf, ConfVars.METASTORETHRIFTCONNECTIONRETRIES);
-    retryDelaySeconds = conf.getTimeVar(ConfVars.METASTORE_CLIENT_CONNECT_RETRY_DELAY, TimeUnit.SECONDS);
+    retryDelaySeconds =
+        conf.getTimeVar(ConfVars.METASTORE_CLIENT_CONNECT_RETRY_DELAY, TimeUnit.SECONDS);
 
     // user wants file store based configuration
     if (msUri != null) {
@@ -92,7 +93,7 @@ public abstract class AbstractThriftMetastoreClientManager implements Closeable 
     }
   }
 
-  void open() throws TException{
+  void open() throws TException {
     open(null);
   }
 
@@ -134,7 +135,8 @@ public abstract class AbstractThriftMetastoreClientManager implements Closeable 
       transport.close();
       transport = null;
     }
-    log.info("Closed a connection to metastore, current connections: {}", CONN_COUNT.decrementAndGet());
+    log.info(
+        "Closed a connection to metastore, current connections: {}", CONN_COUNT.decrementAndGet());
   }
 
   boolean isOpen() {
@@ -146,7 +148,8 @@ public abstract class AbstractThriftMetastoreClientManager implements Closeable 
   }
 
   /**
-   * Swaps the first element of the metastoreUris array with a random element from the remainder of the array.
+   * Swaps the first element of the metastoreUris array with a random element from the remainder of
+   * the array.
    */
   private void promoteRandomMetaStoreURI() {
     if (metastoreUris.length <= 1) {

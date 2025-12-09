@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2024 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.extensions.client.ratelimit;
@@ -51,7 +49,8 @@ public class RateLimitingInvocationHandlerTest {
   private @Mock CloseableThriftHiveMetastoreIface client;
   private @Mock BucketKeyGenerator bucketKeyGenerator;
   private MeterRegistry meterRegistry = new SimpleMeterRegistry();
-  private BucketService bucketService = new InMemoryBucketService(new IntervallyBandwidthProvider(2, 1));
+  private BucketService bucketService =
+      new InMemoryBucketService(new IntervallyBandwidthProvider(2, 1));
   private AbstractMetaStore metastore = AbstractMetaStore.newPrimaryInstance("name", "uri");
   private CloseableThriftHiveMetastoreIface handlerProxy;
 
@@ -60,8 +59,10 @@ public class RateLimitingInvocationHandlerTest {
     when(thriftClientFactory.newInstance(metastore)).thenReturn(client);
     when(bucketKeyGenerator.generateKey(USER)).thenReturn(USER);
     when(bucketKeyGenerator.generateKey(UNKNOWN_USER)).thenReturn(UNKNOWN_USER);
-    handlerProxy = new RateLimitingClientFactory(thriftClientFactory, bucketService, bucketKeyGenerator, meterRegistry)
-        .newInstance(metastore);
+    handlerProxy =
+        new RateLimitingClientFactory(
+                thriftClientFactory, bucketService, bucketKeyGenerator, meterRegistry)
+            .newInstance(metastore);
   }
 
   @Test
@@ -86,10 +87,11 @@ public class RateLimitingInvocationHandlerTest {
     } catch (WaggleDanceServerException e) {
       assertThat(e.getMessage(), is("[STATUS=429] Too many requests."));
     }
-    
+
     verify(client, times(3)).get_table("db", "table");
     verify(client).set_ugi(USER, null);
-    assertThat(meterRegistry.counter(RateLimitMetrics.WITHIN_LIMIT.getMetricName()).count(), is(3.0));
+    assertThat(
+        meterRegistry.counter(RateLimitMetrics.WITHIN_LIMIT.getMetricName()).count(), is(3.0));
     assertThat(meterRegistry.counter(RateLimitMetrics.ERRORS.getMetricName()).count(), is(0.0));
     assertThat(meterRegistry.counter(RateLimitMetrics.EXCEEDED.getMetricName()).count(), is(1.0));
   }
@@ -99,16 +101,19 @@ public class RateLimitingInvocationHandlerTest {
     Table table = new Table();
     when(client.get_table("db", "table")).thenReturn(table);
     BucketService mockedBucketService = Mockito.mock(BucketService.class);
-    when(mockedBucketService.getBucket(anyString())).thenThrow(new RuntimeException("Bucket exception"));
-    CloseableThriftHiveMetastoreIface proxy = new RateLimitingClientFactory(thriftClientFactory, mockedBucketService, bucketKeyGenerator, meterRegistry)
-        .newInstance(metastore);
+    when(mockedBucketService.getBucket(anyString()))
+        .thenThrow(new RuntimeException("Bucket exception"));
+    CloseableThriftHiveMetastoreIface proxy =
+        new RateLimitingClientFactory(
+                thriftClientFactory, mockedBucketService, bucketKeyGenerator, meterRegistry)
+            .newInstance(metastore);
 
     Table result = proxy.get_table("db", "table");
     assertThat(result, is(table));
-    assertThat(meterRegistry.counter(RateLimitMetrics.WITHIN_LIMIT.getMetricName()).count(), is(0.0));
+    assertThat(
+        meterRegistry.counter(RateLimitMetrics.WITHIN_LIMIT.getMetricName()).count(), is(0.0));
     assertThat(meterRegistry.counter(RateLimitMetrics.ERRORS.getMetricName()).count(), is(1.0));
     assertThat(meterRegistry.counter(RateLimitMetrics.EXCEEDED.getMetricName()).count(), is(0.0));
-
   }
 
   @Test
@@ -121,7 +126,7 @@ public class RateLimitingInvocationHandlerTest {
       assertThat(e.getMessage(), is("No such table"));
     }
   }
-  
+
   @Test
   public void testIgnoreSetUgi() throws Exception {
     assertTokens(2, 2);
@@ -161,6 +166,8 @@ public class RateLimitingInvocationHandlerTest {
 
   private void assertTokens(long expectedUserTokenCount, long expectedUnknownUserTokenCount) {
     assertThat(bucketService.getBucket(USER).getAvailableTokens(), is(expectedUserTokenCount));
-    assertThat(bucketService.getBucket(UNKNOWN_USER).getAvailableTokens(), is(expectedUnknownUserTokenCount));
+    assertThat(
+        bucketService.getBucket(UNKNOWN_USER).getAvailableTokens(),
+        is(expectedUnknownUserTokenCount));
   }
 }

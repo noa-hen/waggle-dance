@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2024 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client;
@@ -54,15 +52,18 @@ import com.hotels.bdp.waggledance.context.CommonBeans;
 public class SaslThriftMetastoreClientManager extends AbstractThriftMetastoreClientManager {
 
   private final boolean impersonationEnabled;
-  private static final Duration delegationTokenCacheTtl = Duration.ofHours(
-      1); // The default lifetime in Hive is 7 days (metastore.cluster.delegation.token.max-lifetime)
+  private static final Duration delegationTokenCacheTtl =
+      Duration.ofHours(1); // The default lifetime in Hive is 7 days
+  // (metastore.cluster.delegation.token.max-lifetime)
   private static final long delegationTokenCacheMaximumSize = 1000;
-  private static final LoadingCache<DelegationTokenKey, String> delegationTokenCache = CacheBuilder.newBuilder()
-      .expireAfterWrite(delegationTokenCacheTtl.toMillis(), MILLISECONDS)
-      .maximumSize(delegationTokenCacheMaximumSize)
-      .build(CacheLoader.from(SaslThriftMetastoreClientManager::loadDelegationToken));
+  private static final LoadingCache<DelegationTokenKey, String> delegationTokenCache =
+      CacheBuilder.newBuilder()
+          .expireAfterWrite(delegationTokenCacheTtl.toMillis(), MILLISECONDS)
+          .maximumSize(delegationTokenCacheMaximumSize)
+          .build(CacheLoader.from(SaslThriftMetastoreClientManager::loadDelegationToken));
 
-  SaslThriftMetastoreClientManager(HiveConf conf,
+  SaslThriftMetastoreClientManager(
+      HiveConf conf,
       HiveCompatibleThriftHiveMetastoreIfaceFactory hiveCompatibleThriftHiveMetastoreIfaceFactory,
       int connectionTimeout) {
     super(conf, hiveCompatibleThriftHiveMetastoreIfaceFactory, connectionTimeout);
@@ -93,15 +94,15 @@ public class SaslThriftMetastoreClientManager extends AbstractThriftMetastoreCli
     TException te = null;
     boolean useSsl = conf.getBoolVar(ConfVars.HIVE_METASTORE_USE_SSL);
     boolean useCompactProtocol = conf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_COMPACT_PROTOCOL);
-    int clientSocketTimeout = (int) conf.getTimeVar(ConfVars.METASTORE_CLIENT_SOCKET_TIMEOUT,
-        TimeUnit.MILLISECONDS);
+    int clientSocketTimeout =
+        (int) conf.getTimeVar(ConfVars.METASTORE_CLIENT_SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
 
     for (int attempt = 0; !isConnected && (attempt < retries); ++attempt) {
       for (URI store : metastoreUris) {
         log.info("Trying to connect to metastore with URI {}", store);
         try {
-          transport = new TSocket(store.getHost(), store.getPort(), clientSocketTimeout,
-              connectionTimeout);
+          transport =
+              new TSocket(store.getHost(), store.getPort(), clientSocketTimeout, connectionTimeout);
           // Wrap thrift connection with SASL for secure connection.
           try {
             UserGroupInformation.setConfiguration(conf);
@@ -113,16 +114,25 @@ public class SaslThriftMetastoreClientManager extends AbstractThriftMetastoreCli
             // submission.
             if (impersonationEnabled && delegationToken != null) {
               // authenticate using delegation tokens via the "DIGEST" mechanism
-              transport = KerberosSaslHelper
-                  .getTokenTransport(delegationToken,
-                      store.getHost(), transport,
+              transport =
+                  KerberosSaslHelper.getTokenTransport(
+                      delegationToken,
+                      store.getHost(),
+                      transport,
                       MetaStoreUtils.getMetaStoreSaslProperties(conf, useSsl));
             } else {
               String principalConfig = conf.getVar(ConfVars.METASTORE_KERBEROS_PRINCIPAL);
-              transport = UserGroupInformation.getLoginUser().doAs(
-                  (PrivilegedExceptionAction<TTransport>) () -> KerberosSaslHelper.getKerberosTransport(
-                      principalConfig, store.getHost(), transport,
-                      MetaStoreUtils.getMetaStoreSaslProperties(conf, useSsl), false));
+              transport =
+                  UserGroupInformation.getLoginUser()
+                      .doAs(
+                          (PrivilegedExceptionAction<TTransport>)
+                              () ->
+                                  KerberosSaslHelper.getKerberosTransport(
+                                      principalConfig,
+                                      store.getHost(),
+                                      transport,
+                                      MetaStoreUtils.getMetaStoreSaslProperties(conf, useSsl),
+                                      false));
             }
           } catch (IOException | InterruptedException exception) {
             log.error("Couldn't create client transport, URI " + store, exception);
@@ -135,12 +145,13 @@ public class SaslThriftMetastoreClientManager extends AbstractThriftMetastoreCli
           } else {
             protocol = new TBinaryProtocol(transport);
           }
-          client = hiveCompatibleThriftHiveMetastoreIfaceFactory.newInstance(
-              new ThriftHiveMetastore.Client(protocol));
+          client =
+              hiveCompatibleThriftHiveMetastoreIfaceFactory.newInstance(
+                  new ThriftHiveMetastore.Client(protocol));
           try {
             transport.open();
-            log
-                .info("Opened a connection to metastore '"
+            log.info(
+                "Opened a connection to metastore '"
                     + store
                     + "', total current connections to all metastores: "
                     + CONN_COUNT.incrementAndGet());
@@ -162,8 +173,8 @@ public class SaslThriftMetastoreClientManager extends AbstractThriftMetastoreCli
             }
           }
         } catch (MetaException e) {
-          log.error("Unable to connect to metastore with URI " + store + " in attempt " + attempt,
-              e);
+          log.error(
+              "Unable to connect to metastore with URI " + store + " in attempt " + attempt, e);
         }
         if (isConnected) {
           break;
@@ -180,10 +191,11 @@ public class SaslThriftMetastoreClientManager extends AbstractThriftMetastoreCli
     }
 
     if (!isConnected) {
-      throw new RuntimeException("Could not connect to meta store using any of the URIs ["
-          + msUri
-          + "] provided. Most recent failure: "
-          + StringUtils.stringifyException(te));
+      throw new RuntimeException(
+          "Could not connect to meta store using any of the URIs ["
+              + msUri
+              + "] provided. Most recent failure: "
+              + StringUtils.stringifyException(te));
     }
     log.debug("Connected to metastore.");
   }
@@ -209,15 +221,13 @@ public class SaslThriftMetastoreClientManager extends AbstractThriftMetastoreCli
         return false;
       }
       DelegationTokenKey that = (DelegationTokenKey) o;
-      return Objects.equals(msUri, that.msUri) && Objects.equals(username,
-          that.username);
+      return Objects.equals(msUri, that.msUri) && Objects.equals(username, that.username);
     }
 
     @Override
     public int hashCode() {
       return Objects.hash(msUri, username);
     }
-
   }
 
   private static String loadDelegationToken(DelegationTokenKey key) {

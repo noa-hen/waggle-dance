@@ -23,6 +23,13 @@
         </exclusion>
       </exclusions>
     </dependency>
+    
+    <!-- Jakarta XML Bind for ValidationException -->
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>4.0.2</version>
+    </dependency>
 
     <!-- Waggle Dance -->
     <dependency>

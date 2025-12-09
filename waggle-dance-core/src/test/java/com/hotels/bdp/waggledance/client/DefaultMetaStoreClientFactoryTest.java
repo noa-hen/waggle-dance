@@ -1,21 +1,18 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client;
 
-import static com.hotels.bdp.waggledance.client.HiveUgiArgsStub.TEST_ARGS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
@@ -23,6 +20,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static com.hotels.bdp.waggledance.client.HiveUgiArgsStub.TEST_ARGS;
 
 import java.util.List;
 
@@ -46,13 +45,14 @@ public class DefaultMetaStoreClientFactoryTest {
   private @Mock Iface client;
 
   private final DefaultMetaStoreClientFactory factory = new DefaultMetaStoreClientFactory();
-  private final static int RECONNECTION_RETRIES = 1;
+  private static final int RECONNECTION_RETRIES = 1;
 
   @Test
   public void isOpen() throws Exception {
     when(base.isOpen()).thenReturn(true);
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
 
     boolean result = iface.isOpen();
     assertThat(result, is(true));
@@ -63,7 +63,8 @@ public class DefaultMetaStoreClientFactoryTest {
   public void isOpenWithReconnection() throws Exception {
     when(base.isOpen()).thenReturn(false).thenReturn(true);
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
 
     boolean result = iface.isOpen();
     assertThat(result, is(true));
@@ -74,7 +75,8 @@ public class DefaultMetaStoreClientFactoryTest {
   public void isOpenThrowsException() {
     when(base.isOpen()).thenThrow(new RuntimeException());
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
 
     boolean result = iface.isOpen();
     assertThat(result, is(false));
@@ -85,7 +87,8 @@ public class DefaultMetaStoreClientFactoryTest {
     when(base.getClient()).thenReturn(client);
     when(client.getName()).thenReturn("ourName");
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
 
     String result = iface.getName();
     assertThat(result, is("ourName"));
@@ -96,7 +99,8 @@ public class DefaultMetaStoreClientFactoryTest {
     when(base.getClient()).thenReturn(client);
     when(client.getName()).thenThrow(new TTransportException()).thenReturn("ourName");
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
 
     String result = iface.getName();
     assertThat(result, is("ourName"));
@@ -115,7 +119,8 @@ public class DefaultMetaStoreClientFactoryTest {
         .when(client)
         .alter_table_with_environment_context(dbName, tableName, table, envContext);
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
 
     try {
       iface.alter_table_with_environment_context(dbName, tableName, table, envContext);
@@ -130,7 +135,8 @@ public class DefaultMetaStoreClientFactoryTest {
     when(base.getClient()).thenReturn(client);
     when(client.getName()).thenThrow(new TTransportException()).thenReturn("ourName");
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
     List<String> setUgiResult = iface.set_ugi(TEST_ARGS.getUser(), TEST_ARGS.getGroups());
     assertThat(setUgiResult, is(Lists.newArrayList(TEST_ARGS.getUser())));
     String name = iface.getName();
@@ -144,7 +150,8 @@ public class DefaultMetaStoreClientFactoryTest {
   public void set_ugi_CachedWhenClosed() throws Exception {
     when(base.isOpen()).thenReturn(false);
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
     List<String> setUgiResult = iface.set_ugi(TEST_ARGS.getUser(), TEST_ARGS.getGroups());
     assertThat(setUgiResult, is(Lists.newArrayList(TEST_ARGS.getUser())));
 
@@ -156,9 +163,11 @@ public class DefaultMetaStoreClientFactoryTest {
   public void set_ugi_CalledWhenOpen() throws Exception {
     when(base.getClient()).thenReturn(client);
     when(base.isOpen()).thenReturn(true);
-    when(client.set_ugi(TEST_ARGS.getUser(), TEST_ARGS.getGroups())).thenReturn(Lists.newArrayList("users!"));
+    when(client.set_ugi(TEST_ARGS.getUser(), TEST_ARGS.getGroups()))
+        .thenReturn(Lists.newArrayList("users!"));
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
     List<String> setUgiResult = iface.set_ugi(TEST_ARGS.getUser(), TEST_ARGS.getGroups());
     assertThat(setUgiResult, is(Lists.newArrayList("users!")));
   }
@@ -168,7 +177,8 @@ public class DefaultMetaStoreClientFactoryTest {
     when(base.getClient()).thenReturn(client);
     doThrow(new TTransportException()).when(client).shutdown();
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
 
     iface.shutdown();
   }
@@ -188,7 +198,8 @@ public class DefaultMetaStoreClientFactoryTest {
     when(base.getClient()).thenReturn(client);
     when(client.getName()).thenThrow(new TException());
 
-    CloseableThriftHiveMetastoreIface iface = factory.newInstance("name", RECONNECTION_RETRIES, base);
+    CloseableThriftHiveMetastoreIface iface =
+        factory.newInstance("name", RECONNECTION_RETRIES, base);
 
     iface.getName();
   }

@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2020 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.rest.endpoint;
@@ -47,19 +45,17 @@ import com.hotels.bdp.waggledance.api.model.PrimaryMetaStore;
 import com.hotels.bdp.waggledance.core.federation.service.PopulateStatusFederationService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestContext.class })
+@ContextConfiguration(classes = {TestContext.class})
 @WebAppConfiguration
 public class FederationsAdminControllerTest {
 
-  @Autowired
-  private PopulateStatusFederationService populateStatusFederationService;
-  @Autowired
-  private WebApplicationContext webApplicationContext;
+  @Autowired private PopulateStatusFederationService populateStatusFederationService;
+  @Autowired private WebApplicationContext webApplicationContext;
 
   private MockMvc mockMvc;
 
-  private final AbstractMetaStore metastore = new PrimaryMetaStore("primary", "uri",
-      AccessControlType.READ_AND_WRITE_AND_CREATE);
+  private final AbstractMetaStore metastore =
+      new PrimaryMetaStore("primary", "uri", AccessControlType.READ_AND_WRITE_AND_CREATE);
 
   @Before
   public void setUp() {
@@ -72,7 +68,8 @@ public class FederationsAdminControllerTest {
   public void getAll() throws Exception {
     when(populateStatusFederationService.getAll()).thenReturn(Lists.newArrayList(metastore));
 
-    String expected = "[{\"databasePrefix\":\"\",\"name\":\"primary\",\"remoteMetaStoreUris\":\"uri\",\"metastoreTunnel\":null,\"accessControlType\":\"READ_AND_WRITE_AND_CREATE\",\"status\":\"AVAILABLE\",\"federationType\":\"PRIMARY\",\"writableDatabaseWhiteList\":[]}]";
+    String expected =
+        "[{\"databasePrefix\":\"\",\"name\":\"primary\",\"remoteMetaStoreUris\":\"uri\",\"metastoreTunnel\":null,\"accessControlType\":\"READ_AND_WRITE_AND_CREATE\",\"status\":\"AVAILABLE\",\"federationType\":\"PRIMARY\",\"writableDatabaseWhiteList\":[]}]";
 
     mockMvc
         .perform(get("/api/admin/federations/"))
@@ -96,7 +93,10 @@ public class FederationsAdminControllerTest {
   public void add() throws Exception {
     String content = Jackson2ObjectMapperBuilder.json().build().writeValueAsString(metastore);
     mockMvc
-        .perform(post("/api/admin/federations/").contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
+        .perform(
+            post("/api/admin/federations/")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(content))
         .andExpect(status().isOk());
     verify(populateStatusFederationService).register(metastore);
   }
@@ -106,5 +106,4 @@ public class FederationsAdminControllerTest {
     mockMvc.perform(delete("/api/admin/federations/primary")).andExpect(status().isOk());
     verify(populateStatusFederationService).unregister("primary");
   }
-
 }

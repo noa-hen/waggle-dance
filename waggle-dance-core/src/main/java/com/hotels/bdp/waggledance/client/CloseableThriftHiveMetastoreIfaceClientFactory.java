@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client;
@@ -76,17 +74,23 @@ public class CloseableThriftHiveMetastoreIfaceClientFactory implements ThriftCli
     if (metaStore.getGlueConfig() != null) {
       readWrite = newGlueInstance(name, metaStore.getGlueConfig(), new HashMap<>(properties));
     } else {
-      readWrite = newHiveInstance(metaStore, name, metaStore.getRemoteMetaStoreUris(), new HashMap<>(properties));
+      readWrite =
+          newHiveInstance(
+              metaStore, name, metaStore.getRemoteMetaStoreUris(), new HashMap<>(properties));
     }
     if (metaStore.getReadOnlyRemoteMetaStoreUris() != null) {
-      CloseableThriftHiveMetastoreIface readOnly = newHiveInstance(metaStore, name + "_ro",
-          metaStore.getReadOnlyRemoteMetaStoreUris(), new HashMap<>(properties));
+      CloseableThriftHiveMetastoreIface readOnly =
+          newHiveInstance(
+              metaStore,
+              name + "_ro",
+              metaStore.getReadOnlyRemoteMetaStoreUris(),
+              new HashMap<>(properties));
       return splitTrafficMetaStoreClientFactory.newInstance(readWrite, readOnly);
-
     }
     if (metaStore.getReadOnlyGlueConfig() != null) {
-      CloseableThriftHiveMetastoreIface readOnly = newGlueInstance(name + "_ro", metaStore.getReadOnlyGlueConfig(),
-          new HashMap<>(properties));
+      CloseableThriftHiveMetastoreIface readOnly =
+          newGlueInstance(
+              name + "_ro", metaStore.getReadOnlyGlueConfig(), new HashMap<>(properties));
       return splitTrafficMetaStoreClientFactory.newInstance(readWrite, readOnly);
     }
     return readWrite;
@@ -103,22 +107,28 @@ public class CloseableThriftHiveMetastoreIfaceClientFactory implements ThriftCli
     int connectionTimeout = Math.max(1, defaultConnectionTimeout + (int) metaStore.getLatency());
 
     if (metaStore.getConnectionType() == TUNNELED) {
-      return tunnelingMetaStoreClientFactory
-          .newInstance(uris, metaStore.getMetastoreTunnel(), name, DEFAULT_CLIENT_FACTORY_RECONNECTION_RETRY,
-              connectionTimeout, waggleDanceConfiguration.getConfigurationProperties());
+      return tunnelingMetaStoreClientFactory.newInstance(
+          uris,
+          metaStore.getMetastoreTunnel(),
+          name,
+          DEFAULT_CLIENT_FACTORY_RECONNECTION_RETRY,
+          connectionTimeout,
+          waggleDanceConfiguration.getConfigurationProperties());
     }
     properties.put(ConfVars.METASTOREURIS.varname, uris);
-    properties.put(CommonBeans.IMPERSONATION_ENABLED_KEY, String.valueOf(metaStore.isImpersonationEnabled()));
+    properties.put(
+        CommonBeans.IMPERSONATION_ENABLED_KEY, String.valueOf(metaStore.isImpersonationEnabled()));
     HiveConfFactory confFactory = new HiveConfFactory(Collections.emptyList(), properties);
     HiveConf hiveConf = cachedHiveConf.computeIfAbsent(uris, t -> confFactory.newInstance());
-    return defaultMetaStoreClientFactory
-        .newInstance(hiveConf, "waggledance-" + name, DEFAULT_CLIENT_FACTORY_RECONNECTION_RETRY, connectionTimeout);
+    return defaultMetaStoreClientFactory.newInstance(
+        hiveConf,
+        "waggledance-" + name,
+        DEFAULT_CLIENT_FACTORY_RECONNECTION_RETRY,
+        connectionTimeout);
   }
 
   private CloseableThriftHiveMetastoreIface newGlueInstance(
-      String name,
-      GlueConfig glueConfig,
-      Map<String, String> properties) {
+      String name, GlueConfig glueConfig, Map<String, String> properties) {
     properties.putAll(glueConfig.getConfigurationProperties());
     HiveConfFactory confFactory = new HiveConfFactory(Collections.emptyList(), properties);
     try {

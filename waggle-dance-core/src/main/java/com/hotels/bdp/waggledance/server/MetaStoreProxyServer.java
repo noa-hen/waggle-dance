@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2015-2021 The Apache Software Foundation and Expedia, Inc.
  *
- * This code is based on Hive's HiveMetaStore:
+ * <p>This code is based on Hive's HiveMetaStore:
  *
- * https://github.com/apache/hive/blob/rel/release-2.3.0/metastore/src/java/org/apache/hadoop/hive/metastore/
+ * <p>https://github.com/apache/hive/blob/rel/release-2.3.0/metastore/src/java/org/apache/hadoop/hive/metastore/
  * HiveMetaStore.java
  *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * <p>Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.server;
@@ -34,8 +31,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
+
+import jakarta.annotation.PreDestroy;
 
 import org.apache.hadoop.hive.common.auth.HiveAuthUtils;
 import org.apache.hadoop.hive.conf.HiveConf;
@@ -70,10 +68,9 @@ import com.hotels.bdp.waggledance.util.SaslHelper;
 @Log4j2
 public class MetaStoreProxyServer implements ApplicationRunner {
 
-  /**
-   * default port on which to start the server (48869)
-   */
+  /** default port on which to start the server (48869) */
   public static final int DEFAULT_WAGGLEDANCE_PORT = 0xBEE5;
+
   public static final String ADMIN = "admin";
   public static final String PUBLIC = "public";
 
@@ -122,13 +119,16 @@ public class MetaStoreProxyServer implements ApplicationRunner {
       }
 
       // Add shutdown hook.
-      Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-        String shutdownMsg = "Shutting down WaggleDance.";
-        log.info(shutdownMsg);
-        if (isCliVerbose) {
-          System.err.println(shutdownMsg);
-        }
-      }));
+      Runtime.getRuntime()
+          .addShutdownHook(
+              new Thread(
+                  () -> {
+                    String shutdownMsg = "Shutting down WaggleDance.";
+                    log.info(shutdownMsg);
+                    if (isCliVerbose) {
+                      System.err.println(shutdownMsg);
+                    }
+                  }));
 
       AtomicBoolean startedServing = new AtomicBoolean();
       startWaggleDance(startLock, startCondition, startedServing);
@@ -148,10 +148,7 @@ public class MetaStoreProxyServer implements ApplicationRunner {
    * @throws Throwable
    */
   private void startWaggleDance(
-      Lock startLock,
-      Condition startCondition,
-      AtomicBoolean startedServing)
-    throws Throwable {
+      Lock startLock, Condition startCondition, AtomicBoolean startedServing) throws Throwable {
     try {
       // Server will create new threads up to max as necessary. After an idle
       // period, it will destroy threads to keep the number of threads in the
@@ -159,11 +156,12 @@ public class MetaStoreProxyServer implements ApplicationRunner {
       int minWorkerThreads = hiveConf.getIntVar(ConfVars.METASTORESERVERMINTHREADS);
       int maxWorkerThreads = hiveConf.getIntVar(ConfVars.METASTORESERVERMAXTHREADS);
       boolean tcpKeepAlive = hiveConf.getBoolVar(ConfVars.METASTORE_TCP_KEEP_ALIVE);
-      boolean useFramedTransport = hiveConf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_FRAMED_TRANSPORT);
+      boolean useFramedTransport =
+          hiveConf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_FRAMED_TRANSPORT);
       boolean useSSL = hiveConf.getBoolVar(ConfVars.HIVE_METASTORE_USE_SSL);
       boolean useSasl = hiveConf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_SASL);
 
-      //load 'hadoop.proxyuser' configs
+      // load 'hadoop.proxyuser' configs
       ProxyUsers.refreshSuperUserGroupsConfiguration(hiveConf);
 
       TServerSocket serverSocket = createServerSocket(useSSL, waggleDanceConfiguration.getPort());
@@ -172,20 +170,22 @@ public class MetaStoreProxyServer implements ApplicationRunner {
         serverSocket = new TServerSocketKeepAlive(serverSocket);
       }
 
-      TTransportFactory transFactory = createTTransportFactory(useFramedTransport, useSasl,
-          saslServerWrapper.getSaslServer());
-      TProcessorFactory tProcessorFactory = getTProcessorFactory(useSasl, saslServerWrapper.getSaslServer());
+      TTransportFactory transFactory =
+          createTTransportFactory(useFramedTransport, useSasl, saslServerWrapper.getSaslServer());
+      TProcessorFactory tProcessorFactory =
+          getTProcessorFactory(useSasl, saslServerWrapper.getSaslServer());
       log.info("Starting WaggleDance Server");
 
-      TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverSocket)
-          .processorFactory(tProcessorFactory)
-          .transportFactory(transFactory)
-          .protocolFactory(new TBinaryProtocol.Factory())
-          .minWorkerThreads(minWorkerThreads)
-          .maxWorkerThreads(maxWorkerThreads)
-          .stopTimeoutVal(waggleDanceConfiguration.getThriftServerStopTimeoutValInSeconds())
-          .requestTimeout(waggleDanceConfiguration.getThriftServerRequestTimeout())
-          .requestTimeoutUnit(waggleDanceConfiguration.getThriftServerRequestTimeoutUnit());
+      TThreadPoolServer.Args args =
+          new TThreadPoolServer.Args(serverSocket)
+              .processorFactory(tProcessorFactory)
+              .transportFactory(transFactory)
+              .protocolFactory(new TBinaryProtocol.Factory())
+              .minWorkerThreads(minWorkerThreads)
+              .maxWorkerThreads(maxWorkerThreads)
+              .stopTimeoutVal(waggleDanceConfiguration.getThriftServerStopTimeoutValInSeconds())
+              .requestTimeout(waggleDanceConfiguration.getThriftServerRequestTimeout())
+              .requestTimeoutUnit(waggleDanceConfiguration.getThriftServerRequestTimeoutUnit());
 
       tServer = new TThreadPoolServer(args);
       log.info("Started the new WaggleDance on port [{}]...", waggleDanceConfiguration.getPort());
@@ -204,8 +204,8 @@ public class MetaStoreProxyServer implements ApplicationRunner {
     log.info("Waggle Dance has stopped");
   }
 
-  private TProcessorFactory getTProcessorFactory(boolean useSASL,
-                                                 HadoopThriftAuthBridge.Server server) throws TTransportException {
+  private TProcessorFactory getTProcessorFactory(
+      boolean useSASL, HadoopThriftAuthBridge.Server server) throws TTransportException {
     if (useSASL) {
       return new TProcessorFactorySaslDecorator(tProcessorFactory, server);
     } else {
@@ -213,9 +213,9 @@ public class MetaStoreProxyServer implements ApplicationRunner {
     }
   }
 
-  private TTransportFactory createTTransportFactory(boolean useFramedTransport, boolean useSASL,
-                                                    HadoopThriftAuthBridge.Server server)
-          throws LoginException {
+  private TTransportFactory createTTransportFactory(
+      boolean useFramedTransport, boolean useSASL, HadoopThriftAuthBridge.Server server)
+      throws LoginException {
     if (useSASL) {
       return SaslHelper.getAuthTransFactory(server, hiveConf);
     }
@@ -223,25 +223,31 @@ public class MetaStoreProxyServer implements ApplicationRunner {
       return new TFramedTransport.Factory();
     }
     return new TTransportFactory();
-
   }
 
-  private TServerSocket createServerSocket(boolean useSSL, int port) throws IOException, TTransportException {
+  private TServerSocket createServerSocket(boolean useSSL, int port)
+      throws IOException, TTransportException {
     TServerSocket serverSocket = null;
     // enable SSL support for HMS
-    List<String> sslVersionBlacklist = new ArrayList<>(Arrays.asList(hiveConf.getVar(ConfVars.HIVE_SSL_PROTOCOL_BLACKLIST).split(",")));
+    List<String> sslVersionBlacklist =
+        new ArrayList<>(
+            Arrays.asList(hiveConf.getVar(ConfVars.HIVE_SSL_PROTOCOL_BLACKLIST).split(",")));
     if (!useSSL) {
       serverSocket = HiveAuthUtils.getServerSocket(null, port);
     } else {
       String keyStorePath = hiveConf.getVar(ConfVars.HIVE_METASTORE_SSL_KEYSTORE_PATH).trim();
       if (keyStorePath.isEmpty()) {
         throw new IllegalArgumentException(
-            ConfVars.HIVE_METASTORE_SSL_KEYSTORE_PASSWORD.varname + " Not configured for SSL connection");
+            ConfVars.HIVE_METASTORE_SSL_KEYSTORE_PASSWORD.varname
+                + " Not configured for SSL connection");
       }
-      String keyStorePassword = ShimLoader
-          .getHadoopShims()
-          .getPassword(hiveConf, HiveConf.ConfVars.HIVE_METASTORE_SSL_KEYSTORE_PASSWORD.varname);
-      serverSocket = HiveAuthUtils.getServerSSLSocket(null, port, keyStorePath, keyStorePassword, sslVersionBlacklist);
+      String keyStorePassword =
+          ShimLoader.getHadoopShims()
+              .getPassword(
+                  hiveConf, HiveConf.ConfVars.HIVE_METASTORE_SSL_KEYSTORE_PASSWORD.varname);
+      serverSocket =
+          HiveAuthUtils.getServerSSLSocket(
+              null, port, keyStorePath, keyStorePassword, sslVersionBlacklist);
     }
     return serverSocket;
   }
@@ -253,22 +259,24 @@ public class MetaStoreProxyServer implements ApplicationRunner {
       final AtomicBoolean startedServing) {
     // A simple thread to wait until the server has started and then signal the other threads to
     // begin
-    Thread t = new Thread(() -> {
-      do {
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          log.warn("Signalling thread was interuppted: {}", e.getMessage());
-        }
-      } while (!server.isServing());
-      startLock.lock();
-      try {
-        startedServing.set(true);
-        startCondition.signalAll();
-      } finally {
-        startLock.unlock();
-      }
-    });
+    Thread t =
+        new Thread(
+            () -> {
+              do {
+                try {
+                  Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                  log.warn("Signalling thread was interuppted: {}", e.getMessage());
+                }
+              } while (!server.isServing());
+              startLock.lock();
+              try {
+                startedServing.set(true);
+                startCondition.signalAll();
+              } finally {
+                startLock.unlock();
+              }
+            });
     t.start();
   }
 
@@ -285,7 +293,8 @@ public class MetaStoreProxyServer implements ApplicationRunner {
     waitUntilStarted(3, 1, TimeUnit.MINUTES);
   }
 
-  public void waitUntilStarted(int retries, long waitDelay, TimeUnit waitDelayTimeUnit) throws InterruptedException {
+  public void waitUntilStarted(int retries, long waitDelay, TimeUnit waitDelayTimeUnit)
+      throws InterruptedException {
     if (isRunning()) {
       return;
     }
@@ -301,7 +310,8 @@ public class MetaStoreProxyServer implements ApplicationRunner {
         startLock.unlock();
       }
       if (i == retries) {
-        throw new RuntimeException("Maximum number of tries reached whilst waiting for Thrift server to be ready");
+        throw new RuntimeException(
+            "Maximum number of tries reached whilst waiting for Thrift server to be ready");
       }
     }
   }

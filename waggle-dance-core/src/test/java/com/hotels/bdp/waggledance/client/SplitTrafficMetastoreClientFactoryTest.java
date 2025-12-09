@@ -1,16 +1,14 @@
 /**
- * Copyright (C) 2016-2024 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client;
@@ -40,8 +38,8 @@ public class SplitTrafficMetastoreClientFactoryTest {
 
   @Test
   public void new_instance_getTable() throws Exception {
-    CloseableThriftHiveMetastoreIface client = new SplitTrafficMetastoreClientFactory()
-        .newInstance(readWrite, readOnly);
+    CloseableThriftHiveMetastoreIface client =
+        new SplitTrafficMetastoreClientFactory().newInstance(readWrite, readOnly);
     when(readOnly.get_table("a", "b")).thenReturn(readTable);
 
     Table table = client.get_table("a", "b");
@@ -52,8 +50,8 @@ public class SplitTrafficMetastoreClientFactoryTest {
 
   @Test
   public void new_instance_alterTable() throws Exception {
-    CloseableThriftHiveMetastoreIface client = new SplitTrafficMetastoreClientFactory()
-        .newInstance(readWrite, readOnly);
+    CloseableThriftHiveMetastoreIface client =
+        new SplitTrafficMetastoreClientFactory().newInstance(readWrite, readOnly);
 
     client.alter_table("a", "b", writeTable);
 
@@ -63,8 +61,8 @@ public class SplitTrafficMetastoreClientFactoryTest {
 
   @Test
   public void new_instance_close() throws Exception {
-    CloseableThriftHiveMetastoreIface client = new SplitTrafficMetastoreClientFactory()
-        .newInstance(readWrite, readOnly);
+    CloseableThriftHiveMetastoreIface client =
+        new SplitTrafficMetastoreClientFactory().newInstance(readWrite, readOnly);
 
     client.close();
 
@@ -74,8 +72,8 @@ public class SplitTrafficMetastoreClientFactoryTest {
 
   @Test
   public void new_instance_set_ugi() throws Exception {
-    CloseableThriftHiveMetastoreIface client = new SplitTrafficMetastoreClientFactory()
-        .newInstance(readWrite, readOnly);
+    CloseableThriftHiveMetastoreIface client =
+        new SplitTrafficMetastoreClientFactory().newInstance(readWrite, readOnly);
 
     List<String> expected = Arrays.asList("result");
     when(readOnly.set_ugi("a", Arrays.asList("b"))).thenReturn(expected);
@@ -89,8 +87,8 @@ public class SplitTrafficMetastoreClientFactoryTest {
 
   @Test
   public void new_instance_isOpen_true() throws Exception {
-    CloseableThriftHiveMetastoreIface client = new SplitTrafficMetastoreClientFactory()
-        .newInstance(readWrite, readOnly);
+    CloseableThriftHiveMetastoreIface client =
+        new SplitTrafficMetastoreClientFactory().newInstance(readWrite, readOnly);
     when(readOnly.isOpen()).thenReturn(true);
     when(readWrite.isOpen()).thenReturn(true);
     boolean isOpen = client.isOpen();
@@ -100,8 +98,8 @@ public class SplitTrafficMetastoreClientFactoryTest {
 
   @Test
   public void new_instance_isOpen_false() throws Exception {
-    CloseableThriftHiveMetastoreIface client = new SplitTrafficMetastoreClientFactory()
-        .newInstance(readWrite, readOnly);
+    CloseableThriftHiveMetastoreIface client =
+        new SplitTrafficMetastoreClientFactory().newInstance(readWrite, readOnly);
     when(readWrite.isOpen()).thenReturn(false);
     boolean isOpen = client.isOpen();
 
@@ -111,8 +109,8 @@ public class SplitTrafficMetastoreClientFactoryTest {
 
   @Test
   public void new_instance_isOpen_readOnly_false() throws Exception {
-    CloseableThriftHiveMetastoreIface client = new SplitTrafficMetastoreClientFactory()
-        .newInstance(readWrite, readOnly);
+    CloseableThriftHiveMetastoreIface client =
+        new SplitTrafficMetastoreClientFactory().newInstance(readWrite, readOnly);
     when(readOnly.isOpen()).thenReturn(false);
     when(readWrite.isOpen()).thenReturn(true);
     boolean isOpen = client.isOpen();
@@ -122,13 +120,12 @@ public class SplitTrafficMetastoreClientFactoryTest {
 
   @Test
   public void new_instance_isOpen_readWrite_false() throws Exception {
-    CloseableThriftHiveMetastoreIface client = new SplitTrafficMetastoreClientFactory()
-        .newInstance(readWrite, readOnly);
+    CloseableThriftHiveMetastoreIface client =
+        new SplitTrafficMetastoreClientFactory().newInstance(readWrite, readOnly);
     when(readWrite.isOpen()).thenReturn(false);
     boolean isOpen = client.isOpen();
 
     assertThat(isOpen, is(false));
     verifyNoInteractions(readOnly);
   }
-
 }

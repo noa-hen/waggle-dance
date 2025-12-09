@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance;
@@ -74,7 +72,7 @@ import org.springframework.web.client.RestTemplate;
 import feign.Feign;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
-import feign.jaxrs.JAXRSContract;
+import feign.jaxrs.JakartaContract;
 import fm.last.commons.test.file.ClassDataFolder;
 import fm.last.commons.test.file.DataFolder;
 
@@ -94,7 +92,7 @@ import com.hotels.beeju.ThriftHiveMetaStoreJUnitRule;
 import com.hotels.hcommon.hive.metastore.client.tunnelling.MetastoreTunnel;
 
 public class WaggleDanceIntegrationTest {
-  
+
   private static Logger log = LoggerFactory.getLogger(WaggleDanceIntegrationTest.class);
 
   private static final String LOCAL_DATABASE = "local_database";
@@ -102,12 +100,15 @@ public class WaggleDanceIntegrationTest {
   private static final String REMOTE_DATABASE = "remote_database";
   private static final String REMOTE_TABLE = "remote_table";
   private static final String SECONDARY_METASTORE_NAME = "waggle_remote";
-  private static final String PREFIXED_REMOTE_DATABASE = SECONDARY_METASTORE_NAME + "_" + REMOTE_DATABASE;
+  private static final String PREFIXED_REMOTE_DATABASE =
+      SECONDARY_METASTORE_NAME + "_" + REMOTE_DATABASE;
 
   public @Rule ServerSocketRule graphite = new ServerSocketRule();
   public @Rule TemporaryFolder temporaryFolder = new TemporaryFolder();
-  public @Rule ThriftHiveMetaStoreJUnitRule localServer = new ThriftHiveMetaStoreJUnitRule(LOCAL_DATABASE);
-  public @Rule ThriftHiveMetaStoreJUnitRule remoteServer = new ThriftHiveMetaStoreJUnitRule(REMOTE_DATABASE);
+  public @Rule ThriftHiveMetaStoreJUnitRule localServer =
+      new ThriftHiveMetaStoreJUnitRule(LOCAL_DATABASE);
+  public @Rule ThriftHiveMetaStoreJUnitRule remoteServer =
+      new ThriftHiveMetaStoreJUnitRule(REMOTE_DATABASE);
   public @Rule ThriftHiveMetaStoreJUnitRule newRemoteServer = new ThriftHiveMetaStoreJUnitRule();
   public @Rule DataFolder dataFolder = new ClassDataFolder();
 
@@ -126,7 +127,8 @@ public class WaggleDanceIntegrationTest {
     createLocalTable(new File(localWarehouseUri, LOCAL_DATABASE + "/" + LOCAL_TABLE), LOCAL_TABLE);
     log.info(">>>> Table {} ", localServer.client().getTable(LOCAL_DATABASE, LOCAL_TABLE));
 
-    createRemoteTable(new File(remoteWarehouseUri, REMOTE_DATABASE + "/" + REMOTE_TABLE), REMOTE_TABLE);
+    createRemoteTable(
+        new File(remoteWarehouseUri, REMOTE_DATABASE + "/" + REMOTE_TABLE), REMOTE_TABLE);
     log.info(">>>> Table {} ", remoteServer.client().getTable(REMOTE_DATABASE, REMOTE_TABLE));
   }
 
@@ -152,12 +154,12 @@ public class WaggleDanceIntegrationTest {
     File partitionAsia = new File(tableUri, "continent=Asia");
     File partitionChina = new File(partitionAsia, "country=China");
 
-    log
-        .info(">>>> Partitions added: {}",
-            client
-                .add_partitions(Arrays
-                    .asList(newPartition(hiveTable, Arrays.asList("Europe", "UK"), partitionUk),
-                        newPartition(hiveTable, Arrays.asList("Asia", "China"), partitionChina))));
+    log.info(
+        ">>>> Partitions added: {}",
+        client.add_partitions(
+            Arrays.asList(
+                newPartition(hiveTable, Arrays.asList("Europe", "UK"), partitionUk),
+                newPartition(hiveTable, Arrays.asList("Asia", "China"), partitionChina))));
   }
 
   private void runWaggleDance(WaggleDanceRunner runner) throws Exception {
@@ -167,19 +169,20 @@ public class WaggleDanceIntegrationTest {
   private Federations stopServerAndGetConfiguration() throws Exception, FileNotFoundException {
     runner.stop();
     // Stopping the server triggers the saving of the config file.
-    Federations federations = YamlFactory
-        .newYaml()
-        .loadAs(new FileInputStream(runner.federationConfig()), Federations.class);
+    Federations federations =
+        YamlFactory.newYaml()
+            .loadAs(new FileInputStream(runner.federationConfig()), Federations.class);
     return federations;
   }
 
   @Test
   public void typical() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -196,23 +199,40 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void typicalGetAllFunctions() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .withPrimaryPrefix("primary_")
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .withPrimaryPrefix("primary_")
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
-    List<ResourceUri> resourceUris = Lists
-        .newArrayList(new ResourceUri(ResourceType.JAR, "hdfs://path/to/my/jar/my.jar"));
-    Function localFunction = new Function("fn1", LOCAL_DATABASE, "com.hotels.hive.FN1", "hadoop", PrincipalType.USER, 0,
-        FunctionType.JAVA, resourceUris);
+    List<ResourceUri> resourceUris =
+        Lists.newArrayList(new ResourceUri(ResourceType.JAR, "hdfs://path/to/my/jar/my.jar"));
+    Function localFunction =
+        new Function(
+            "fn1",
+            LOCAL_DATABASE,
+            "com.hotels.hive.FN1",
+            "hadoop",
+            PrincipalType.USER,
+            0,
+            FunctionType.JAVA,
+            resourceUris);
     localServer.client().createFunction(localFunction);
-    Function remoteFunction = new Function("fn2", REMOTE_DATABASE, "com.hotels.hive.FN1", "hadoop", PrincipalType.USER,
-        0, FunctionType.JAVA, resourceUris);
+    Function remoteFunction =
+        new Function(
+            "fn2",
+            REMOTE_DATABASE,
+            "com.hotels.hive.FN1",
+            "hadoop",
+            PrincipalType.USER,
+            0,
+            FunctionType.JAVA,
+            resourceUris);
     remoteServer.client().createFunction(remoteFunction);
 
     GetAllFunctionsResponse allFunctions = proxy.getAllFunctions();
@@ -228,12 +248,12 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void usePrefix() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri())
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri())
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -253,37 +273,62 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void manyFederatedMetastores() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri())
-        .federate("fed1", remoteServer.getThriftConnectionUri())
-        .federate("fed2", remoteServer.getThriftConnectionUri())
-        .federate("fed3", remoteServer.getThriftConnectionUri())
-        .federate("fed4", remoteServer.getThriftConnectionUri())
-        .federate("fed5", remoteServer.getThriftConnectionUri())
-        .federate("fed6", remoteServer.getThriftConnectionUri())
-        .federate("fed7", remoteServer.getThriftConnectionUri())
-        .federate("fed8", remoteServer.getThriftConnectionUri())
-        .federate("fed9", remoteServer.getThriftConnectionUri())
-        .federate("fed10", remoteServer.getThriftConnectionUri())
-        .federate("fed11", remoteServer.getThriftConnectionUri())
-        .federate("fed12", remoteServer.getThriftConnectionUri())
-        .federate("fed13", remoteServer.getThriftConnectionUri())
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri())
+            .federate("fed1", remoteServer.getThriftConnectionUri())
+            .federate("fed2", remoteServer.getThriftConnectionUri())
+            .federate("fed3", remoteServer.getThriftConnectionUri())
+            .federate("fed4", remoteServer.getThriftConnectionUri())
+            .federate("fed5", remoteServer.getThriftConnectionUri())
+            .federate("fed6", remoteServer.getThriftConnectionUri())
+            .federate("fed7", remoteServer.getThriftConnectionUri())
+            .federate("fed8", remoteServer.getThriftConnectionUri())
+            .federate("fed9", remoteServer.getThriftConnectionUri())
+            .federate("fed10", remoteServer.getThriftConnectionUri())
+            .federate("fed11", remoteServer.getThriftConnectionUri())
+            .federate("fed12", remoteServer.getThriftConnectionUri())
+            .federate("fed13", remoteServer.getThriftConnectionUri())
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
 
     List<String> dbs = proxy.getAllDatabases();
-    List<String> expected = newArrayList("default", "local_database", "waggle_remote_default",
-        "waggle_remote_remote_database", "fed1_default", "fed1_remote_database", "fed2_default", "fed2_remote_database",
-        "fed3_default", "fed3_remote_database", "fed4_default", "fed4_remote_database", "fed5_default",
-        "fed5_remote_database", "fed6_default", "fed6_remote_database", "fed7_default", "fed7_remote_database",
-        "fed8_default", "fed8_remote_database", "fed9_default", "fed9_remote_database", "fed10_default",
-        "fed10_remote_database", "fed11_default", "fed11_remote_database", "fed12_default", "fed12_remote_database",
-        "fed13_default", "fed13_remote_database");
+    List<String> expected =
+        newArrayList(
+            "default",
+            "local_database",
+            "waggle_remote_default",
+            "waggle_remote_remote_database",
+            "fed1_default",
+            "fed1_remote_database",
+            "fed2_default",
+            "fed2_remote_database",
+            "fed3_default",
+            "fed3_remote_database",
+            "fed4_default",
+            "fed4_remote_database",
+            "fed5_default",
+            "fed5_remote_database",
+            "fed6_default",
+            "fed6_remote_database",
+            "fed7_default",
+            "fed7_remote_database",
+            "fed8_default",
+            "fed8_remote_database",
+            "fed9_default",
+            "fed9_remote_database",
+            "fed10_default",
+            "fed10_remote_database",
+            "fed11_default",
+            "fed11_remote_database",
+            "fed12_default",
+            "fed12_remote_database",
+            "fed13_default",
+            "fed13_remote_database");
     assertThat(dbs.size(), is(expected.size()));
     assertThat(dbs, Matchers.containsInAnyOrder(expected.toArray()));
   }
@@ -291,13 +336,13 @@ public class WaggleDanceIntegrationTest {
   @Test
   public void usePrimaryPrefix() throws Exception {
     String primaryPrefix = "primary_";
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .withPrimaryPrefix(primaryPrefix)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri())
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .withPrimaryPrefix(primaryPrefix)
+            .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri())
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -316,7 +361,8 @@ public class WaggleDanceIntegrationTest {
     assertTypicalRemoteTable(proxy, prefixedRemoteDbName);
   }
 
-  private void assertTypicalRemoteTable(HiveMetaStoreClient proxy, String waggledRemoteDbName) throws TException {
+  private void assertTypicalRemoteTable(HiveMetaStoreClient proxy, String waggledRemoteDbName)
+      throws TException {
     Table remoteTable = remoteServer.client().getTable(REMOTE_DATABASE, REMOTE_TABLE);
     Table waggledRemoteTable = proxy.getTable(waggledRemoteDbName, REMOTE_TABLE);
     assertThat(waggledRemoteTable.getDbName(), is(waggledRemoteDbName));
@@ -325,13 +371,13 @@ public class WaggleDanceIntegrationTest {
     assertThat(waggledRemoteTable.getParameters(), is(remoteTable.getParameters()));
     assertThat(waggledRemoteTable.getPartitionKeys(), is(remoteTable.getPartitionKeys()));
 
-    List<String> partitionNames = Arrays.asList("continent=Europe/country=UK", "continent=Asia/country=China");
+    List<String> partitionNames =
+        Arrays.asList("continent=Europe/country=UK", "continent=Asia/country=China");
 
-    List<Partition> remotePartitions = remoteServer
-        .client()
-        .getPartitionsByNames(REMOTE_DATABASE, REMOTE_TABLE, partitionNames);
-    List<Partition> waggledRemotePartitions = proxy
-        .getPartitionsByNames(waggledRemoteDbName, REMOTE_TABLE, partitionNames);
+    List<Partition> remotePartitions =
+        remoteServer.client().getPartitionsByNames(REMOTE_DATABASE, REMOTE_TABLE, partitionNames);
+    List<Partition> waggledRemotePartitions =
+        proxy.getPartitionsByNames(waggledRemoteDbName, REMOTE_TABLE, partitionNames);
     assertThat(waggledRemotePartitions.size(), is(2));
     for (int i = 0; i < waggledRemotePartitions.size(); ++i) {
       Partition remotePartition = remotePartitions.get(i);
@@ -350,12 +396,12 @@ public class WaggleDanceIntegrationTest {
   @Ignore("Seems to fail for unknown reasons often in Github Actions")
   @Test
   public void typicalWithGraphite() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federate("remote", remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .graphite("localhost", graphite.port(), "graphitePrefix", 1000)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federate("remote", remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .graphite("localhost", graphite.port(), "graphitePrefix", 1000)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -367,21 +413,32 @@ public class WaggleDanceIntegrationTest {
     proxy.getTable(REMOTE_DATABASE, REMOTE_TABLE);
     runner.stop();
 
-    Set<String> metrics = new TreeSet<>(Arrays.asList(new String(graphite.getOutput()).split("\n")));
-    assertMetric(metrics,
+    Set<String> metrics =
+        new TreeSet<>(Arrays.asList(new String(graphite.getOutput()).split("\n")));
+    assertMetric(
+        metrics,
         "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.get_all_databases.all.calls;metricattribute=count 2");
-    assertMetric(metrics,
+    assertMetric(
+        metrics,
         "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.get_all_databases.all.success;metricattribute=count 2");
-    assertMetric(metrics,
+    assertMetric(
+        metrics,
         "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.get_table_req.primary.calls;metricattribute=count 1");
-    assertMetric(metrics,
+    assertMetric(
+        metrics,
         "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.get_table_req.primary.success;metricattribute=count 1");
-    assertMetric(metrics,
+    assertMetric(
+        metrics,
         "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.get_table_req.remote.calls;metricattribute=count 1");
-    assertMetric(metrics,
+    assertMetric(
+        metrics,
         "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.get_table_req.remote.success;metricattribute=count 1");
-    assertMetric(metrics, "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.success");
-    assertMetric(metrics, "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.calls");
+    assertMetric(
+        metrics,
+        "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.success");
+    assertMetric(
+        metrics,
+        "graphitePrefix.counter.com.hotels.bdp.waggledance.server.FederatedHMSHandler.calls");
   }
 
   private void assertMetric(Set<String> metrics, String partialMetric) {
@@ -399,16 +456,20 @@ public class WaggleDanceIntegrationTest {
 
     localServer.createDatabase(writableDatabase);
 
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(), AccessControlType.READ_AND_WRITE_AND_CREATE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE)
+            .build();
 
     runWaggleDance(runner);
 
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
     // create rights
-    proxy.createDatabase(new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
+    proxy.createDatabase(
+        new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
     Database newDB = proxy.getDatabase("newDB");
     assertNotNull(newDB);
 
@@ -423,7 +484,8 @@ public class WaggleDanceIntegrationTest {
       proxy.getTable(LOCAL_DATABASE, LOCAL_TABLE);
       fail("Should get NoSuchObjectException");
     } catch (NoSuchObjectException e) {
-      // Local table should be allowed to drop, so it now no longer exists and we get an appropriate exception
+      // Local table should be allowed to drop, so it now no longer exists and we get an appropriate
+      // exception
     }
   }
 
@@ -433,17 +495,21 @@ public class WaggleDanceIntegrationTest {
 
     localServer.createDatabase(writableDatabase);
 
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), AccessControlType.READ_AND_WRITE_AND_CREATE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE)
+            .build();
 
     runWaggleDance(runner);
 
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
     // create rights
-    proxy.createDatabase(new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
+    proxy.createDatabase(
+        new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
     Database newDB = proxy.getDatabase("newDB");
     assertNotNull(newDB);
 
@@ -458,19 +524,25 @@ public class WaggleDanceIntegrationTest {
       proxy.getTable(LOCAL_DATABASE, LOCAL_TABLE);
       fail("Should get NoSuchObjectException");
     } catch (NoSuchObjectException e) {
-      // Local table should be allowed to drop, so it now no longer exists and we get an appropriate exception
+      // Local table should be allowed to drop, so it now no longer exists and we get an appropriate
+      // exception
     }
   }
 
   @Test
-  public void federatedWritesSucceedIfReadAndWriteOnDatabaseWhiteListIsConfigured() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), AccessControlType.READ_ONLY)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), READ_AND_WRITE_ON_DATABASE_WHITELIST,
-            new String[] { REMOTE_DATABASE }, new String[] { REMOTE_DATABASE })
-        .build();
+  public void federatedWritesSucceedIfReadAndWriteOnDatabaseWhiteListIsConfigured()
+      throws Exception {
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), AccessControlType.READ_ONLY)
+            .federate(
+                SECONDARY_METASTORE_NAME,
+                remoteServer.getThriftConnectionUri(),
+                READ_AND_WRITE_ON_DATABASE_WHITELIST,
+                new String[] {REMOTE_DATABASE},
+                new String[] {REMOTE_DATABASE})
+            .build();
 
     runWaggleDance(runner);
 
@@ -489,18 +561,20 @@ public class WaggleDanceIntegrationTest {
       proxy.getTable(waggledRemoteDbName, REMOTE_TABLE);
       fail("Should get NoSuchObjectException");
     } catch (NoSuchObjectException e) {
-      // Federated table should be allowed to drop, so it now no longer exists and we get an appropriate exception
+      // Federated table should be allowed to drop, so it now no longer exists and we get an
+      // appropriate exception
     }
   }
 
   @Test
-  public void federatedWritesFailIfReadAndWriteOnDatabaseWhiteListIsNotConfigured() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), AccessControlType.READ_ONLY)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri())
-        .build();
+  public void federatedWritesFailIfReadAndWriteOnDatabaseWhiteListIsNotConfigured()
+      throws Exception {
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), AccessControlType.READ_ONLY)
+            .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri())
+            .build();
 
     runWaggleDance(runner);
 
@@ -523,14 +597,19 @@ public class WaggleDanceIntegrationTest {
   }
 
   @Test
-  public void federatedWritesFailIfReadAndWriteOnDatabaseWhiteListDoesNotIncludeDb() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), AccessControlType.READ_ONLY)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), READ_AND_WRITE_ON_DATABASE_WHITELIST,
-            new String[] { REMOTE_DATABASE }, new String[] { "mismatch" })
-        .build();
+  public void federatedWritesFailIfReadAndWriteOnDatabaseWhiteListDoesNotIncludeDb()
+      throws Exception {
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), AccessControlType.READ_ONLY)
+            .federate(
+                SECONDARY_METASTORE_NAME,
+                remoteServer.getThriftConnectionUri(),
+                READ_AND_WRITE_ON_DATABASE_WHITELIST,
+                new String[] {REMOTE_DATABASE},
+                new String[] {"mismatch"})
+            .build();
 
     runWaggleDance(runner);
 
@@ -558,11 +637,14 @@ public class WaggleDanceIntegrationTest {
 
     localServer.createDatabase(writableDatabase);
 
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_AND_WRITE_ON_DATABASE_WHITELIST,
-            writableDatabase)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                READ_AND_WRITE_ON_DATABASE_WHITELIST,
+                writableDatabase)
+            .build();
 
     runWaggleDance(runner);
 
@@ -583,16 +665,19 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void createDatabaseUsingManualAndWhitelistingUpdatesConfig() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .build();
 
     runWaggleDance(runner);
 
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
-    proxy.createDatabase(new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
+    proxy.createDatabase(
+        new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
     Database newDB = proxy.getDatabase("newDB");
     assertNotNull(newDB);
 
@@ -609,17 +694,20 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void createDatabaseDatabaseUsingPrefixAndWhitelistingUpdates() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .build();
 
     runWaggleDance(runner);
 
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
-    proxy.createDatabase(new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
+    proxy.createDatabase(
+        new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
     Database newDB = proxy.getDatabase("newDB");
     assertNotNull(newDB);
 
@@ -636,16 +724,22 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void alterTableOnFederatedIsNotAllowedUsingManual() throws Exception {
-    String[] mappableDatabases = new String[] { REMOTE_DATABASE };
-    String[] writableDatabaseWhitelist = new String[] { REMOTE_DATABASE };
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.MANUAL)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .federate("doesNotMatterManualMode", remoteServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_ON_DATABASE_WHITELIST, mappableDatabases, writableDatabaseWhitelist)
-        .build();
+    String[] mappableDatabases = new String[] {REMOTE_DATABASE};
+    String[] writableDatabaseWhitelist = new String[] {REMOTE_DATABASE};
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.MANUAL)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .federate(
+                "doesNotMatterManualMode",
+                remoteServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_ON_DATABASE_WHITELIST,
+                mappableDatabases,
+                writableDatabaseWhitelist)
+            .build();
 
     runWaggleDance(runner);
 
@@ -661,19 +755,23 @@ public class WaggleDanceIntegrationTest {
   @Test
   public void doesNotOverwriteConfigOnShutdownManualMode() throws Exception {
     // Note a similar test for PREFIX is not required
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.MANUAL)
-        .overwriteConfigOnShutdown(false)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.MANUAL)
+            .overwriteConfigOnShutdown(false)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
 
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
-    proxy.createDatabase(new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
+    proxy.createDatabase(
+        new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
     Database newDB = proxy.getDatabase("newDB");
     assertNotNull(newDB);
 
@@ -694,24 +792,28 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void overwritesConfigOnShutdownAfterAddingFederation() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
-    FederationsAdminClient restClient = Feign
-        .builder()
-        .contract(new JAXRSContract())
-        .encoder(new JacksonEncoder())
-        .decoder(new JacksonDecoder())
-        .target(FederationsAdminClient.class, "http://localhost:" + runner.getRestApiPort() + "/");
+    FederationsAdminClient restClient =
+        Feign.builder()
+            .contract(new JakartaContract())
+            .encoder(new JacksonEncoder())
+            .decoder(new JacksonDecoder())
+            .target(
+                FederationsAdminClient.class, "http://localhost:" + runner.getRestApiPort() + "/");
 
-    FederatedMetaStore newFederation = new FederatedMetaStore("new_waggle_remote",
-        newRemoteServer.getThriftConnectionUri());
+    FederatedMetaStore newFederation =
+        new FederatedMetaStore("new_waggle_remote", newRemoteServer.getThriftConnectionUri());
     restClient.add(newFederation);
 
     Federations federations = stopServerAndGetConfiguration();
@@ -731,25 +833,29 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void doesNotOverwriteConfigOnShutdownAfterAddingFederation() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .overwriteConfigOnShutdown(false)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .overwriteConfigOnShutdown(false)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
-    FederationsAdminClient restClient = Feign
-        .builder()
-        .contract(new JAXRSContract())
-        .encoder(new JacksonEncoder())
-        .decoder(new JacksonDecoder())
-        .target(FederationsAdminClient.class, "http://localhost:" + runner.getRestApiPort() + "/");
+    FederationsAdminClient restClient =
+        Feign.builder()
+            .contract(new JakartaContract())
+            .encoder(new JacksonEncoder())
+            .decoder(new JacksonDecoder())
+            .target(
+                FederationsAdminClient.class, "http://localhost:" + runner.getRestApiPort() + "/");
 
-    FederatedMetaStore newFederation = new FederatedMetaStore("new_waggle_remote",
-        newRemoteServer.getThriftConnectionUri());
+    FederatedMetaStore newFederation =
+        new FederatedMetaStore("new_waggle_remote", newRemoteServer.getThriftConnectionUri());
     restClient.add(newFederation);
 
     Federations federations = stopServerAndGetConfiguration();
@@ -765,44 +871,58 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void restApiGetStatus() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
 
     RestTemplate rest = new RestTemplateBuilder().build();
-    PrimaryMetaStore primaryMetastore = rest
-        .getForObject("http://localhost:" + runner.getRestApiPort() + "/api/admin/federations/primary",
+    PrimaryMetaStore primaryMetastore =
+        rest.getForObject(
+            "http://localhost:" + runner.getRestApiPort() + "/api/admin/federations/primary",
             PrimaryMetaStore.class);
     assertThat(primaryMetastore.getStatus(), is(MetaStoreStatus.AVAILABLE));
-    FederatedMetaStore federatedMetastore = rest
-        .getForObject(
-            "http://localhost:" + runner.getRestApiPort() + "/api/admin/federations/" + SECONDARY_METASTORE_NAME,
+    FederatedMetaStore federatedMetastore =
+        rest.getForObject(
+            "http://localhost:"
+                + runner.getRestApiPort()
+                + "/api/admin/federations/"
+                + SECONDARY_METASTORE_NAME,
             FederatedMetaStore.class);
     assertThat(federatedMetastore.getStatus(), is(MetaStoreStatus.AVAILABLE));
   }
 
-  // This does not set up a tunnel, but tests if a configuration with metastore-tunnel can be read correctly
+  // This does not set up a tunnel, but tests if a configuration with metastore-tunnel can be read
+  // correctly
   @Test
   public void metastoreTunnelConfiguration() throws Exception {
     String route = "ec2-user@bastion-host -> hadoop@emr-master";
     String privateKeys = "/home/user/.ssh/bastion-key-pair.pem,/home/user/.ssh/emr-key-pair.pem";
     String knownHosts = "/home/user/.ssh/known_hosts";
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federateWithMetastoreTunnel(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE,
-            route, privateKeys, knownHosts)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federateWithMetastoreTunnel(
+                SECONDARY_METASTORE_NAME,
+                remoteServer.getThriftConnectionUri(),
+                REMOTE_DATABASE,
+                route,
+                privateKeys,
+                knownHosts)
+            .build();
 
     runWaggleDance(runner);
     RestTemplate rest = new RestTemplateBuilder().build();
-    FederatedMetaStore federatedMetastore = rest
-        .getForObject(
-            "http://localhost:" + runner.getRestApiPort() + "/api/admin/federations/" + SECONDARY_METASTORE_NAME,
+    FederatedMetaStore federatedMetastore =
+        rest.getForObject(
+            "http://localhost:"
+                + runner.getRestApiPort()
+                + "/api/admin/federations/"
+                + SECONDARY_METASTORE_NAME,
             FederatedMetaStore.class);
 
     MetastoreTunnel metastoreTunnel = federatedMetastore.getMetastoreTunnel();
@@ -813,15 +933,18 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void getDatabaseFromPatternManual() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.MANUAL)
-        .overwriteConfigOnShutdown(false)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), "remote.?database")
-        .federate("third", remoteServer.getThriftConnectionUri(), "no_match.*")
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.MANUAL)
+            .overwriteConfigOnShutdown(false)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), "remote.?database")
+            .federate("third", remoteServer.getThriftConnectionUri(), "no_match.*")
+            .build();
     runWaggleDance(runner);
 
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -833,15 +956,18 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void getDatabaseFromPatternPrefixed() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .overwriteConfigOnShutdown(false)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), "remote.?database")
-        .federate("third", remoteServer.getThriftConnectionUri(), "no_match.*")
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .overwriteConfigOnShutdown(false)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), "remote.?database")
+            .federate("third", remoteServer.getThriftConnectionUri(), "no_match.*")
+            .build();
     runWaggleDance(runner);
 
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -856,14 +982,17 @@ public class WaggleDanceIntegrationTest {
     localServer.createDatabase("random_primary");
     remoteServer.createDatabase("random_federated");
 
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.MANUAL)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .withPrimaryMappedDatabases(new String[] { LOCAL_DATABASE })
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.MANUAL)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .withPrimaryMappedDatabases(new String[] {LOCAL_DATABASE})
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -874,7 +1003,8 @@ public class WaggleDanceIntegrationTest {
     assertThat(allDatabases.get(1), is(REMOTE_DATABASE));
 
     // Ensure that the database is added to mapped-databases
-    proxy.createDatabase(new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
+    proxy.createDatabase(
+        new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
     Federations federations = stopServerAndGetConfiguration();
     PrimaryMetaStore primaryMetaStore = federations.getPrimaryMetaStore();
     assertThat(primaryMetaStore.getMappedDatabases().contains("newdb"), is(true));
@@ -885,14 +1015,17 @@ public class WaggleDanceIntegrationTest {
     localServer.createDatabase("random_primary");
     remoteServer.createDatabase("random_federated");
 
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .withPrimaryMappedDatabases(new String[] { LOCAL_DATABASE })
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .withPrimaryMappedDatabases(new String[] {LOCAL_DATABASE})
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -903,7 +1036,8 @@ public class WaggleDanceIntegrationTest {
     assertThat(allDatabases.get(1), is(PREFIXED_REMOTE_DATABASE));
 
     // Ensure that the database is added to mapped-databases
-    proxy.createDatabase(new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
+    proxy.createDatabase(
+        new Database("newDB", "", new File(localWarehouseUri, "newDB").toURI().toString(), null));
     Federations federations = stopServerAndGetConfiguration();
     PrimaryMetaStore primaryMetaStore = federations.getPrimaryMetaStore();
     assertThat(primaryMetaStore.getMappedDatabases().contains("newdb"), is(true));
@@ -914,22 +1048,33 @@ public class WaggleDanceIntegrationTest {
     String localTable = "other_local_table";
     String remoteTable = "other_remote_table";
     createLocalTable(new File(localWarehouseUri, LOCAL_DATABASE + "/" + localTable), localTable);
-    createLocalTable(new File(localWarehouseUri, LOCAL_DATABASE + "/" + "not_mapped_local"), "not_mapped_local");
-    createRemoteTable(new File(remoteWarehouseUri, REMOTE_DATABASE + "/" + remoteTable), remoteTable);
-    createRemoteTable(new File(remoteWarehouseUri, REMOTE_DATABASE + "/" + "not_mapped_remote"), "not_mapped_remote");
+    createLocalTable(
+        new File(localWarehouseUri, LOCAL_DATABASE + "/" + "not_mapped_local"), "not_mapped_local");
+    createRemoteTable(
+        new File(remoteWarehouseUri, REMOTE_DATABASE + "/" + remoteTable), remoteTable);
+    createRemoteTable(
+        new File(remoteWarehouseUri, REMOTE_DATABASE + "/" + "not_mapped_remote"),
+        "not_mapped_remote");
 
-    MappedTables mappedTablesLocal = new MappedTables(LOCAL_DATABASE, Collections.singletonList(localTable));
-    MappedTables mappedTablesRemote = new MappedTables(REMOTE_DATABASE, Collections.singletonList(remoteTable));
+    MappedTables mappedTablesLocal =
+        new MappedTables(LOCAL_DATABASE, Collections.singletonList(localTable));
+    MappedTables mappedTablesRemote =
+        new MappedTables(REMOTE_DATABASE, Collections.singletonList(remoteTable));
 
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .withPrimaryMappedTables(Collections.singletonList(mappedTablesLocal))
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(),
-            Collections.singletonList(mappedTablesRemote), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .withPrimaryMappedTables(Collections.singletonList(mappedTablesLocal))
+            .federate(
+                SECONDARY_METASTORE_NAME,
+                remoteServer.getThriftConnectionUri(),
+                Collections.singletonList(mappedTablesRemote),
+                REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -947,20 +1092,28 @@ public class WaggleDanceIntegrationTest {
     String localTable = "other_local_table";
     String remoteTable = "other_remote_table";
     createLocalTable(new File(localWarehouseUri, LOCAL_DATABASE + "/" + localTable), localTable);
-    createRemoteTable(new File(remoteWarehouseUri, REMOTE_DATABASE + "/" + remoteTable), remoteTable);
+    createRemoteTable(
+        new File(remoteWarehouseUri, REMOTE_DATABASE + "/" + remoteTable), remoteTable);
 
-    MappedTables mappedTablesLocal = new MappedTables(LOCAL_DATABASE, Collections.singletonList(".*other.*"));
-    MappedTables mappedTablesRemote = new MappedTables(REMOTE_DATABASE, Collections.singletonList("no_match.*"));
+    MappedTables mappedTablesLocal =
+        new MappedTables(LOCAL_DATABASE, Collections.singletonList(".*other.*"));
+    MappedTables mappedTablesRemote =
+        new MappedTables(REMOTE_DATABASE, Collections.singletonList("no_match.*"));
 
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(),
-            AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
-        .withPrimaryMappedTables(Collections.singletonList(mappedTablesLocal))
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(),
-            Collections.singletonList(mappedTablesRemote), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary(
+                "primary",
+                localServer.getThriftConnectionUri(),
+                AccessControlType.READ_AND_WRITE_AND_CREATE_ON_DATABASE_WHITELIST)
+            .withPrimaryMappedTables(Collections.singletonList(mappedTablesLocal))
+            .federate(
+                SECONDARY_METASTORE_NAME,
+                remoteServer.getThriftConnectionUri(),
+                Collections.singletonList(mappedTablesRemote),
+                REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -978,14 +1131,15 @@ public class WaggleDanceIntegrationTest {
     databaseNameMapping1.put(LOCAL_DATABASE, "abc");
     Map<String, String> databaseNameMapping2 = new HashMap<>();
     databaseNameMapping2.put(REMOTE_DATABASE, "xyz");
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .withPrimaryDatabaseNameMappingMap(databaseNameMapping1)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .withFederatedDatabaseNameMappingMap(databaseNameMapping2)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .withPrimaryDatabaseNameMappingMap(databaseNameMapping1)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .withFederatedDatabaseNameMappingMap(databaseNameMapping2)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -1012,13 +1166,14 @@ public class WaggleDanceIntegrationTest {
     databaseNameMapping1.put(LOCAL_DATABASE, "abc");
     Map<String, String> databaseNameMapping2 = new HashMap<>();
     databaseNameMapping2.put(REMOTE_DATABASE, "xyz");
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .withPrimaryDatabaseNameMappingMap(databaseNameMapping1)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .withFederatedDatabaseNameMappingMap(databaseNameMapping2)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .withPrimaryDatabaseNameMappingMap(databaseNameMapping1)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .withFederatedDatabaseNameMappingMap(databaseNameMapping2)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -1041,12 +1196,13 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void hiveMetastoreFilterHookConfiguredForPrimary() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .withHiveMetastoreFilterHook(PrefixingMetastoreFilter.class.getName())
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .withHiveMetastoreFilterHook(PrefixingMetastoreFilter.class.getName())
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -1060,11 +1216,12 @@ public class WaggleDanceIntegrationTest {
 
   @Test
   public void get_privilege_set() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -1075,34 +1232,42 @@ public class WaggleDanceIntegrationTest {
     String objectName = null;
     List<String> partValues = null;
     String columnName = null;
-    HiveObjectRef hiveObjectRef = new HiveObjectRef(objectType, dbName, objectName, partValues, columnName);
-    PrincipalPrivilegeSet get_privilege_set = proxy.get_privilege_set(hiveObjectRef, "hadoop", null);
+    HiveObjectRef hiveObjectRef =
+        new HiveObjectRef(objectType, dbName, objectName, partValues, columnName);
+    PrincipalPrivilegeSet get_privilege_set =
+        proxy.get_privilege_set(hiveObjectRef, "hadoop", null);
     assertNotNull(get_privilege_set);
   }
 
   @Test
   public void getTableMeta() throws Exception {
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federate(SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federate(
+                SECONDARY_METASTORE_NAME, remoteServer.getThriftConnectionUri(), REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
 
-    List<TableMeta> tableMeta = proxy
-        .getTableMeta("waggle_remote_remote_database", "*", Lists.newArrayList("EXTERNAL_TABLE"));
+    List<TableMeta> tableMeta =
+        proxy.getTableMeta(
+            "waggle_remote_remote_database", "*", Lists.newArrayList("EXTERNAL_TABLE"));
     assertThat(tableMeta.size(), is(1));
     assertThat(tableMeta.get(0).getDbName(), is("waggle_remote_remote_database"));
     assertThat(tableMeta.get(0).getTableName(), is(REMOTE_TABLE));
     // use wildcards: '.'
-    tableMeta = proxy.getTableMeta("waggle_remote.remote_database", "*", Lists.newArrayList("EXTERNAL_TABLE"));
+    tableMeta =
+        proxy.getTableMeta(
+            "waggle_remote.remote_database", "*", Lists.newArrayList("EXTERNAL_TABLE"));
     assertThat(tableMeta.size(), is(1));
     assertThat(tableMeta.get(0).getDbName(), is("waggle_remote_remote_database"));
     assertThat(tableMeta.get(0).getTableName(), is(REMOTE_TABLE));
-    tableMeta = proxy.getTableMeta("waggle.remote_remote_database", "*", Lists.newArrayList("EXTERNAL_TABLE"));
+    tableMeta =
+        proxy.getTableMeta(
+            "waggle.remote_remote_database", "*", Lists.newArrayList("EXTERNAL_TABLE"));
     assertThat(tableMeta.size(), is(1));
     assertThat(tableMeta.get(0).getDbName(), is("waggle_remote_remote_database"));
     assertThat(tableMeta.get(0).getTableName(), is(REMOTE_TABLE));
@@ -1111,12 +1276,12 @@ public class WaggleDanceIntegrationTest {
   @Test
   public void getTableWhenConnectionUnavailablePrefix() throws Exception {
     String unavailable = "unavailable_secondary";
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.PREFIXED)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federate(unavailable, "thrift://localhost:0000", REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.PREFIXED)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federate(unavailable, "thrift://localhost:0000", REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -1135,12 +1300,12 @@ public class WaggleDanceIntegrationTest {
   @Test
   public void getTableWhenConnectionUnavailableManual() throws Exception {
     String unavailable = "unavailable_secondary";
-    runner = WaggleDanceRunner
-        .builder(configLocation)
-        .databaseResolution(DatabaseResolution.MANUAL)
-        .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
-        .federate(unavailable, "thrift://localhost:0000", REMOTE_DATABASE)
-        .build();
+    runner =
+        WaggleDanceRunner.builder(configLocation)
+            .databaseResolution(DatabaseResolution.MANUAL)
+            .primary("primary", localServer.getThriftConnectionUri(), READ_ONLY)
+            .federate(unavailable, "thrift://localhost:0000", REMOTE_DATABASE)
+            .build();
 
     runWaggleDance(runner);
     HiveMetaStoreClient proxy = runner.createWaggleDanceClient();
@@ -1149,8 +1314,10 @@ public class WaggleDanceIntegrationTest {
       // secondary is not reachable
       proxy.getTable(REMOTE_DATABASE, REMOTE_TABLE);
       fail("Should throw NoSuchObjectException");
-      // Manual mapping works differently then PREFIXED mapping if the secondary is not reachable, it results in NoSuchObject.
-      // A better test would be a connection failure after WD started, but that's hard to mimic. So testing current behavior so we at least capture that.
+      // Manual mapping works differently then PREFIXED mapping if the secondary is not reachable,
+      // it results in NoSuchObject.
+      // A better test would be a connection failure after WD started, but that's hard to mimic. So
+      // testing current behavior so we at least capture that.
     } catch (NoSuchObjectException e) {
       // primary still works
       Table tableFromPrimary = proxy.getTable(LOCAL_DATABASE, LOCAL_TABLE);

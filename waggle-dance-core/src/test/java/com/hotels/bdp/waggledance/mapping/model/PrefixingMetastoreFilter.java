@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.mapping.model;
@@ -28,9 +26,7 @@ import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.api.TableMeta;
 
-/**
- * For testing purposes
- * */
+/** For testing purposes */
 public class PrefixingMetastoreFilter implements MetaStoreFilterHook {
 
   public static final String PREFIX_KEY = "waggledance.hook.prefix";
@@ -38,7 +34,7 @@ public class PrefixingMetastoreFilter implements MetaStoreFilterHook {
   private final String prefix;
 
   public PrefixingMetastoreFilter(HiveConf conf) {
-    prefix = conf.get(PREFIX_KEY,PREFIX_DEFAULT);
+    prefix = conf.get(PREFIX_KEY, PREFIX_DEFAULT);
   }
 
   @Override
@@ -51,12 +47,13 @@ public class PrefixingMetastoreFilter implements MetaStoreFilterHook {
     return dataBase;
   }
 
-  @Override //TODO
-  public List<String> filterTableNames(String catName, String dbName, List<String> tableList) throws MetaException {
+  @Override // TODO
+  public List<String> filterTableNames(String catName, String dbName, List<String> tableList)
+      throws MetaException {
     return tableList;
   }
 
-  @Override //TODO
+  @Override // TODO
   public List<TableMeta> filterTableMetas(List<TableMeta> tableMetas) throws MetaException {
     return tableMetas;
   }
@@ -69,7 +66,7 @@ public class PrefixingMetastoreFilter implements MetaStoreFilterHook {
 
   @Override
   public List<Table> filterTables(List<Table> tableList) throws MetaException {
-    for (Table table: tableList){
+    for (Table table : tableList) {
       setLocationPrefix(table);
     }
     return tableList;
@@ -77,14 +74,15 @@ public class PrefixingMetastoreFilter implements MetaStoreFilterHook {
 
   @Override
   public List<Partition> filterPartitions(List<Partition> partitionList) throws MetaException {
-    for (Partition partition: partitionList){
+    for (Partition partition : partitionList) {
       setLocationPrefix(partition.getSd());
     }
     return partitionList;
   }
 
   @Override
-  public List<PartitionSpec> filterPartitionSpecs(List<PartitionSpec> partitionSpecList) throws MetaException {
+  public List<PartitionSpec> filterPartitionSpecs(List<PartitionSpec> partitionSpecList)
+      throws MetaException {
     for (PartitionSpec partitionSpec : partitionSpecList) {
       setLocationPrefix(partitionSpec.getSharedSDPartitionSpec().getSd());
       filterPartitions(partitionSpec.getPartitionList().getPartitions());
@@ -93,16 +91,18 @@ public class PrefixingMetastoreFilter implements MetaStoreFilterHook {
   }
 
   @Override
-  public Partition filterPartition(Partition partition) throws MetaException, NoSuchObjectException {
+  public Partition filterPartition(Partition partition)
+      throws MetaException, NoSuchObjectException {
     setLocationPrefix(partition);
     return partition;
   }
 
-  @Override //TODO
-  public List<String> filterPartitionNames(String catName, String dbName, String tblName, List<String> partitionNames) throws MetaException {
+  @Override // TODO
+  public List<String> filterPartitionNames(
+      String catName, String dbName, String tblName, List<String> partitionNames)
+      throws MetaException {
     return partitionNames;
   }
-
 
   private void setLocationPrefix(Table table) {
     setLocationPrefix(table.getSd());
@@ -116,5 +116,4 @@ public class PrefixingMetastoreFilter implements MetaStoreFilterHook {
     String location = sd.getLocation();
     sd.setLocation(prefix + location);
   }
-
 }

@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client;
@@ -75,17 +73,22 @@ public class CloseableThriftHiveMetastoreIfaceClientFactoryTest {
     configurationProperties.put(ConfVars.METASTORE_USE_THRIFT_FRAMED_TRANSPORT.varname, "true");
     configurationProperties.put(ConfVars.METASTORE_USE_THRIFT_COMPACT_PROTOCOL.varname, "false");
     when(waggleDanceConfiguration.getConfigurationProperties()).thenReturn(configurationProperties);
-    factory = new CloseableThriftHiveMetastoreIfaceClientFactory(tunnelingMetaStoreClientFactory,
-        defaultMetaStoreClientFactory, glueClientFactory, waggleDanceConfiguration, splitTrafficMetaStoreClientFactory);
+    factory =
+        new CloseableThriftHiveMetastoreIfaceClientFactory(
+            tunnelingMetaStoreClientFactory,
+            defaultMetaStoreClientFactory,
+            glueClientFactory,
+            waggleDanceConfiguration,
+            splitTrafficMetaStoreClientFactory);
   }
 
   @Test
   public void defaultFactory() {
     ArgumentCaptor<HiveConf> hiveConfCaptor = ArgumentCaptor.forClass(HiveConf.class);
     FederatedMetaStore fed1 = newFederatedInstance("fed1", THRIFT_URI);
-    fed1
-        .setConfigurationProperties(
-            Collections.singletonMap(ConfVars.METASTORE_KERBEROS_PRINCIPAL.varname, "hive/_HOST@HADOOP.COM"));
+    fed1.setConfigurationProperties(
+        Collections.singletonMap(
+            ConfVars.METASTORE_KERBEROS_PRINCIPAL.varname, "hive/_HOST@HADOOP.COM"));
     factory.newInstance(fed1);
     verify(defaultMetaStoreClientFactory)
         .newInstance(hiveConfCaptor.capture(), eq("waggledance-fed1"), eq(3), eq(2000));
@@ -93,8 +96,12 @@ public class CloseableThriftHiveMetastoreIfaceClientFactoryTest {
     HiveConf hiveConf = hiveConfCaptor.getValue();
     assertThat(hiveConf.getVar(ConfVars.METASTOREURIS), is(THRIFT_URI));
     assertThat(hiveConf.getIntVar(ConfVars.METASTORETHRIFTCONNECTIONRETRIES), is(5));
-    assertThat(hiveConf.getTimeVar(ConfVars.METASTORE_CLIENT_SOCKET_TIMEOUT, TimeUnit.MILLISECONDS), is(6000L));
-    assertThat(hiveConf.getTimeVar(ConfVars.METASTORE_CLIENT_CONNECT_RETRY_DELAY, TimeUnit.SECONDS), is(5L));
+    assertThat(
+        hiveConf.getTimeVar(ConfVars.METASTORE_CLIENT_SOCKET_TIMEOUT, TimeUnit.MILLISECONDS),
+        is(6000L));
+    assertThat(
+        hiveConf.getTimeVar(ConfVars.METASTORE_CLIENT_CONNECT_RETRY_DELAY, TimeUnit.SECONDS),
+        is(5L));
     assertThat(hiveConf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_FRAMED_TRANSPORT), is(true));
     assertThat(hiveConf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_COMPACT_PROTOCOL), is(false));
     assertThat(hiveConf.getVar(ConfVars.METASTORE_KERBEROS_PRINCIPAL), is("hive/_HOST@HADOOP.COM"));
@@ -104,12 +111,16 @@ public class CloseableThriftHiveMetastoreIfaceClientFactoryTest {
   public void splitTrafficFactory() {
     PrimaryMetaStore metaStore = newPrimaryInstance("hms", THRIFT_URI);
     metaStore.setReadOnlyRemoteMetaStoreUris(THRIFT_URI_READ_ONLY);
-    CloseableThriftHiveMetastoreIface readWriteClient = mock(CloseableThriftHiveMetastoreIface.class);
+    CloseableThriftHiveMetastoreIface readWriteClient =
+        mock(CloseableThriftHiveMetastoreIface.class);
     // Using 'any(HiveConf.class); generic matcher because HiveConf doesn't implement equals.
-    when(defaultMetaStoreClientFactory.newInstance(any(HiveConf.class), eq("waggledance-hms"), eq(3), eq(2000)))
+    when(defaultMetaStoreClientFactory.newInstance(
+            any(HiveConf.class), eq("waggledance-hms"), eq(3), eq(2000)))
         .thenReturn(readWriteClient);
-    CloseableThriftHiveMetastoreIface readOnlyclient = mock(CloseableThriftHiveMetastoreIface.class);
-    when(defaultMetaStoreClientFactory.newInstance(any(HiveConf.class), eq("waggledance-hms_ro"), eq(3), eq(2000)))
+    CloseableThriftHiveMetastoreIface readOnlyclient =
+        mock(CloseableThriftHiveMetastoreIface.class);
+    when(defaultMetaStoreClientFactory.newInstance(
+            any(HiveConf.class), eq("waggledance-hms_ro"), eq(3), eq(2000)))
         .thenReturn(readOnlyclient);
 
     factory.newInstance(metaStore);
@@ -127,13 +138,17 @@ public class CloseableThriftHiveMetastoreIfaceClientFactoryTest {
     String glueEndpoint = "glue.us-east-1.amazonaws.com";
     glueConfig.setGlueEndpoint(glueEndpoint);
     metaStore.setReadOnlyGlueConfig(glueConfig);
-    CloseableThriftHiveMetastoreIface readWriteClient = mock(CloseableThriftHiveMetastoreIface.class);
+    CloseableThriftHiveMetastoreIface readWriteClient =
+        mock(CloseableThriftHiveMetastoreIface.class);
 
-    when(defaultMetaStoreClientFactory.newInstance(any(HiveConf.class), eq("waggledance-hms"), eq(3), eq(2000)))
+    when(defaultMetaStoreClientFactory.newInstance(
+            any(HiveConf.class), eq("waggledance-hms"), eq(3), eq(2000)))
         .thenReturn(readWriteClient);
-    CloseableThriftHiveMetastoreIface readOnlyclient = mock(CloseableThriftHiveMetastoreIface.class);
+    CloseableThriftHiveMetastoreIface readOnlyclient =
+        mock(CloseableThriftHiveMetastoreIface.class);
     ArgumentCaptor<HiveConf> glueHiveConfCaptor = ArgumentCaptor.forClass(HiveConf.class);
-    when(glueClientFactory.newInstance(glueHiveConfCaptor.capture(), eq(null))).thenReturn(glueClient);
+    when(glueClientFactory.newInstance(glueHiveConfCaptor.capture(), eq(null)))
+        .thenReturn(glueClient);
 
     factory.newInstance(metaStore);
 
@@ -141,7 +156,8 @@ public class CloseableThriftHiveMetastoreIfaceClientFactoryTest {
     assertThat(hiveConf.get("hive.metastore.glue.catalogid"), is(glueAccountId));
     assertThat(hiveConf.get("aws.glue.endpoint"), is(glueEndpoint));
     assertThat(hiveConf.getVar(ConfVars.METASTOREURIS), is(""));
-    verify(splitTrafficMetaStoreClientFactory).newInstance(eq(readWriteClient), any(MetastoreIfaceAdapter.class));
+    verify(splitTrafficMetaStoreClientFactory)
+        .newInstance(eq(readWriteClient), any(MetastoreIfaceAdapter.class));
     verifyNoInteractions(tunnelingMetaStoreClientFactory);
   }
 
@@ -184,8 +200,12 @@ public class CloseableThriftHiveMetastoreIfaceClientFactoryTest {
     assertThat(hiveConf.get("aws.glue.endpoint"), is(glueEndpoint));
     assertThat(hiveConf.getVar(ConfVars.METASTOREURIS), is(""));
     assertThat(hiveConf.getIntVar(ConfVars.METASTORETHRIFTCONNECTIONRETRIES), is(5));
-    assertThat(hiveConf.getTimeVar(ConfVars.METASTORE_CLIENT_SOCKET_TIMEOUT, TimeUnit.MILLISECONDS), is(6000L));
-    assertThat(hiveConf.getTimeVar(ConfVars.METASTORE_CLIENT_CONNECT_RETRY_DELAY, TimeUnit.SECONDS), is(5L));
+    assertThat(
+        hiveConf.getTimeVar(ConfVars.METASTORE_CLIENT_SOCKET_TIMEOUT, TimeUnit.MILLISECONDS),
+        is(6000L));
+    assertThat(
+        hiveConf.getTimeVar(ConfVars.METASTORE_CLIENT_CONNECT_RETRY_DELAY, TimeUnit.SECONDS),
+        is(5L));
     assertThat(hiveConf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_FRAMED_TRANSPORT), is(true));
     assertThat(hiveConf.getBoolVar(ConfVars.METASTORE_USE_THRIFT_COMPACT_PROTOCOL), is(false));
   }

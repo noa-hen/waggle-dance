@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.context;
@@ -37,7 +35,8 @@ import com.hotels.bdp.waggledance.mapping.service.impl.LowerCasePrefixNamingStra
 @org.springframework.context.annotation.Configuration
 public class CommonBeans {
 
-  public final static String IMPERSONATION_ENABLED_KEY = "hive.metastore.thrift.impersonation.enabled";
+  public static final String IMPERSONATION_ENABLED_KEY =
+      "hive.metastore.thrift.impersonation.enabled";
 
   @Bean
   public HiveConf hiveConf(WaggleDanceConfiguration waggleDanceConfiguration) {
@@ -54,7 +53,8 @@ public class CommonBeans {
   }
 
   @Bean
-  public PrefixNamingStrategy prefixNamingStrategy(WaggleDanceConfiguration waggleDanceConfiguration) {
+  public PrefixNamingStrategy prefixNamingStrategy(
+      WaggleDanceConfiguration waggleDanceConfiguration) {
     return new LowerCasePrefixNamingStrategy();
   }
 
@@ -62,19 +62,24 @@ public class CommonBeans {
   public SplitTrafficMetastoreClientFactory splitTrafficMetaStoreClientFactory() {
     return new SplitTrafficMetastoreClientFactory();
   }
-  
 
   @Bean
   public ThriftClientFactory defaultWaggleDanceClientFactory(
-      WaggleDanceConfiguration waggleDanceConfiguration, SplitTrafficMetastoreClientFactory splitTrafficMetaStoreClientFactory) {
-    return new CloseableThriftHiveMetastoreIfaceClientFactory(new TunnelingMetaStoreClientFactory(),
-        new DefaultMetaStoreClientFactory(), new GlueClientFactory(), waggleDanceConfiguration, splitTrafficMetaStoreClientFactory);
+      WaggleDanceConfiguration waggleDanceConfiguration,
+      SplitTrafficMetastoreClientFactory splitTrafficMetaStoreClientFactory) {
+    return new CloseableThriftHiveMetastoreIfaceClientFactory(
+        new TunnelingMetaStoreClientFactory(),
+        new DefaultMetaStoreClientFactory(),
+        new GlueClientFactory(),
+        waggleDanceConfiguration,
+        splitTrafficMetaStoreClientFactory);
   }
 
-  //Only load when no other beans with this name can be found.
+  // Only load when no other beans with this name can be found.
   @ConditionalOnMissingBean
   @Bean
-  public ThriftClientFactory thriftClientFactory(ThriftClientFactory defaultWaggleDanceClientFactory) {
+  public ThriftClientFactory thriftClientFactory(
+      ThriftClientFactory defaultWaggleDanceClientFactory) {
     return defaultWaggleDanceClientFactory;
   }
 

@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client;
@@ -37,7 +35,9 @@ import com.hotels.beeju.ThriftHiveMetaStoreJUnitRule;
 @RunWith(MockitoJUnitRunner.class)
 public class ThriftMetastoreClientManagerIntegrationTest {
 
-  private final HiveCompatibleThriftHiveMetastoreIfaceFactory hiveCompatibleThriftHiveMetastoreIfaceFactory = new HiveCompatibleThriftHiveMetastoreIfaceFactory();
+  private final HiveCompatibleThriftHiveMetastoreIfaceFactory
+      hiveCompatibleThriftHiveMetastoreIfaceFactory =
+          new HiveCompatibleThriftHiveMetastoreIfaceFactory();
   private final HiveConf hiveConf = new HiveConf();
   private final int connectionTimeout = 10;
   private final String databaseName = "dbname";
@@ -48,8 +48,9 @@ public class ThriftMetastoreClientManagerIntegrationTest {
   @Before
   public void init() {
     hiveConf.setVar(ConfVars.METASTOREURIS, hive.getThriftConnectionUri());
-    manager = new ThriftMetastoreClientManager(hiveConf, hiveCompatibleThriftHiveMetastoreIfaceFactory,
-        connectionTimeout);
+    manager =
+        new ThriftMetastoreClientManager(
+            hiveConf, hiveCompatibleThriftHiveMetastoreIfaceFactory, connectionTimeout);
   }
 
   @Test
@@ -69,8 +70,9 @@ public class ThriftMetastoreClientManagerIntegrationTest {
   @Test
   public void openWithDummyConnectionThrowsRuntimeWithOriginalExceptionInMessage() {
     hiveConf.setVar(ConfVars.METASTOREURIS, "thrift://localhost:123");
-    manager = new ThriftMetastoreClientManager(hiveConf, hiveCompatibleThriftHiveMetastoreIfaceFactory,
-        connectionTimeout);
+    manager =
+        new ThriftMetastoreClientManager(
+            hiveConf, hiveCompatibleThriftHiveMetastoreIfaceFactory, connectionTimeout);
 
     try {
       manager.open(TEST_ARGS);

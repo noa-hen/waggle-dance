@@ -1,20 +1,19 @@
 /**
- * Copyright (C) 2016-2019 Expedia, Inc.
+ * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.yaml;
 
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.ScalarStyle;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.CollectionNode;
@@ -29,14 +28,16 @@ import com.google.common.base.CaseFormat;
 
 public class AdvancedRepresenter extends Representer {
 
+  public AdvancedRepresenter(DumperOptions dumperOptions) {
+    super(dumperOptions);
+  }
+
   @Override
   protected NodeTuple representJavaBeanProperty(
-      Object javaBean,
-      Property property,
-      Object propertyValue,
-      Tag customTag) {
+      Object javaBean, Property property, Object propertyValue, Tag customTag) {
     setDefaultScalarStyle(ScalarStyle.PLAIN);
-    NodeTuple nodeTuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
+    NodeTuple nodeTuple =
+        super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
     Node valueNode = nodeTuple.getValueNode();
     if (Tag.NULL.equals(valueNode.getTag())) {
       return null; // skip 'null' values
@@ -59,5 +60,4 @@ public class AdvancedRepresenter extends Representer {
     Object name = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_HYPHEN, property.getName());
     return new NodeTuple(representData(name), valueNode);
   }
-
 }

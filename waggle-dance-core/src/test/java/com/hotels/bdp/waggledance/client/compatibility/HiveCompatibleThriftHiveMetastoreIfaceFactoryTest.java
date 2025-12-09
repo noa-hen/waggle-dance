@@ -1,16 +1,14 @@
 /**
  * Copyright (C) 2016-2025 Expedia, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.hotels.bdp.waggledance.client.compatibility;
@@ -70,12 +68,14 @@ import com.hotels.bdp.waggledance.client.CloseableThriftHiveMetastoreIface;
 @RunWith(MockitoJUnitRunner.class)
 public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
 
-  private final HiveCompatibleThriftHiveMetastoreIfaceFactory factory = new HiveCompatibleThriftHiveMetastoreIfaceFactory();
+  private final HiveCompatibleThriftHiveMetastoreIfaceFactory factory =
+      new HiveCompatibleThriftHiveMetastoreIfaceFactory();
 
   private static final String DB_NAME = "db";
   private static final String TABLE_NAME = "table";
   private @Mock Client delegate;
-  private final Table table = new Table(DB_NAME, TABLE_NAME, "", 0, 0, 0, null, null, null, "", "", "");
+  private final Table table =
+      new Table(DB_NAME, TABLE_NAME, "", 0, 0, 0, null, null, null, "", "", "");
 
   @Test
   public void get_table_req() throws Exception {
@@ -92,10 +92,12 @@ public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
     CloseableThriftHiveMetastoreIface thriftHiveMetastoreIface = factory.newInstance(delegate);
     GetTablesRequest tablesRequest = new GetTablesRequest(DB_NAME);
     tablesRequest.addToTblNames(TABLE_NAME);
-    when(delegate.get_table_objects_by_name_req(tablesRequest)).thenThrow(new TApplicationException("Error"));
+    when(delegate.get_table_objects_by_name_req(tablesRequest))
+        .thenThrow(new TApplicationException("Error"));
     when(delegate.get_table_objects_by_name(DB_NAME, Lists.newArrayList(TABLE_NAME)))
         .thenReturn(Lists.newArrayList(table));
-    GetTablesResult tablesResult = thriftHiveMetastoreIface.get_table_objects_by_name_req(tablesRequest);
+    GetTablesResult tablesResult =
+        thriftHiveMetastoreIface.get_table_objects_by_name_req(tablesRequest);
     assertThat(tablesResult, is(new GetTablesResult(Lists.newArrayList(table))));
   }
 
@@ -126,7 +128,8 @@ public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
     GetTableRequest tableRequest = new GetTableRequest(DB_NAME, TABLE_NAME);
     when(delegate.get_table_req(tableRequest))
         .thenThrow(new TApplicationException("ApplicationException, should not be thrown"));
-    NoSuchObjectException cause = new NoSuchObjectException("Should be thrown, this is called from compatiblity layer");
+    NoSuchObjectException cause =
+        new NoSuchObjectException("Should be thrown, this is called from compatiblity layer");
     when(delegate.get_table(DB_NAME, TABLE_NAME)).thenThrow(cause);
     try {
       thriftHiveMetastoreIface.get_table_req(tableRequest);
@@ -143,7 +146,9 @@ public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
     TApplicationException cause = new TApplicationException("Should be thrown");
     when(delegate.get_table_req(tableRequest)).thenThrow(cause);
     when(delegate.get_table(DB_NAME, TABLE_NAME))
-        .thenThrow(new TApplicationException("should not be thrown, this is called from compatiblity layer"));
+        .thenThrow(
+            new TApplicationException(
+                "should not be thrown, this is called from compatiblity layer"));
     try {
       thriftHiveMetastoreIface.get_table_req(tableRequest);
       fail("exception should have been thrown");
@@ -156,7 +161,8 @@ public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
   public void nonTApplicationExceptionsAreThrown() throws Exception {
     CloseableThriftHiveMetastoreIface thriftHiveMetastoreIface = factory.newInstance(delegate);
     GetTableRequest tableRequest = new GetTableRequest(DB_NAME, TABLE_NAME);
-    NoSuchObjectException cause = new NoSuchObjectException("Normal Error nothing to do with compatibility");
+    NoSuchObjectException cause =
+        new NoSuchObjectException("Normal Error nothing to do with compatibility");
     when(delegate.get_table_req(tableRequest)).thenThrow(cause);
     try {
       thriftHiveMetastoreIface.get_table_req(tableRequest);
@@ -171,8 +177,10 @@ public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
   public void get_primary_keys() throws Exception {
     CloseableThriftHiveMetastoreIface thriftHiveMetastoreIface = factory.newInstance(delegate);
     PrimaryKeysRequest primaryKeysRequest = new PrimaryKeysRequest(DB_NAME, TABLE_NAME);
-    when(delegate.get_primary_keys(primaryKeysRequest)).thenThrow(new TApplicationException("Error"));
-    PrimaryKeysResponse primaryKeysResponse = thriftHiveMetastoreIface.get_primary_keys(primaryKeysRequest);
+    when(delegate.get_primary_keys(primaryKeysRequest))
+        .thenThrow(new TApplicationException("Error"));
+    PrimaryKeysResponse primaryKeysResponse =
+        thriftHiveMetastoreIface.get_primary_keys(primaryKeysRequest);
     assertThat(primaryKeysResponse, is(new PrimaryKeysResponse(emptyList())));
     verify(delegate).get_table(DB_NAME, TABLE_NAME);
   }
@@ -181,8 +189,10 @@ public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
   public void get_foreign_keys() throws Exception {
     CloseableThriftHiveMetastoreIface thriftHiveMetastoreIface = factory.newInstance(delegate);
     ForeignKeysRequest foreignKeysRequest = new ForeignKeysRequest(null, null, DB_NAME, TABLE_NAME);
-    when(delegate.get_foreign_keys(foreignKeysRequest)).thenThrow(new TApplicationException("Error"));
-    ForeignKeysResponse foreignKeysResponse = thriftHiveMetastoreIface.get_foreign_keys(foreignKeysRequest);
+    when(delegate.get_foreign_keys(foreignKeysRequest))
+        .thenThrow(new TApplicationException("Error"));
+    ForeignKeysResponse foreignKeysResponse =
+        thriftHiveMetastoreIface.get_foreign_keys(foreignKeysRequest);
     assertThat(foreignKeysResponse, is(new ForeignKeysResponse(emptyList())));
     verify(delegate).get_table(DB_NAME, TABLE_NAME);
   }
@@ -196,7 +206,7 @@ public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
       thriftHiveMetastoreIface.get_database(DB_NAME);
       fail("exception should have been thrown");
     } catch (TApplicationException e) {
-      //get original TApplicationException back.
+      // get original TApplicationException back.
       assertThat(e.getMessage(), is("Error"));
     }
   }
@@ -213,11 +223,22 @@ public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
     List<SQLCheckConstraint> checkConstraints = emptyList();
     doThrow(new TApplicationException("Error"))
         .when(delegate)
-        .create_table_with_constraints(table, primaryKeys, foreignKeys, uniqueConstraints, notNullConstraints,
-            defaultConstraints, checkConstraints);
-    thriftHiveMetastoreIface
-        .create_table_with_constraints(table, primaryKeys, foreignKeys, uniqueConstraints, notNullConstraints,
-            defaultConstraints, checkConstraints);
+        .create_table_with_constraints(
+            table,
+            primaryKeys,
+            foreignKeys,
+            uniqueConstraints,
+            notNullConstraints,
+            defaultConstraints,
+            checkConstraints);
+    thriftHiveMetastoreIface.create_table_with_constraints(
+        table,
+        primaryKeys,
+        foreignKeys,
+        uniqueConstraints,
+        notNullConstraints,
+        defaultConstraints,
+        checkConstraints);
     verify(delegate).create_table(table);
   }
 
@@ -308,5 +329,4 @@ public class HiveCompatibleThriftHiveMetastoreIfaceFactoryTest {
     CheckConstraintsResponse emptyResponse = new CheckConstraintsResponse(emptyList());
     assertThat(response, is(emptyResponse));
   }
-
 }
