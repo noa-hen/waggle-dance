@@ -34,7 +34,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import jakarta.annotation.PreDestroy;
 import javax.security.auth.login.LoginException;
 
 import org.apache.hadoop.hive.common.auth.HiveAuthUtils;
@@ -60,6 +59,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PreDestroy;
 import lombok.extern.log4j.Log4j2;
 
 import com.hotels.bdp.waggledance.conf.WaggleDanceConfiguration;

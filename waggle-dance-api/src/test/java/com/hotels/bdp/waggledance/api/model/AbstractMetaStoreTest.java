@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.validation.ConstraintViolation;
-
 import org.hibernate.validator.HibernateValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+import jakarta.validation.ConstraintViolation;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
