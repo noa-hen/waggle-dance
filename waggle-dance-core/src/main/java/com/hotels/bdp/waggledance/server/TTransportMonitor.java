@@ -21,8 +21,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.annotation.PreDestroy;
-import javax.annotation.WillClose;
+import jakarta.annotation.PreDestroy;
+import jakarta.annotation.WillClose;
 
 import org.apache.thrift.transport.TTransport;
 import org.slf4j.Logger;

@@ -17,8 +17,8 @@ package com.hotels.bdp.waggledance.api.federation.service;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.hotels.bdp.waggledance.api.model.AbstractMetaStore;
 
