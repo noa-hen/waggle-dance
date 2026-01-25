@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2025 Expedia, Inc.
+ * Copyright (C) 2016-2026 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
 import org.apache.hadoop.hive.metastore.api.TableMeta;
 import org.apache.thrift.TException;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 
 import com.google.common.collect.ImmutableList;

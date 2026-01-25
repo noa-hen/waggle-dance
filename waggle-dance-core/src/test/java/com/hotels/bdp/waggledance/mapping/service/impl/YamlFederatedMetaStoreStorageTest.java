@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2025 Expedia, Inc.
+ * Copyright (C) 2016-2026 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.ConstraintViolationException;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +36,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import fm.last.commons.test.file.ClassDataFolder;
 import fm.last.commons.test.file.DataFolder;
+import jakarta.validation.ConstraintViolationException;
 
 import com.google.common.collect.Lists;
 

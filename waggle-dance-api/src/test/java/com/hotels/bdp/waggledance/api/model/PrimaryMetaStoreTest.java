@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2025 Expedia, Inc.
+ * Copyright (C) 2016-2026 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-
 import org.junit.Test;
+
+import jakarta.validation.ConstraintViolation;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

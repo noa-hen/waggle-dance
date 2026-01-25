@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2025 Expedia, Inc.
+ * Copyright (C) 2016-2026 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package com.hotels.bdp.waggledance.mapping.service;
 import java.io.Closeable;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.hadoop.hive.metastore.api.NoSuchObjectException;
+
+import jakarta.validation.constraints.NotNull;
 
 import com.hotels.bdp.waggledance.mapping.model.DatabaseMapping;
 

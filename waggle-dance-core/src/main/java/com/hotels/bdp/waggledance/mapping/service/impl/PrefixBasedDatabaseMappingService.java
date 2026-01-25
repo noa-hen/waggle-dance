@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2025 Expedia, Inc.
+ * Copyright (C) 2016-2026 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.hive.metastore.api.Function;
 import org.apache.hadoop.hive.metastore.api.GetAllFunctionsResponse;
@@ -41,6 +39,8 @@ import org.apache.hadoop.hive.metastore.api.TableMeta;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.validation.constraints.NotNull;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;

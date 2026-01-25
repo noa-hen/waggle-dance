@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2025 Expedia, Inc.
+ * Copyright (C) 2016-2026 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.client.RestTemplate;
 
 import feign.Feign;
@@ -773,7 +772,7 @@ public class WaggleDanceIntegrationTest {
 
     runWaggleDance(runner);
 
-    RestTemplate rest = new RestTemplateBuilder().build();
+    RestTemplate rest = new RestTemplate();
     PrimaryMetaStore primaryMetastore = rest
         .getForObject("http://localhost:" + runner.getRestApiPort() + "/api/admin/federations/primary",
             PrimaryMetaStore.class);
@@ -799,7 +798,7 @@ public class WaggleDanceIntegrationTest {
         .build();
 
     runWaggleDance(runner);
-    RestTemplate rest = new RestTemplateBuilder().build();
+    RestTemplate rest = new RestTemplate();
     FederatedMetaStore federatedMetastore = rest
         .getForObject(
             "http://localhost:" + runner.getRestApiPort() + "/api/admin/federations/" + SECONDARY_METASTORE_NAME,

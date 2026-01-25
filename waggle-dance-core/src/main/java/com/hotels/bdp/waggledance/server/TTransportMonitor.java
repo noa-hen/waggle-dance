@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-2025 Expedia, Inc.
+ * Copyright (C) 2016-2026 Expedia, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.annotation.PreDestroy;
-import javax.annotation.WillClose;
-
 import org.apache.thrift.transport.TTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PreDestroy;
 import lombok.AllArgsConstructor;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -97,7 +95,7 @@ public class TTransportMonitor {
     scheduler.shutdown();
   }
 
-  public void monitor(@WillClose TTransport transport, @WillClose Closeable action) {
+  public void monitor(TTransport transport, Closeable action) {
     transports.offer(new ActionContainer(transport, action));
   }
 
